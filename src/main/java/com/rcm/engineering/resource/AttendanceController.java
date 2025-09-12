@@ -34,8 +34,6 @@ public class AttendanceController {
         return "attendance";
     }
 
-    // ---------------- REST ENDPOINTS ----------------
-
 
     @PostMapping("/api/mark")
     @ResponseBody
