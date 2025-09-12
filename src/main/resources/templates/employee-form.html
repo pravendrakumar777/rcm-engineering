@@ -1,0 +1,196 @@
+<!--===========================================================================================-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml" lang="">
+<head>
+    <meta charset="UTF-8">
+    <title>Employee Onboarding</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header-title {
+            flex-grow: 1;
+            text-align: center;
+            margin: 0;
+        }
+
+        .form-container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-new {
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header-row">
+        <div>
+            <a href="/employees" class="btn btn-success btn-new">⬅ Back to Employee List</a>
+        </div>
+        <h3 class="header-title">Employee Onboarding Form</h3>
+        <div style="width: 120px;"></div>
+    </div>
+
+    <div class="form-container">
+        <form th:action="@{/employees/save}" th:object="${employee}" method="post">
+            <input type="hidden" th:field="*{id}"/>
+
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label class="form-label">Name</label>
+                    <input type="text" class="form-control" th:field="*{name}" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Mobile</label>
+                    <input type="text" class="form-control" th:field="*{mobile}" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Gender</label>
+                    <select class="form-select" th:field="*{gender}">
+                        <option value="">Select</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" th:field="*{email}">
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label class="form-label">Date of Birth</label>
+                    <input type="date" class="form-control" th:field="*{dateOfBirth}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Address</label>
+                    <input type="text" class="form-control" th:field="*{address}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">City</label>
+                    <input type="text" class="form-control" th:field="*{city}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">State</label>
+                    <input type="text" class="form-control" th:field="*{state}">
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label class="form-label">Postal Code</label>
+                    <input type="text" class="form-control" th:field="*{postalCode}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Country</label>
+                    <input type="text" class="form-control" th:field="*{country}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Department</label>
+                    <select class="form-select" th:field="*{department}">
+                        <option value="">Select</option>
+                        <option value="Production">Production</option>
+                        <option value="Engineering">Engineering</option>
+                        <option value="Quality Control">Quality Control</option>
+                        <option value="Finance & Accounts">Finance & Accounts</option>
+                        <option value="Logistics & Dispatch">Logistics & Dispatch</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Designation</label>
+                    <select class="form-select" th:field="*{designation}">
+                        <option value="">Select</option>
+                        <option value="Production Helper">Production Helper</option>
+                        <option value="Account Manager">Account Manager</option>
+                        <option value="Traub Senior Setter">Traub Senior Setter</option>
+                        <option value="Traub Specialist">Traub Specialist</option>
+                        <option value="Quality Analyst">Quality Analyst</option>
+                        <option value="Production Logistics Executive">Production Logistics Executive</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label class="form-label">Date of Joining</label>
+                    <input type="date" class="form-control" th:field="*{dateOfJoining}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Date of Exit</label>
+                    <input type="date" class="form-control" th:field="*{dateOfExit}" disabled>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">PAN Number</label>
+                    <input type="text" class="form-control" th:field="*{panNumber}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Aadhaar Number</label>
+                    <input type="text" class="form-control" th:field="*{aadhaarNumber}">
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label class="form-label">Bank Name</label>
+                    <input type="text" class="form-control" th:field="*{bankName}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Bank Account Number</label>
+                    <input type="text" class="form-control" th:field="*{bankAccountNumber}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">IFSC Code</label>
+                    <input type="text" class="form-control" th:field="*{ifscCode}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Salary</label>
+                    <input type="number" step="0.01" class="form-control" th:field="*{salary}">
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label class="form-label">Created At</label>
+                    <input type="hidden" class="form-control" th:field="*{createdAt}" readonly>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Manager</label>
+                    <select class="form-select" th:field="*{manager}">
+                        <option value="" disabled selected>Select Manager</option>
+                        <option value="Chandra">Chandra</option>
+                        <option value="Kishan">Kishan</option>
+                        <option value="Pravendra">Pravendra</option>
+                        <option value="Manish">Manish</option>
+                        <option value="Kamlendra">Kamlendra</option>
+                    </select>
+                </div>
+            </div>
+
+
+            <div class="text-end">
+                <button type="submit" class="btn btn-success">Create</button>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,323 @@
+<!--=======================================================================================-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Attendance Calendar</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            margin-top: 40px;
+        }
+
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .header-title {
+            flex-grow: 1;
+            text-align: center;
+            margin: 0;
+        }
+
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+
+        .day {
+            position: relative;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            text-align: center;
+            cursor: pointer;
+            background: white;
+            transition: 0.2s;
+        }
+
+        .day:hover {
+            background: #eee;
+        }
+
+        .present {
+            background-color: #a8e6a3 !important;
+        }
+
+        .absent {
+            background-color: #f7a8a8 !important;
+        }
+
+        .empty {
+            background: #f1f1f1;
+            cursor: default;
+        }
+
+        .header-day {
+            font-weight: bold;
+            background: #007bff;
+            color: white;
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        select {
+            margin: 5px;
+            padding: 6px;
+        }
+
+        .btn-new {
+            white-space: nowrap;
+        }
+
+        .status-indicators {
+            position: absolute;
+            left: 8px;
+            top: 5px;
+            width: calc(100% - 16px);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            font-size: 0.75rem;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .status-row {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-bottom: 2px;
+        }
+
+        .status-box {
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            display: inline-block;
+        }
+
+        .checkin-box {
+            background-color: green;
+        }
+
+        .checkout-box {
+            background-color: red;
+        }
+
+        .future-absent {
+            background-color: #ffe08a !important;
+        }
+
+        .current-day {
+            border: 2px solid #007bff !important;
+            background-color: #e6f0ff !important;
+            box-shadow: 0 0 8px rgba(0, 123, 255, 0.4);
+            opacity: 1 !important;
+            pointer-events: auto !important;
+        }
+
+        .present {
+            background-color: #a8e6a3 !important;
+        }
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header-row">
+        <div>
+            <a href="/employees" class="btn btn-success btn-new">👨‍💼 Manage Employees</a>
+            <a href="/challans" class="btn btn-primary btn-new ms-2">⬅ Back to Challans</a>
+            <a href="/attendance/report" class="btn btn-warning">📄 View Attendance Report</a>
+        </div>
+        <h3 class="header-title">Attendance Calendar</h3>
+        <div style="width: 120px;"></div>
+    </div>
+
+    <div class="mb-3">
+        <label for="employeeSelect" class="form-label">Employee:</label>
+        <select id="employeeSelect" class="form-select d-inline-block w-auto"></select>
+    </div>
+
+    <div id="calendar" class="calendar"></div>
+</div>
+
+<script>
+    const employeeSelect = document.getElementById("employeeSelect");
+    const calendarDiv = document.getElementById("calendar");
+
+    function formatTimeWithMeridiem(dateTimeStr) {
+        if (!dateTimeStr) return '';
+        const date = new Date(dateTimeStr);
+        if (isNaN(date.getTime())) return '';
+        let hours = date.getHours();
+        const minutes = date.getMinutes();
+        const meridiem = hours >= 12 ? 'PM' : 'AM';
+        hours = ((hours + 11) % 12 + 1);
+        return `${hours}:${minutes.toString().padStart(2, '0')} ${meridiem}`;
+    }
+
+    async function loadEmployees() {
+        const res = await fetch('/employees/api');
+        const employees = await res.json();
+        employeeSelect.innerHTML = employees.map(e => `<option value="${e.empCode}">${e.name}</option>`).join('');
+        renderCalendar();
+    }
+
+    async function renderCalendar() {
+        calendarDiv.innerHTML = '';
+        const empCode = employeeSelect.value;
+        if (!empCode) return;
+
+        const year = new Date().getFullYear();
+        const month = new Date().getMonth();
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+        ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"].forEach(d => {
+            const div = document.createElement('div');
+            div.className = 'header-day';
+            div.innerText = d;
+            calendarDiv.appendChild(div);
+        });
+
+        for (let i = 0; i < firstDay; i++) {
+            const div = document.createElement('div');
+            div.className = 'day empty';
+            calendarDiv.appendChild(div);
+        }
+
+        for (let d = 1; d <= daysInMonth; d++) {
+            const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+            const div = document.createElement('div');
+            div.className = 'day';
+            div.innerHTML = `<div>${d}</div>`;
+            div.dataset.date = dateStr;
+            div.onclick = () => toggleAttendance(empCode, dateStr, div);
+            calendarDiv.appendChild(div);
+        }
+
+        await loadAttendance(empCode, year, month, daysInMonth);
+    }
+
+    async function loadAttendance(empCode, year, month, daysInMonth) {
+        const start = `${year}-${String(month + 1).padStart(2, '0')}-01`;
+        const end = `${year}-${String(month + 1).padStart(2, '0')}-${daysInMonth}`;
+        const res = await fetch(`/attendance/api/${empCode}/month?start=${start}&end=${end}`);
+        const data = await res.json();
+        const map = {};
+        data.forEach(a => map[a.date] = a);
+
+        const todayStr = new Date().toISOString().split('T')[0];
+        document.querySelectorAll('.day').forEach((d) => {
+            const dayNum = parseInt(d.innerText);
+            if (!dayNum) return;
+
+            const dateStr = d.dataset.date;
+            const record = map[dateStr];
+
+            let checkIn = '';
+            let checkOut = '';
+            const today = new Date().toISOString().split('T')[0];
+
+            if (record) {
+                if (record.status === "ABSENT") {
+                    if (dateStr > today) {
+                        d.classList.add('future-absent');
+                    } else {
+                        d.classList.add('absent');
+                    }
+                } else {
+                    d.classList.add('present');
+                }
+
+                checkIn = formatTimeWithMeridiem(record.checkInDateTime);
+                checkOut = formatTimeWithMeridiem(record.checkOutDateTime);
+                d.setAttribute("data-checkin", record.checkInDateTime || "");
+                d.setAttribute("data-checkout", record.checkOutDateTime || "");
+            }
+
+            d.innerHTML = `
+                <div class="status-indicators">
+                    ${checkIn ? `<div class="status-row"><span class="status-box checkin-box"></span>${checkIn}</div>` : ''}
+                    ${checkOut ? `<div class="status-row"><span class="status-box checkout-box"></span>${checkOut}</div>` : ''}
+                </div>
+                <div>${dayNum}</div>
+            `;
+
+            if (dateStr === todayStr) {
+                d.classList.add('current-day');
+                d.style.opacity = 1;
+                d.style.pointerEvents = 'auto';
+            } else {
+                d.classList.remove('current-day');
+                d.style.opacity = 0.5;
+                d.style.pointerEvents = 'none';
+            }
+        });
+    }
+
+    async function toggleAttendance(empCode, date, div) {
+        const todayStr = new Date().toISOString().split('T')[0];
+        if (date !== todayStr) {
+            alert("You can only mark attendance for today.");
+            return;
+        }
+
+        const now = new Date();
+        const timestamp = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}T${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+        const status = "PRESENT";
+
+        const alreadyCheckedIn = div.getAttribute("data-checkin");
+        const alreadyCheckedOut = div.getAttribute("data-checkout");
+        const params = new URLSearchParams({empCode, date, status});
+
+        if (!alreadyCheckedIn) {
+            params.append("checkInDateTime", timestamp);
+        } else if (!alreadyCheckedOut) {
+            params.append("checkOutDateTime", timestamp);
+        } else {
+            alert("Already checked in and out for today.");
+            return;
+        }
+
+        const res = await fetch(`/attendance/api/mark?${params.toString()}`, {
+            method: "POST"
+        });
+
+        const data = await res.json();
+        const checkInTime = data.checkInDateTime ? formatTimeWithMeridiem(data.checkInDateTime) : "";
+        const checkOutTime = data.checkOutDateTime ? formatTimeWithMeridiem(data.checkOutDateTime) : "";
+
+        div.classList.add("present");
+        div.setAttribute("data-checkin", data.checkInDateTime || "");
+        div.setAttribute("data-checkout", data.checkOutDateTime || "");
+        div.innerHTML = `
+            <div class="status-indicators">
+                ${checkInTime ? `<div class="status-row"><span class="status-box checkin-box"></span>${checkInTime}</div>` : ''}
+                ${checkOutTime ? `<div class="status-row"><span class="status-box checkout-box"></span>${checkOutTime}</div>` : ''}
+            </div>
+            <div>${now.getDate()}</div>
+        `;
+    }
+
+    employeeSelect.addEventListener('change', renderCalendar);
+    window.onload = loadEmployees;
+</script>
+
+</body>
+</html>
+

@@ -1,0 +1,173 @@
+<!--================================================================================-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Monthly Attendance</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .header-title {
+            flex-grow: 1;
+            text-align: center;
+            margin: 0;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .btn-new {
+            white-space: nowrap;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .status-box {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+            margin-right: 6px;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header-row">
+        <div class="action-buttons">
+            <a href="/employees" class="btn btn-primary btn-new">⬅ Back to Employees</a>
+            <a href="/attendance" class="btn btn-info btn-new">📅 Mark Attendance</a>
+            <a href="/employees/calculate-salary" class="btn btn-info btn-new">Salary Calculations</a>
+        </div>
+        <h3 class="header-title">Attendance Report</h3>
+        <div style="width: 120px;"></div>
+    </div>
+
+    <form method="get" action="/attendance/report" class="row g-3 mb-4" id="attendanceForm">
+        <div class="col-md-3">
+            <input type="text" name="empCode" class="form-control" placeholder="EMP CODE" required
+                   th:value="${param.empCode}">
+        </div>
+        <div class="col-md-3">
+            <input type="date" name="start" class="form-control" required
+                   th:value="${param.start}">
+        </div>
+        <div class="col-md-3">
+            <input type="date" name="end" class="form-control" required
+                   th:value="${param.end}">
+        </div>
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-success w-100">Get Attendances</button>
+        </div>
+    </form>
+
+    <div th:if="${attendanceList != null}" class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Check-In</th>
+                <th>Check-Out</th>
+                <th>Working Hours</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="att : ${attendanceList}" th:classappend="${att.status == 'ABSENT'} ? 'table-danger'">
+                <td th:text="${#temporals.format(att.date, 'dd-MM-yyyy')}"></td>
+                <td>
+                    <span class="status-box"></span>
+                    <span class="status-text" th:text="${att.status}"></span>
+                </td>
+                <td th:text="${att.checkInDateTime != null ? #temporals.format(att.checkInDateTime, 'hh:mm a') : '—'}"></td>
+                <td th:text="${att.checkOutDateTime != null ? #temporals.format(att.checkOutDateTime, 'hh:mm a') : '—'}"></td>
+                <td th:text="${att.getFormattedTotalHours}"></td>
+            </tr>
+            <tr style="background-color: #e9f5ff;"
+                th:if="${presentCount != null and absentCount != null and totalWorkingHours != null}">
+                <td style="font-weight: bold;">Status Summary</td>
+                <td style="font-weight: bold;">
+                    <span class="status-box" style="background-color: #28a745;"></span>
+                    <span th:text="${presentCount}"></span> P
+                    <span class="status-box" style="background-color: #dc3545; margin-left: 10px;"></span>
+                    <span th:text="${absentCount}"></span> A
+                    <span style="margin-left: 10px;">(<span th:text="${totalDays}"></span> Days)</span>
+                </td>
+                <td></td>
+                <td style="text-align: right; font-weight: bold;">Total Hours</td>
+                <td th:text="${totalWorkingHours}" style="font-weight: bold;"></td>
+            </tr>
+            </tbody>
+
+
+            </tbody>
+        </table>
+    </div>
+
+    <div th:if="${#lists.isEmpty(attendanceList)}" class="alert alert-warning mt-3">
+        No attendance records found for the selected period.
+    </div>
+</div>
+
+<script>
+    // Validate date range
+    document.getElementById("attendanceForm").addEventListener("submit", function (e) {
+        const start = new Date(document.querySelector('[name="start"]').value);
+        const end = new Date(document.querySelector('[name="end"]').value);
+        if (start > end) {
+            e.preventDefault();
+            alert("Start date must be before end date.");
+        }
+    });
+
+    // Apply status box colors dynamically
+    document.querySelectorAll("tr").forEach(row => {
+        const statusText = row.querySelector(".status-text");
+        const statusBox = row.querySelector(".status-box");
+
+        if (statusText && statusBox) {
+            const status = statusText.textContent.trim().toUpperCase();
+            if (status === "PRESENT") {
+                statusBox.style.backgroundColor = "#28a745";
+            } else if (status === "ABSENT") {
+                statusBox.style.backgroundColor = "#dc3545";
+            }
+        }
+    });
+</script>
+</body>
+</html>

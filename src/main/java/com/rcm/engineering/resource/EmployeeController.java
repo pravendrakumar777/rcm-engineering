@@ -1,0 +1,186 @@
+package com.rcm.engineering.resource;
+
+import com.itextpdf.io.exceptions.IOException;
+import com.rcm.engineering.domain.Attendance;
+import com.rcm.engineering.domain.Employee;
+import com.rcm.engineering.repository.EmployeeRepository;
+import com.rcm.engineering.resource.utils.PdfGeneratorUtil;
+import com.rcm.engineering.service.AttendanceService;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import javax.servlet.http.HttpServletResponse;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.stream.Collectors;
+
+@Controller
+@RequestMapping("/employees")
+public class EmployeeController {
+
+    private final EmployeeRepository employeeRepository;
+    private final AttendanceService attendanceService;
+
+    public EmployeeController(EmployeeRepository employeeRepository, AttendanceService attendanceService) {
+        this.employeeRepository = employeeRepository;
+        this.attendanceService = attendanceService;
+    }
+
+    @GetMapping
+    public String listEmployees(Model model) {
+        model.addAttribute("employees", employeeRepository.findAll());
+        return "employee-list";
+    }
+
+    @GetMapping("/form")
+    public String showCreateForm(Model model) {
+        model.addAttribute("employee", new Employee());
+        model.addAttribute("formTitle", "Create New Employee");
+        return "employee-form";
+    }
+
+    @PostMapping("/save")
+    public String saveEmployee(@ModelAttribute Employee employee, RedirectAttributes redirectAttributes) {
+        if (employee.getEmpCode() != null && !employee.getEmpCode().isEmpty()) {
+            Optional<Employee> existingEmployee = employeeRepository.findByEmpCode(employee.getEmpCode());
+            if (existingEmployee.isPresent()) {
+                Employee existing = existingEmployee.get();
+
+                existing.setName(employee.getName());
+                existing.setMobile(employee.getMobile());
+                existing.setGender(employee.getGender());
+                existing.setEmail(employee.getEmail());
+                existing.setManager(employee.getManager());
+                existing.setDateOfBirth(employee.getDateOfBirth());
+                existing.setAddress(employee.getAddress());
+                existing.setCity(employee.getCity());
+                existing.setState(employee.getState());
+                existing.setPostalCode(employee.getPostalCode());
+                existing.setCountry(employee.getCountry());
+                existing.setDepartment(employee.getDepartment());
+                existing.setDesignation(employee.getDesignation());
+                existing.setDateOfJoining(employee.getDateOfJoining());
+                existing.setDateOfExit(employee.getDateOfExit());
+                existing.setPanNumber(employee.getPanNumber());
+                existing.setAadhaarNumber(employee.getAadhaarNumber());
+                existing.setBankName(employee.getBankName());
+                existing.setBankAccountNumber(employee.getBankAccountNumber());
+                existing.setIfscCode(employee.getIfscCode());
+                existing.setSalary(employee.getSalary());
+
+                if (existing.getCreatedAt() == null) {
+                    existing.setCreatedAt(LocalDateTime.now());
+                }
+
+                employeeRepository.save(existing);
+                redirectAttributes.addFlashAttribute("success", "Employee updated successfully.");
+                return "redirect:/employees";
+            } else {
+                redirectAttributes.addFlashAttribute("error", "Employee not found for update.");
+                return "redirect:/employees?error=notfound";
+            }
+        }
+        String empCode = "RCMEM" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("ddMMyyyyHHmmss"));
+        employee.setEmpCode(empCode);
+        employeeRepository.save(employee);
+        redirectAttributes.addFlashAttribute("success", "Employee saved successfully.");
+        return "redirect:/employees";
+    }
+
+    @GetMapping("/edit/{empCode}")
+    public String showEditForm(@PathVariable String empCode, Model model) {
+        Employee employee = employeeRepository.findByEmpCode(empCode)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid employee empCode"));
+        model.addAttribute("employee", employee);
+        model.addAttribute("formTitle", "Update Onboarded Employee Details");
+        return "employee-edit";
+    }
+
+    @GetMapping("/delete/{empCode}")
+    public String deleteEmployee(@PathVariable String empCode) {
+        Employee employee = employeeRepository.findByEmpCode(empCode)
+                .orElseThrow(() -> new IllegalArgumentException("Employee with empCode " + empCode + " not found"));
+
+        employeeRepository.delete(employee);
+        return "redirect:/employees";
+    }
+
+    @PostMapping
+    @ResponseBody
+    public Employee createEmployee(@RequestBody Employee employee) {
+        return employeeRepository.save(employee);
+    }
+
+    @GetMapping("/api")
+    @ResponseBody
+    public List<Employee> getAllEmployees() {
+        return employeeRepository.findAll();
+    }
+
+    @GetMapping("/calculate-salary")
+    public String calculateSalary(
+            @RequestParam(required = false) String empCode,
+            @RequestParam(required = false) String start,
+            @RequestParam(required = false) String end,
+            Model model,
+            HttpServletResponse response) throws IOException {
+
+        if (empCode != null && start != null && end != null) {
+            try {
+                LocalDate s = LocalDate.parse(start);
+                LocalDate e = LocalDate.parse(end);
+
+                List<Attendance> attendanceList = attendanceService.getAttendance(empCode, s, e)
+                        .stream()
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toList());
+
+                model.addAttribute("attendanceList", attendanceList);
+
+                Employee employee = employeeRepository.findByEmpCode(empCode)
+                        .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+                double monthlySalary = employee.getSalary();
+                double dailyRate = monthlySalary / 30.0;
+                double hourlyRate = dailyRate / 8.0;
+                double totalWorkedHours = 0.0;
+
+                for (Attendance att : attendanceList) {
+                    if (att.getStatus() == Attendance.Status.PRESENT) {
+                        LocalDateTime checkIn = att.getCheckInDateTime();
+                        LocalDateTime checkOut = att.getCheckOutDateTime();
+
+                        if (checkIn != null && checkOut != null) {
+                            Duration duration = Duration.between(checkIn, checkOut);
+                            double hoursWorked = duration.toMinutes() / 60.0;
+                            totalWorkedHours += hoursWorked;
+                        }
+                    }
+                }
+
+                long presentDays = attendanceList.stream()
+                        .filter(att -> att.getStatus() == Attendance.Status.PRESENT)
+                        .count();
+
+                double totalSalary = totalWorkedHours * hourlyRate;
+
+                model.addAttribute("employee", employee);
+                model.addAttribute("presentDays", presentDays);
+                model.addAttribute("totalSalary", totalSalary);
+
+                response.setContentType("application/pdf");
+                response.setHeader("Content-Disposition", "attachment; filename=payslip.pdf");
+                PdfGeneratorUtil.generatePayslip(employee, attendanceList, presentDays, totalSalary, response.getOutputStream());
+
+            } catch (Exception ex) {
+                model.addAttribute("errorMessage", "Employee not found or invalid data.");
+            }
+        }
+        return "calculate-salary";
+    }
+}
