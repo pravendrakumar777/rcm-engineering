@@ -1,19 +1,13 @@
 package com.rcm.engineering.resource;
 
 import com.rcm.engineering.domain.Attendance;
-import com.rcm.engineering.domain.Employee;
-import com.rcm.engineering.domain.dto.AttendanceDTO;
 import com.rcm.engineering.repository.EmployeeRepository;
-import com.rcm.engineering.resource.utils.PdfGeneratorUtil;
 import com.rcm.engineering.service.AttendanceService;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
