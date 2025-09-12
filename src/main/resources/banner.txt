@@ -1,23 +1,8 @@
-
-RRRRRRRRRRRRRRRRR           CCCCCCCCCCCCCMMMMMMMM               MMMMMMMM     EEEEEEEEEEEEEEEEEEEEEENNNNNNNN        NNNNNNNN        GGGGGGGGGGGGGIIIIIIIIIINNNNNNNN        NNNNNNNNEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEERRRRRRRRRRRRRRRRR   IIIIIIIIIINNNNNNNN        NNNNNNNN        GGGGGGGGGGGGG
-R::::::::::::::::R       CCC::::::::::::CM:::::::M             M:::::::M     E::::::::::::::::::::EN:::::::N       N::::::N     GGG::::::::::::GI::::::::IN:::::::N       N::::::NE::::::::::::::::::::EE::::::::::::::::::::ER::::::::::::::::R  I::::::::IN:::::::N       N::::::N     GGG::::::::::::G
-R::::::RRRRRR:::::R    CC:::::::::::::::CM::::::::M           M::::::::M     E::::::::::::::::::::EN::::::::N      N::::::N   GG:::::::::::::::GI::::::::IN::::::::N      N::::::NE::::::::::::::::::::EE::::::::::::::::::::ER::::::RRRRRR:::::R I::::::::IN::::::::N      N::::::N   GG:::::::::::::::G
-RR:::::R     R:::::R  C:::::CCCCCCCC::::CM:::::::::M         M:::::::::M     EE::::::EEEEEEEEE::::EN:::::::::N     N::::::N  G:::::GGGGGGGG::::GII::::::IIN:::::::::N     N::::::NEE::::::EEEEEEEEE::::EEE::::::EEEEEEEEE::::ERR:::::R     R:::::RII::::::IIN:::::::::N     N::::::N  G:::::GGGGGGGG::::G
-  R::::R     R:::::R C:::::C       CCCCCCM::::::::::M       M::::::::::M       E:::::E       EEEEEEN::::::::::N    N::::::N G:::::G       GGGGGG  I::::I  N::::::::::N    N::::::N  E:::::E       EEEEEE  E:::::E       EEEEEE  R::::R     R:::::R  I::::I  N::::::::::N    N::::::N G:::::G       GGGGGG
-  R::::R     R:::::RC:::::C              M:::::::::::M     M:::::::::::M       E:::::E             N:::::::::::N   N::::::NG:::::G                I::::I  N:::::::::::N   N::::::N  E:::::E               E:::::E               R::::R     R:::::R  I::::I  N:::::::::::N   N::::::NG:::::G
-  R::::RRRRRR:::::R C:::::C              M:::::::M::::M   M::::M:::::::M       E::::::EEEEEEEEEE   N:::::::N::::N  N::::::NG:::::G                I::::I  N:::::::N::::N  N::::::N  E::::::EEEEEEEEEE     E::::::EEEEEEEEEE     R::::RRRRRR:::::R   I::::I  N:::::::N::::N  N::::::NG:::::G
-  R:::::::::::::RR  C:::::C              M::::::M M::::M M::::M M::::::M       E:::::::::::::::E   N::::::N N::::N N::::::NG:::::G    GGGGGGGGGG  I::::I  N::::::N N::::N N::::::N  E:::::::::::::::E     E:::::::::::::::E     R:::::::::::::RR    I::::I  N::::::N N::::N N::::::NG:::::G    GGGGGGGGGG
-  R::::RRRRRR:::::R C:::::C              M::::::M  M::::M::::M  M::::::M       E:::::::::::::::E   N::::::N  N::::N:::::::NG:::::G    G::::::::G  I::::I  N::::::N  N::::N:::::::N  E:::::::::::::::E     E:::::::::::::::E     R::::RRRRRR:::::R   I::::I  N::::::N  N::::N:::::::NG:::::G    G::::::::G
-  R::::R     R:::::RC:::::C              M::::::M   M:::::::M   M::::::M       E::::::EEEEEEEEEE   N::::::N   N:::::::::::NG:::::G    GGGGG::::G  I::::I  N::::::N   N:::::::::::N  E::::::EEEEEEEEEE     E::::::EEEEEEEEEE     R::::R     R:::::R  I::::I  N::::::N   N:::::::::::NG:::::G    GGGGG::::G
-  R::::R     R:::::RC:::::C              M::::::M    M:::::M    M::::::M       E:::::E             N::::::N    N::::::::::NG:::::G        G::::G  I::::I  N::::::N    N::::::::::N  E:::::E               E:::::E               R::::R     R:::::R  I::::I  N::::::N    N::::::::::NG:::::G        G::::G
-  R::::R     R:::::R C:::::C       CCCCCCM::::::M     MMMMM     M::::::M       E:::::E       EEEEEEN::::::N     N:::::::::N G:::::G       G::::G  I::::I  N::::::N     N:::::::::N  E:::::E       EEEEEE  E:::::E       EEEEEE  R::::R     R:::::R  I::::I  N::::::N     N:::::::::N G:::::G       G::::G
-RR:::::R     R:::::R  C:::::CCCCCCCC::::CM::::::M               M::::::M     EE::::::EEEEEEEE:::::EN::::::N      N::::::::N  G:::::GGGGGGGG::::GII::::::IIN::::::N      N::::::::NEE::::::EEEEEEEE:::::EEE::::::EEEEEEEE:::::ERR:::::R     R:::::RII::::::IIN::::::N      N::::::::N  G:::::GGGGGGGG::::G
-R::::::R     R:::::R   CC:::::::::::::::CM::::::M               M::::::M     E::::::::::::::::::::EN::::::N       N:::::::N   GG:::::::::::::::GI::::::::IN::::::N       N:::::::NE::::::::::::::::::::EE::::::::::::::::::::ER::::::R     R:::::RI::::::::IN::::::N       N:::::::N   GG:::::::::::::::G
-R::::::R     R:::::R     CCC::::::::::::CM::::::M               M::::::M     E::::::::::::::::::::EN::::::N        N::::::N     GGG::::::GGG:::GI::::::::IN::::::N        N::::::NE::::::::::::::::::::EE::::::::::::::::::::ER::::::R     R:::::RI::::::::IN::::::N        N::::::N     GGG::::::GGG:::G
-RRRRRRRR     RRRRRRR        CCCCCCCCCCCCCMMMMMMMM               MMMMMMMM     EEEEEEEEEEEEEEEEEEEEEENNNNNNNN         NNNNNNN        GGGGGG   GGGGIIIIIIIIIINNNNNNNN         NNNNNNNEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEERRRRRRRR     RRRRRRRIIIIIIIIIINNNNNNNN         NNNNNNN        GGGGGG   GGGG
-
-
-
-
-
-
+  ____   ____ __  __   _____ _   _  ____ ___ _   _ _____ _____ ____  ___ _   _  ____ 
+ |  _ \ / ___|  \/  | | ____| \ | |/ ___|_ _| \ | | ____| ____|  _ \|_ _| \ | |/ ___|
+ | |_) | |   | |\/| | |  _| |  \| | |  _ | ||  \| |  _| |  _| | |_) || ||  \| | |  _ 
+ |  _ <| |___| |  | | | |___| |\  | |_| || || |\  | |___| |___|  _ < | || |\  | |_| |
+ |_| \_\\____|_|  |_| |_____|_| \_|\____|___|_| \_|_____|_____|_| \_\___|_| \_|\____|
+                                                                                     
+${application.title} ${application.version}
+Powered by Spring Boot ${spring-boot.version}
