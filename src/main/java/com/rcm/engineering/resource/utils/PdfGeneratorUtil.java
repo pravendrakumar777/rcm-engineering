@@ -99,47 +99,40 @@ public class PdfGeneratorUtil {
         doc.add(new Paragraph("\nChallan No: " + challan.getChallanNo() + "     Date: " + formattedDate));
         doc.add(new Paragraph("M/s: " + challan.getCustomerName()));
 
-        // === Table Header (Expanded) ===
-        float[] columnWidths = {50F, 120F, 80F, 70F, 60F, 60F, 80F, 100F};
+        float[] columnWidths = {50F, 120F, 90F, 60F, 60F, 80F, 100F};
 
         Table table = new Table(columnWidths);
         table.setWidth(UnitValue.createPercentValue(100));
 
         table.addHeaderCell("S. No");
         table.addHeaderCell("Item Name");
-        table.addHeaderCell("Ref. Ch. No.");
-        table.addHeaderCell("Weight (kg)");
-        table.addHeaderCell("Pcs/Kg");
-        table.addHeaderCell("Rate/Pc");
-        table.addHeaderCell("Total Pcs");
-        table.addHeaderCell(" Total Amount");
+        table.addHeaderCell("Weight (Kg)");
+        table.addHeaderCell("Pieces/Kg");
+        table.addHeaderCell("Rate/Piece");
+        table.addHeaderCell("Total Pieces");
+        table.addHeaderCell("Total Amount");
 
-        // === Table Rows ===
         int i = 1;
         double grandTotal = 0.0;
+
         for (ChallanItem item : challan.getItems()) {
             table.addCell(String.valueOf(i++));
             table.addCell(nonNull(item.getDescription()));
-            table.addCell(nonNull(item.getRefChNo()));
             table.addCell(nonNull(item.getWeight()));
             table.addCell(String.valueOf(item.getPiecesPerKg()));
-            table.addCell(String.format("%.2f", item.getRatePerPiece()));
+            table.addCell(formatDouble(item.getRatePerPiece()));
             table.addCell(String.valueOf(item.getTotalPieces()));
-            table.addCell(String.format("%.2f", item.getTotalAmount()));
-
+            table.addCell(formatDouble(item.getTotalAmount()));
             grandTotal += item.getTotalAmount();
         }
 
         doc.add(table.setMarginTop(10));
+        Cell emptyCell = new Cell(1, 5).add(new Paragraph(""));
+        emptyCell.setBorder(Border.NO_BORDER);
+        table.addCell(emptyCell);
+        table.addCell(new Cell().add(new Paragraph("Grand Total")));
+        table.addCell(new Cell().add(new Paragraph(formatDouble(grandTotal))));
 
-        // === Grand Total Row ===
-        Paragraph totalParagraph = new Paragraph("Grand Total: ₹ " + String.format("%.2f", grandTotal))
-                .setBold()
-                .setTextAlignment(TextAlignment.RIGHT)
-                .setFontSize(12);
-        doc.add(totalParagraph);
-
-        // === Footer ===
         doc.add(new Paragraph("\nFor : RCM ENGINEERING")
                 .setTextAlignment(TextAlignment.RIGHT)
                 .setBold());
@@ -154,6 +147,9 @@ public class PdfGeneratorUtil {
 
         doc.close();
         return out.toByteArray();
+    }
+    private static String formatDouble(double value) {
+        return String.format("%.2f", value);
     }
 
     // Calculate salary & generate payslip
