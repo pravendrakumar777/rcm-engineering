@@ -6,20 +6,59 @@ pipeline {
         jdk 'Java 8'
     }
 
+    parameters {
+        choice(
+            name: 'ENV',
+            choices: ['dev', 'uat', 'prod'],
+            description: 'Select environment profile to build & deploy'
+        )
+    }
+
+    environment {
+        DEV_PORT = "8081"
+        UAT_PORT = "8082"
+        PROD_PORT = "8083"
+    }
+
     stages {
         stage('Checkout') {
             steps {
                 git url: 'https://github.com/pravendrakumar777/rcm-engineering', branch: 'main'
             }
         }
+
         stage('Build') {
             steps {
-                sh 'mvn clean package -DskipTests'
+                sh "mvn clean package -P${params.ENV} -DskipTests"
             }
         }
+
+        stage('Stop Old Instance') {
+            steps {
+                script {
+                    def port = (params.ENV == 'dev') ? DEV_PORT : (params.ENV == 'uat') ? UAT_PORT : PROD_PORT
+                    sh """
+                        PID=\$(lsof -t -i:\${port} || true)
+                        if [ ! -z "\$PID" ]; then
+                            echo "Stopping old instance running on port \${port}..."
+                            kill -9 \$PID
+                        fi
+                    """
+                }
+            }
+        }
+
         stage('Run') {
             steps {
-                sh 'java -jar target/rcm-engineering-0.0.1-SNAPSHOT.jar &'
+                script {
+                    def port = (params.ENV == 'dev') ? DEV_PORT : (params.ENV == 'uat') ? UAT_PORT : PROD_PORT
+                    sh """
+                        echo "Starting application with profile: ${params.ENV} on port \${port}"
+                        nohup java -jar target/rcm-engineering-0.0.1-SNAPSHOT.jar \
+                        --spring.profiles.active=${params.ENV} \
+                        --server.port=\${port} > ${params.ENV}.log 2>&1 &
+                    """
+                }
             }
         }
     }
