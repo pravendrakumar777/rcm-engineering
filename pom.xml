@@ -11,7 +11,8 @@
 	<groupId>com.rcm.engineering</groupId>
 	<artifactId>rcm-engineering</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>rcm-engineering</name>
+    <packaging>jar</packaging>
+    <name>rcm-engineering</name>
 	<description>RCM Engineering Project for Spring Boot</description>
 	<properties>
 		<java.version>1.8</java.version>
