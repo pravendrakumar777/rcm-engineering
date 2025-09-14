@@ -133,7 +133,7 @@
                 <td th:text="${emp.mobile}"></td>
                 <td th:text="${emp.gender}"></td>
                 <td th:text="${emp.email}"></td>
-                <td th:text="${emp.dateOfBirth}"></td>
+                <td th:text="${#temporals.format(emp.dateOfBirth, 'dd-MM-yyyy')}"></td>
                 <td th:text="${emp.address}"></td>
                 <td th:text="${emp.city}"></td>
                 <td th:text="${emp.state}"></td>
@@ -142,7 +142,7 @@
                 <td th:text="${emp.department}"></td>
                 <td th:text="${emp.getManager}"></td>
                 <td th:text="${emp.designation}"></td>
-                <td th:text="${emp.dateOfJoining}"></td>
+                <td th:text="${#temporals.format(emp.dateOfJoining, 'dd-MM-yyyy')}"></td>
                 <td th:text="${emp.panNumber}"></td>
                 <td th:text="${emp.aadhaarNumber}"></td>
                 <td th:text="${emp.bankName}"></td>
