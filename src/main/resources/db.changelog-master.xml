@@ -19,4 +19,22 @@
 <!--            <column name="manager" type="varchar(255)"/>-->
 <!--        </addColumn>-->
 <!--    </changeSet>-->
+
+    <changeSet id="20250914091734-1" author="Pravendra Kumar">
+        <comment>Change challan.date from DATE to DATETIME for LocalDateTime mapping</comment>
+        <modifyDataType
+                tableName="challan"
+                columnName="date"
+                newDataType="DATETIME"/>
+    </changeSet>
+
+    <changeSet id="20250914-1" author="Pravendra Kumar">
+        <comment>Change challan.date to DATETIME</comment>
+        <modifyDataType tableName="challan" columnName="date" newDataType="DATETIME"/>
+    </changeSet>
+
+    <changeSet id="20250914-2" author="Pravendra">
+        <comment>Ensure challan.date is DATETIME</comment>
+        <modifyDataType tableName="challan" columnName="date" newDataType="DATETIME"/>
+    </changeSet>
 </databaseChangeLog>

@@ -70,9 +70,8 @@
         <table class="table table-bordered table-hover" id="challanTable">
             <thead class="table-light">
             <tr>
-                <th>ID</th>
                 <th>Challan No</th>
-                <th>Customer</th>
+                <th>Partner Name</th>
                 <th>Created Date</th>
                 <th>Action</th>
             </tr>
@@ -116,7 +115,9 @@
         const ampm = hours >= 12 ? 'PM' : 'AM';
         hours = hours % 12 || 12;
 
-        return `${day}-${month}-${year} ${hours}:${minutes} ${ampm}`;
+        const paddedHours = pad(hours);
+<!--        return `${day}-${month}-${year} ${hours}:${minutes} ${ampm}`;-->
+        return `${day}-${month}-${year} ${paddedHours}:${minutes} ${ampm}`;
     };
 
     // ---------- load challans ----------
@@ -131,7 +132,6 @@
             challans.forEach(challan => {
                 const tr = document.createElement("tr");
                 tr.innerHTML = `
-                    <td>${escapeHtml(challan.id)}</td>
                     <td>${escapeHtml(challan.challanNo)}</td>
                     <td>${escapeHtml(challan.customerName)}</td>
                     <td>${escapeHtml(fmtDate(challan.date))}</td>
@@ -194,9 +194,8 @@
             }
 
             document.getElementById("challanDetails").innerHTML = `
-                <p><strong>ID:</strong> ${challan.id}</p>
                 <p><strong>Challan No:</strong> ${challan.challanNo}</p>
-                <p><strong>Customer:</strong> ${challan.customerName}</p>
+                <p><strong>Partner Name:</strong> ${challan.customerName}</p>
                 <p><strong>Date:</strong> ${fmtDate(challan.date)}</p>
                 <hr>
                 <h6>Items:</h6>

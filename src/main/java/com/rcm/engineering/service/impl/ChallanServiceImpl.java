@@ -15,6 +15,7 @@ import java.util.Optional;
 @Service
 @Transactional
 public class ChallanServiceImpl implements ChallanService {
+
     private static final Logger log = LoggerFactory.getLogger(ChallanServiceImpl.class);
     private final ChallanRepository challanRepository;
 
