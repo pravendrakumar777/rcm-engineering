@@ -71,7 +71,7 @@
             <thead class="table-light">
             <tr>
                 <th>Challan No</th>
-                <th>Partner Name</th>
+                <th>OEM Supplier</th>
                 <th>Created Date</th>
                 <th>Action</th>
             </tr>
@@ -183,7 +183,7 @@
                 });
 
                 itemsRows += `<tr class="fw-bold">
-                    <td colspan="3" class="text-end">TOTAL</td>
+                    <td colspan="3" class="text-end">Total</td>
                     <td>${totalWeight.toFixed(2)}</td>
                     <td></td><td></td>
                     <td>${totalPieces}</td>
@@ -194,9 +194,9 @@
             }
 
             document.getElementById("challanDetails").innerHTML = `
-                <p><strong>Challan No:</strong> ${challan.challanNo}</p>
-                <p><strong>Partner Name:</strong> ${challan.customerName}</p>
-                <p><strong>Date:</strong> ${fmtDate(challan.date)}</p>
+                <p><strong>Challan No :</strong> ${challan.challanNo}</p>
+                <p><strong>OEM Supplier :</strong> ${challan.customerName}</p>
+                <p><strong>Date :</strong> ${fmtDate(challan.date)}</p>
                 <hr>
                 <h6>Items:</h6>
                 <table class="table table-sm table-bordered">

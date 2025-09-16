@@ -70,7 +70,7 @@
                     </div>
                     <input type="hidden" name="date" id="date">
                     <div class="mb-3">
-                        <label class="form-label">OEM (Original Equipment Manufacturer)</label>
+                        <label class="form-label">OEM Supplier (Vendor Partner’s)</label>
                         <input type="text" name="customerName" class="form-control" required>
                     </div>
                 </div>
@@ -83,9 +83,21 @@
                                 <input type="text" placeholder="Components" name="description" class="form-control"
                                        required>
                             </div>
-<!--                            <div class="mb-2">-->
-<!--                                <input type="text" placeholder="Ref. Ch. No." name="refChNo" class="form-control">-->
-<!--                            </div>-->
+                            <div class="mb-2">
+                                <input type="text" placeholder="Process (Job Work)" name="process" class="form-control"
+                                       required>
+                            </div>
+                            <div class="mb-2">
+                                <input type="text" placeholder="HSN Code" name="hsnCode" class="form-control"
+                                       required>
+                            </div>
+                            <div class="mb-2">
+                                <input type="text" placeholder="Unit" name="unit" class="form-control"
+                                       required>
+                            </div>
+                            <div class="mb-2">
+                                <input type="text" placeholder="Ref.Challan/PO" name="refChNo" class="form-control">
+                            </div>
                             <div class="mb-2">
                                 <input type="number" step="0.01" placeholder="Weight (Kg)" name="weight"
                                        class="form-control weight" required>
@@ -132,9 +144,18 @@
             <div class="mb-2">
                 <input type="text" placeholder="Components" name="description" class="form-control" required>
             </div>
-<!--            <div class="mb-2">-->
-<!--                <input type="text" placeholder="Ref. Ch. No." name="refChNo" class="form-control">-->
-<!--            </div>-->
+            <div class="mb-2">
+                <input type="text" placeholder="Process (Job Work)" name="process" class="form-control" required>
+            </div>
+            <div class="mb-2">
+                <input type="text" placeholder="HSN Code" name="hsnCode" class="form-control" required>
+            </div>
+            <div class="mb-2">
+                <input type="text" placeholder="Unit" name="unit" class="form-control" required>
+            </div>
+            <div class="mb-2">
+                <input type="text" placeholder="Ref. Ch. No." name="refChNo" class="form-control">
+            </div>
             <div class="mb-2">
                 <input type="number" step="0.01" placeholder="Weight (Kg)" name="weight" class="form-control weight" required>
             </div>
@@ -189,7 +210,10 @@
         document.querySelectorAll("#items .item-section").forEach(item => {
             challan.items.push({
                 description: item.querySelector("[name='description']").value,
-<!--                refChNo: item.querySelector("[name='refChNo']").value,-->
+                process: item.querySelector("[name='process']").value,
+                hsnCode: item.querySelector("[name='hsnCode']").value,
+                unit: item.querySelector("[name='unit']").value,
+                refChNo: item.querySelector("[name='refChNo']").value,
                 weight: item.querySelector("[name='weight']").value,
                 piecesPerKg: parseFloat(item.querySelector("[name='piecesPerKg']").value) || 0,
                 ratePerPiece: parseFloat(item.querySelector("[name='ratePerPiece']").value) || 0,

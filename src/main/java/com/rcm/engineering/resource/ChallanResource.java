@@ -2,6 +2,7 @@ package com.rcm.engineering.resource;
 
 import com.rcm.engineering.domain.Challan;
 import com.rcm.engineering.domain.ChallanItem;
+import com.rcm.engineering.resource.utils.FtlToPdfUtil;
 import com.rcm.engineering.resource.utils.PdfGeneratorUtil;
 import com.rcm.engineering.service.ChallanService;
 import org.slf4j.Logger;
@@ -31,6 +32,7 @@ public class ChallanResource {
         this.pdfGeneratorUtil = pdfGeneratorUtil;
     }
 
+
     // 1. Save Challan to DB
     @PostMapping("/challan")
     public ResponseEntity<Challan> createChallan(@RequestBody Challan challan) {
@@ -45,7 +47,7 @@ public class ChallanResource {
         challan.setChallanNo(generatedChallanNo);
         try {
             Challan saved = challanService.saveChallan(challan);
-            byte[] pdfBytes = PdfGeneratorUtil.generateChallanPDF(saved);
+            byte[] pdfBytes = FtlToPdfUtil.generateChallanPDF(saved);
 
             return ResponseEntity.ok()
                     .contentLength(pdfBytes.length)
@@ -62,8 +64,7 @@ public class ChallanResource {
     public ResponseEntity<ByteArrayResource> downloadChallan(@PathVariable Long id) {
         try {
             Challan challan = challanService.getChallanById(id);
-            byte[] pdfBytes = PdfGeneratorUtil.generateChallanPDF(challan);
-
+            byte[] pdfBytes = FtlToPdfUtil.generateChallanPDF(challan);
             return ResponseEntity.ok()
                     .contentLength(pdfBytes.length)
                     .contentType(MediaType.APPLICATION_PDF)
@@ -73,11 +74,6 @@ public class ChallanResource {
             log.error("PDF download failed", e);
             return ResponseEntity.status(500).build();
         }
-    }
-
-    public String generateChallanNo() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
-        return "RCMCN" + LocalDateTime.now().format(formatter);
     }
 
     @GetMapping("/challans")
@@ -104,5 +100,9 @@ public class ChallanResource {
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    private String generateChallanNo() {
+        return "RCMCN" + System.currentTimeMillis();
     }
 }

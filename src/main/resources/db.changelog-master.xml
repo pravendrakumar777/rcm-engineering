@@ -37,4 +37,13 @@
         <comment>Ensure challan.date is DATETIME</comment>
         <modifyDataType tableName="challan" columnName="date" newDataType="DATETIME"/>
     </changeSet>
+
+    <changeSet id="a20250914210123" author="Pravendra Kumar">
+        <addColumn tableName="challan_item">
+            <column name="process" type="varchar(255)"/>
+            <column name="hsn_code" type="varchar(255)"/>
+            <column name="unit" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

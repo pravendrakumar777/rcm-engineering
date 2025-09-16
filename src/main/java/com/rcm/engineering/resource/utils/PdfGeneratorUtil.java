@@ -1,12 +1,14 @@
 package com.rcm.engineering.resource.utils;
 
+import com.itextpdf.html2pdf.HtmlConverter;
 import com.itextpdf.io.image.ImageDataFactory;
-import com.itextpdf.kernel.font.PdfFont;
-import com.itextpdf.kernel.font.PdfFontFactory;
+import com.itextpdf.kernel.colors.ColorConstants;
+import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.borders.Border;
+import com.itextpdf.layout.borders.SolidBorder;
 import com.itextpdf.layout.element.*;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
@@ -18,7 +20,6 @@ import com.rcm.engineering.domain.Employee;
 import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.time.Duration;
@@ -33,106 +34,22 @@ public class PdfGeneratorUtil {
         return value == null ? "" : value;
     }
 
-    public static byte[] generateChallanPDF(Challan challan) throws IOException {
+    public static byte[] generateFtlChallanPDF(Challan challan) throws Exception {
+        String htmlContent = FtlToPdfUtil.processTemplateForChallan(challan);
+
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        PdfWriter writer = new PdfWriter(out);
-        PdfDocument pdfDoc = new PdfDocument(writer);
-        pdfDoc.addNewPage();
-        Document doc = new Document(pdfDoc);
-        Table headerTable = new Table(UnitValue.createPercentArray(new float[]{1, 3}));
-        headerTable.setWidth(UnitValue.createPercentValue(100));
-
-        try (InputStream logoStream = PdfGeneratorUtil.class.getResourceAsStream("/static/images/logo.png")) {
-            if (logoStream != null) {
-                ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-                byte[] data = new byte[1024];
-                int nRead;
-                while ((nRead = logoStream.read(data, 0, data.length)) != -1) {
-                    buffer.write(data, 0, nRead);
-                }
-                buffer.flush();
-                byte[] imageBytes = buffer.toByteArray();
-                Image logo = new Image(ImageDataFactory.create(imageBytes))
-                        .scaleAbsolute(100, 100);
-                headerTable.addCell(new Cell().add(logo).setBorder(Border.NO_BORDER));
-            } else {
-                headerTable.addCell(new Cell().add(new Paragraph("")).setBorder(Border.NO_BORDER));
-            }
-        } catch (Exception e) {
-            headerTable.addCell(new Cell().add(new Paragraph("")).setBorder(Border.NO_BORDER));
-        }
-
-        Paragraph companyName = new Paragraph("RCM ENGINEERING & MANUFACTURING")
-                .setTextAlignment(TextAlignment.LEFT)
-                .setFontSize(16)
-                .setBold();
-        Paragraph companyDetails = new Paragraph(
-                "KH NO: 513/1, 513/2,\n" +
-                        "VILL BASAI, NEAR BASAI FLYOVER - GURUGRAM HR. 122001\n" +
-                        "Mob: 9639200584, 7819929402 | Email: cs29680881@gmail.com\n" +
-                        "GSTIN: 06ABCDE1234F1Z5 | CIN: U12345UP2020PTC123456"
-        )
-                .setFontSize(9)
-                .setTextAlignment(TextAlignment.LEFT)
-                .setMarginTop(2);
-        Cell infoCell = new Cell()
-                .add(companyName)
-                .add(companyDetails)
-                .setVerticalAlignment(VerticalAlignment.MIDDLE)
-                .setBorder(Border.NO_BORDER);
-
-        headerTable.addCell(infoCell);
-        doc.add(headerTable);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-        String formattedDate = challan.getDate().format(formatter);
-        doc.add(new Paragraph("\nChallan No: " + challan.getChallanNo() + "     Date: " + formattedDate));
-        doc.add(new Paragraph("M/s: " + challan.getCustomerName()));
-
-        float[] columnWidths = {50F, 120F, 90F, 60F, 60F, 80F, 100F};
-        Table table = new Table(columnWidths);
-        table.setWidth(UnitValue.createPercentValue(100));
-
-        table.addHeaderCell("S. No");
-        table.addHeaderCell("Item Name");
-        table.addHeaderCell("Weight (Kg)");
-        table.addHeaderCell("Pieces/Kg");
-        table.addHeaderCell("Rate/Piece");
-        table.addHeaderCell("Total Pieces");
-        table.addHeaderCell("Total Amount");
-        int i = 1;
-        double grandTotal = 0.0;
-
-        for (ChallanItem item : challan.getItems()) {
-            table.addCell(String.valueOf(i++));
-            table.addCell(nonNull(item.getDescription()));
-            table.addCell(nonNull(item.getWeight()));
-            table.addCell(String.valueOf(item.getPiecesPerKg()));
-            table.addCell(formatDouble(item.getRatePerPiece()));
-            table.addCell(String.valueOf(item.getTotalPieces()));
-            table.addCell(formatDouble(item.getTotalAmount()));
-            grandTotal += item.getTotalAmount();
-        }
-        doc.add(table.setMarginTop(10));
-        Cell emptyCell = new Cell(1, 5).add(new Paragraph(""));
-        emptyCell.setBorder(Border.NO_BORDER);
-        table.addCell(emptyCell);
-        table.addCell(new Cell().add(new Paragraph("Grand Total")));
-        table.addCell(new Cell().add(new Paragraph(formatDouble(grandTotal))));
-        doc.add(new Paragraph("\nFor : RCM ENGINEERING")
-                .setTextAlignment(TextAlignment.RIGHT)
-                .setBold());
-        doc.add(new Paragraph("\nReceiver's Signature ____________________")
-                .setTextAlignment(TextAlignment.LEFT)
-                .setFontSize(10));
-        doc.add(new Paragraph("Authorised Signatory ____________________")
-                .setTextAlignment(TextAlignment.RIGHT)
-                .setFontSize(10));
-        doc.close();
+        HtmlConverter.convertToPdf(htmlContent, out);
         return out.toByteArray();
     }
 
-    private static String formatDouble(double value) {
-        return String.format("%.2f", value);
+    public static byte[] generateFtlPayslipPDF(Employee emp,
+                                            List<Attendance> records,
+                                            long presentDays,
+                                            double totalSalary) throws Exception {
+        String htmlContent = FtlToPdfUtil.processTemplateForPayslip(emp, records, presentDays, totalSalary);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        HtmlConverter.convertToPdf(htmlContent, out);
+        return out.toByteArray();
     }
 
     public static void generatePayslip(Employee emp, List<Attendance> records, long presentDays, double totalSalary, OutputStream out) {
