@@ -34,6 +34,9 @@ public class ChallanServiceImpl implements ChallanService {
                 double totalAmount = totalPieces * item.getRatePerPiece();
                 item.setTotalPieces(totalPieces);
                 item.setTotalAmount(totalAmount);
+                item.setProcess(item.getProcess());
+                item.setHsnCode(item.getHsnCode());
+                item.setUnit(item.getUnit());
             });
         }
         return challanRepository.save(challan);

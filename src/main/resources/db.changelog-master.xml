@@ -46,4 +46,7 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="20250916214122" author="Pravendra Kumar">
+        <dropColumn tableName="challan_item" columnName="hsnCode"/>
+    </changeSet>
 </databaseChangeLog>

@@ -21,6 +21,7 @@ public class ChallanItem {
     private double totalAmount;
 
     private String process;
+    @Column(name = "hsn_code")
     private String hsnCode;
     private String unit;
 

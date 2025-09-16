@@ -1,6 +1,6 @@
-<!--=====================================================================================================-->
+<!--=====================================================================================================&ndash;&gt;-->
 <!DOCTYPE html>
-<html lang="">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Challan List</title>
@@ -44,14 +44,34 @@
             white-space: nowrap;
         }
 
-        .btn-attendance {
-            margin-left: 8px;
-            white-space: nowrap;
+        table th, table td {
+            vertical-align: middle !important;
+            padding: 0.6rem 0.75rem;
         }
 
-        /* spacing between buttons */
-        tfoot tr th {
-            background: #f1f1f1;
+        /* Prevent wrapping headers */
+        table th {
+            white-space: nowrap;
+            text-align: center;
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+
+        table td {
+            text-align: center;
+        }
+
+        /* Right align numeric columns */
+        .text-right {
+            text-align: right !important;
+        }
+
+        .modal-body table th, .modal-body table td {
+            padding: 0.4rem;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
         }
     </style>
 </head>
@@ -66,7 +86,7 @@
         <div style="width: 120px;"></div>
     </div>
 
-    <div class="table-container">
+    <div class="table-container table-responsive">
         <table class="table table-bordered table-hover" id="challanTable">
             <thead class="table-light">
             <tr>
@@ -81,8 +101,9 @@
     </div>
 </div>
 
+<!-- Modal -->
 <div class="modal fade" id="challanModal" tabindex="-1" aria-labelledby="challanModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="challanModalLabel">Challan Details</h5>
@@ -95,7 +116,6 @@
 </div>
 
 <script>
-    // ---------- helpers ----------
     const escapeHtml = (s) => String(s ?? '')
         .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
@@ -105,7 +125,6 @@
         const str = typeof d === 'string' ? d.replace(' ', 'T') : d;
         const dt = new Date(str);
         if (isNaN(dt.getTime())) return '';
-
         const pad = (n) => n.toString().padStart(2, '0');
         const day = pad(dt.getDate());
         const month = pad(dt.getMonth() + 1);
@@ -114,13 +133,9 @@
         const minutes = pad(dt.getMinutes());
         const ampm = hours >= 12 ? 'PM' : 'AM';
         hours = hours % 12 || 12;
-
-        const paddedHours = pad(hours);
-<!--        return `${day}-${month}-${year} ${hours}:${minutes} ${ampm}`;-->
-        return `${day}-${month}-${year} ${paddedHours}:${minutes} ${ampm}`;
+        return `${day}-${month}-${year} ${pad(hours)}:${minutes} ${ampm}`;
     };
 
-    // ---------- load challans ----------
     async function loadChallans() {
         try {
             const response = await fetch('/api/challans');
@@ -128,7 +143,6 @@
             const challans = await response.json();
             const tbody = document.querySelector("#challanTable tbody");
             tbody.innerHTML = "";
-
             challans.forEach(challan => {
                 const tr = document.createElement("tr");
                 tr.innerHTML = `
@@ -147,7 +161,6 @@
         }
     }
 
-    // ---------- view challan modal ----------
     async function viewChallan(id) {
         try {
             const response = await fetch(`/api/challan/${id}`);
@@ -156,41 +169,42 @@
             const items = Array.isArray(challan.items) ? challan.items : [];
             let itemsRows = '', totalWeight = 0, totalAmount = 0, totalPieces = 0;
 
-            if (items.length) {
-                items.forEach((item, idx) => {
-                    const particular = item.description || "-";
-                    const refCh = item.refChNo || "-";
-                    const weight = Number(item.weight) || 0;
-                    const pcsPerKg = Number(item.piecesPerKg) || 0;
-                    const rate = Number(item.ratePerPiece) || 0;
-                    const pcs = item.totalPieces || (weight * pcsPerKg);
-                    const amount = item.totalAmount || (pcs * rate);
+            items.forEach((item, idx) => {
+                const weight = Number(item.weight) || 0;
+                const pcsPerKg = Number(item.piecesPerKg) || 0;
+                const rate = Number(item.ratePerPiece) || 0;
+                const pcs = item.totalPieces || (weight * pcsPerKg);
+                const amount = item.totalAmount || (pcs * rate);
 
-                    totalWeight += weight;
-                    totalPieces += pcs;
-                    totalAmount += amount;
+                totalWeight += weight;
+                totalPieces += pcs;
+                totalAmount += amount;
 
-                    itemsRows += `<tr>
-                        <td>${idx + 1}</td>
-                        <td>${escapeHtml(particular)}</td>
-                        <td>${escapeHtml(refCh)}</td>
-                        <td>${weight.toFixed(2)}</td>
-                        <td>${pcsPerKg.toFixed(2)}</td>
-                        <td>${rate.toFixed(2)}</td>
-                        <td>${pcs}</td>
-                        <td>${amount.toFixed(2)}</td>
-                    </tr>`;
-                });
-
-                itemsRows += `<tr class="fw-bold">
-                    <td colspan="3" class="text-end">Total</td>
-                    <td>${totalWeight.toFixed(2)}</td>
-                    <td></td><td></td>
-                    <td>${totalPieces}</td>
-                    <td>${totalAmount.toFixed(2)}</td>
+                itemsRows += `<tr>
+                    <td>${idx + 1}</td>
+                    <td>${escapeHtml(item.description || "-")}</td>
+                    <td>${escapeHtml(item.refChNo || "-")}</td>
+                    <td>${escapeHtml(item.process || "-")}</td>
+                    <td>${escapeHtml(item.hsnCode || "-")}</td>
+                    <td>${escapeHtml(item.unit || "-")}</td>
+                    <td class="text-right">${weight.toFixed(2)}</td>
+                    <td class="text-right">${pcsPerKg.toFixed(2)}</td>
+                    <td class="text-right">${rate.toFixed(2)}</td>
+                    <td class="text-right">${pcs}</td>
+                    <td class="text-right">${amount.toFixed(2)}</td>
                 </tr>`;
+            });
+
+            if (!itemsRows) {
+                itemsRows = `<tr><td colspan="11" class="text-center text-muted">No items found</td></tr>`;
             } else {
-                itemsRows = `<tr><td colspan="8" class="text-center text-muted">No items found</td></tr>`;
+                itemsRows += `<tr class="fw-bold">
+                    <td colspan="6" class="text-end">Total</td>
+                    <td class="text-right">${totalWeight.toFixed(2)}</td>
+                    <td></td><td></td>
+                    <td class="text-right">${totalPieces}</td>
+                    <td class="text-right">${totalAmount.toFixed(2)}</td>
+                </tr>`;
             }
 
             document.getElementById("challanDetails").innerHTML = `
@@ -199,21 +213,30 @@
                 <p><strong>Date :</strong> ${fmtDate(challan.date)}</p>
                 <hr>
                 <h6>Items:</h6>
-                <table class="table table-sm table-bordered">
-                    <thead class="table-light">
-                        <tr>
-                            <th>S.No</th><th>Item Name</th><th>Ref. Ch. No.</th>
-                            <th>Weight (Kg)</th><th>Pcs/Kg</th><th>Rate (₹/pc)</th>
-                            <th>Total Pcs</th><th>Amount (₹)</th>
-                        </tr>
-                    </thead>
-                    <tbody>${itemsRows}</tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="table table-sm table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th>S.No</th>
+                                <th>Item Name</th>
+                                <th>Ref. Ch. No.</th>
+                                <th>Process</th>
+                                <th>HSN Code</th>
+                                <th>Unit</th>
+                                <th>Weight (Kg)</th>
+                                <th>Pcs/Kg</th>
+                                <th>Rate (₹/pc)</th>
+                                <th>Total Pcs</th>
+                                <th>Amount (₹)</th>
+                            </tr>
+                        </thead>
+                        <tbody>${itemsRows}</tbody>
+                    </table>
+                </div>
                 <div class="text-end mt-3">
                     <h5><strong>Total Amount : ₹ ${totalAmount.toFixed(2)}</strong></h5>
                 </div>
             `;
-
             new bootstrap.Modal(document.getElementById("challanModal")).show();
         } catch (err) {
             console.error("Failed to fetch challan details", err);
