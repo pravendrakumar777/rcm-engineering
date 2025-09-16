@@ -30,6 +30,10 @@
         .table-container {
             margin-top: 30px;
         }
+        .summary {
+            margin-top: 20px;
+            font-size: 1.1rem;
+        }
     </style>
 </head>
 <body>
@@ -42,6 +46,7 @@
         <div style="width: 120px;"></div>
     </div>
 
+    <!-- Salary calculation form -->
     <form method="get" action="/employees/calculate-salary" class="row g-3 mb-4" id="salaryForm">
         <div class="col-md-3">
             <input type="text" name="empCode" class="form-control" placeholder="EMP CODE" required
@@ -55,15 +60,41 @@
             <input type="date" name="end" class="form-control" required
                    th:value="${param.end}">
         </div>
-        <div class="col-md-3">
-            <button type="submit" class="btn btn-success w-100">Calculate & PDF</button>
+        <div class="col-md-3 d-flex gap-2">
+            <button type="submit" class="btn btn-success flex-fill">Calculate</button>
+            <button type="button" class="btn btn-warning flex-fill"
+                    onclick="downloadPdf()">Download PDF</button>
         </div>
     </form>
 
+    <!-- Error message -->
     <div th:if="${errorMessage}" class="alert alert-danger">
         <span th:text="${errorMessage}"></span>
     </div>
 
+    <!-- Salary Summary -->
+<!--    <div th:if="${attendanceList != null}">-->
+<!--        <div class="summary">-->
+<!--            <p><strong>Employee:</strong> <span th:text="${employee != null ? employee.firstNme + ' ' + employee.lastName : ''}"></span></p>-->
+<!--            <p><strong>Present Days:</strong> <span th:text="${presentDays}"></span></p>-->
+<!--            <p><strong>Total Salary:</strong> ₹<span th:text="${#numbers.formatDecimal(totalSalary, 2, 2)}"></span></p>-->
+<!--        </div>-->
+<!--    </div>-->
+
+    <!-- Salary Summary -->
+    <div th:if="${attendanceList != null}">
+        <div class="summary">
+            <p th:if="${employee != null}">
+                <strong>Employee:</strong>
+                <span th:text="${employee.name}"></span>
+            </p>
+            <p><strong>Present Days:</strong> <span th:text="${presentDays}"></span></p>
+            <p><strong>Total Salary:</strong> ₹<span th:text="${#numbers.formatDecimal(totalSalary, 2, 2)}"></span></p>
+        </div>
+    </div>
+
+
+    <!-- Attendance Table -->
     <div th:if="${attendanceList != null}" class="table-container table-responsive">
         <table class="table table-bordered">
             <thead>
@@ -89,6 +120,25 @@
 </div>
 
 <script>
+    function downloadPdf() {
+        const empCode = document.querySelector('[name="empCode"]').value;
+        const start = document.querySelector('[name="start"]').value;
+        const end = document.querySelector('[name="end"]').value;
+
+        if (!empCode || !start || !end) {
+            alert("Please fill all fields before downloading PDF.");
+            return;
+        }
+        if (new Date(start) > new Date(end)) {
+            alert("Start date must be before end date.");
+            return;
+        }
+
+        window.location.href =
+            `/employees/calculate-salary/pdf?empCode=${empCode}&start=${start}&end=${end}`;
+    }
+
+    // Prevent invalid date range on calculate form
     document.getElementById("salaryForm").addEventListener("submit", function (e) {
         const start = new Date(document.querySelector('[name="start"]').value);
         const end = new Date(document.querySelector('[name="end"]').value);

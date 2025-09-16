@@ -4,6 +4,7 @@ import com.itextpdf.io.exceptions.IOException;
 import com.rcm.engineering.domain.Attendance;
 import com.rcm.engineering.domain.Employee;
 import com.rcm.engineering.repository.EmployeeRepository;
+import com.rcm.engineering.resource.utils.FtlToPdfUtil;
 import com.rcm.engineering.resource.utils.PdfGeneratorUtil;
 import com.rcm.engineering.service.AttendanceService;
 import org.springframework.stereotype.Controller;
@@ -122,6 +123,7 @@ public class EmployeeController {
         return employeeRepository.findAll();
     }
 
+    /*
     @GetMapping("/calculate-salary")
     public String calculateSalary(
             @RequestParam(required = false) String empCode,
@@ -183,4 +185,105 @@ public class EmployeeController {
         }
         return "calculate-salary";
     }
+     */
+
+    @GetMapping("/calculate-salary")
+    public String showSalary(
+            @RequestParam(required = false) String empCode,
+            @RequestParam(required = false) String start,
+            @RequestParam(required = false) String end,
+            Model model) {
+
+        if (empCode != null && start != null && end != null) {
+            try {
+                LocalDate s = LocalDate.parse(start);
+                LocalDate e = LocalDate.parse(end);
+
+                List<Attendance> attendanceList = attendanceService.getAttendance(empCode, s, e)
+                        .stream()
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toList());
+
+                Employee employee = employeeRepository.findByEmpCode(empCode)
+                        .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+                double monthlySalary = employee.getSalary();
+                double dailyRate = monthlySalary / 30.0;
+                double hourlyRate = dailyRate / 8.0;
+
+                double totalWorkedHours = 0.0;
+                for (Attendance att : attendanceList) {
+                    if (att.getStatus() == Attendance.Status.PRESENT &&
+                            att.getCheckInDateTime() != null &&
+                            att.getCheckOutDateTime() != null) {
+
+                        Duration duration = Duration.between(att.getCheckInDateTime(), att.getCheckOutDateTime());
+                        totalWorkedHours += duration.toMinutes() / 60.0;
+                    }
+                }
+
+                long presentDays = attendanceList.stream()
+                        .filter(att -> att.getStatus() == Attendance.Status.PRESENT)
+                        .count();
+
+                double totalSalary = totalWorkedHours * hourlyRate;
+
+                model.addAttribute("employee", employee);
+                model.addAttribute("attendanceList", attendanceList);
+                model.addAttribute("presentDays", presentDays);
+                model.addAttribute("totalSalary", totalSalary);
+
+            } catch (Exception ex) {
+                model.addAttribute("errorMessage", "Employee not found or invalid data.");
+            }
+        }
+        return "calculate-salary";
+    }
+
+    @GetMapping("/calculate-salary/pdf")
+    public void downloadPayslip(
+            @RequestParam String empCode,
+            @RequestParam String start,
+            @RequestParam String end,
+            HttpServletResponse response) throws IOException, java.io.IOException {
+
+        LocalDate s = LocalDate.parse(start);
+        LocalDate e = LocalDate.parse(end);
+
+        List<Attendance> attendanceList = attendanceService.getAttendance(empCode, s, e)
+                .stream()
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+
+        Employee employee = employeeRepository.findByEmpCode(empCode)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+        double monthlySalary = employee.getSalary();
+        double dailyRate = monthlySalary / 30.0;
+        double hourlyRate = dailyRate / 8.0;
+
+        double totalWorkedHours = 0.0;
+        for (Attendance att : attendanceList) {
+            if (att.getStatus() == Attendance.Status.PRESENT &&
+                    att.getCheckInDateTime() != null &&
+                    att.getCheckOutDateTime() != null) {
+                Duration duration = Duration.between(att.getCheckInDateTime(), att.getCheckOutDateTime());
+                totalWorkedHours += duration.toMinutes() / 60.0;
+            }
+        }
+
+        long presentDays = attendanceList.stream()
+                .filter(att -> att.getStatus() == Attendance.Status.PRESENT)
+                .count();
+
+        double totalSalary = totalWorkedHours * hourlyRate;
+
+        // PDF Response
+        response.setContentType("application/pdf");
+        response.setHeader("Content-Disposition", "attachment; filename=payslip.pdf");
+
+        PdfGeneratorUtil.generatePayslip(employee, attendanceList, presentDays, totalSalary, response.getOutputStream());
+    }
+
+
 }
