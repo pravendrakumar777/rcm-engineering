@@ -49,4 +49,16 @@
     <changeSet id="20250916214122" author="Pravendra Kumar">
         <dropColumn tableName="challan_item" columnName="hsnCode"/>
     </changeSet>
+
+    <changeSet id="202509171006" author="Pravendra Kumar">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="challan" columnName="ref_ch_no"/>
+            </not>
+        </preConditions>
+
+        <addColumn tableName="challan">
+            <column name="ref_ch_no" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

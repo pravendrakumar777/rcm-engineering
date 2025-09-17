@@ -11,7 +11,6 @@ public class ChallanItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String description;
-    private String refChNo;
     private String weight;
     private int quantity;
 
@@ -44,14 +43,6 @@ public class ChallanItem {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getRefChNo() {
-        return refChNo;
-    }
-
-    public void setRefChNo(String refChNo) {
-        this.refChNo = refChNo;
     }
 
     public String getWeight() {
@@ -138,12 +129,12 @@ public class ChallanItem {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         ChallanItem that = (ChallanItem) o;
-        return quantity == that.quantity && Double.compare(piecesPerKg, that.piecesPerKg) == 0 && Double.compare(ratePerPiece, that.ratePerPiece) == 0 && totalPieces == that.totalPieces && Double.compare(totalAmount, that.totalAmount) == 0 && Objects.equals(id, that.id) && Objects.equals(description, that.description) && Objects.equals(refChNo, that.refChNo) && Objects.equals(weight, that.weight) && Objects.equals(process, that.process) && Objects.equals(hsnCode, that.hsnCode) && Objects.equals(unit, that.unit) && Objects.equals(challan, that.challan);
+        return quantity == that.quantity && Double.compare(piecesPerKg, that.piecesPerKg) == 0 && Double.compare(ratePerPiece, that.ratePerPiece) == 0 && totalPieces == that.totalPieces && Double.compare(totalAmount, that.totalAmount) == 0 && Objects.equals(id, that.id) && Objects.equals(description, that.description) && Objects.equals(weight, that.weight) && Objects.equals(process, that.process) && Objects.equals(hsnCode, that.hsnCode) && Objects.equals(unit, that.unit) && Objects.equals(challan, that.challan);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, description, refChNo, weight, quantity, piecesPerKg, ratePerPiece, totalPieces, totalAmount, process, hsnCode, unit, challan);
+        return Objects.hash(id, description, weight, quantity, piecesPerKg, ratePerPiece, totalPieces, totalAmount, process, hsnCode, unit, challan);
     }
 
     @Override
@@ -151,7 +142,6 @@ public class ChallanItem {
         return "ChallanItem{" +
                 "id=" + id +
                 ", description='" + description + '\'' +
-                ", refChNo='" + refChNo + '\'' +
                 ", weight='" + weight + '\'' +
                 ", quantity=" + quantity +
                 ", piecesPerKg=" + piecesPerKg +

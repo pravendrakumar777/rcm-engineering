@@ -24,6 +24,7 @@ td { text-align: center; }
 <br>
 
 <p><b>Challan No :</b> ${challan.challanNo}</p>
+<p><b>Challan Ref No :</b> ${challan.refChNo}</p>
 <p><b>Challan Issued Date :</b> ${formattedDate}</p>
 <p><b>OEM Supplier / Vendor Partner’s :</b> ${challan.customerName}</p>
 

@@ -1,8 +1,9 @@
+<!--================================================================================-->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Calculate Employee Salary</title>
+    <title>Salary Preview</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -30,23 +31,31 @@
         .table-container {
             margin-top: 30px;
         }
-        .summary {
-            margin-top: 20px;
-            font-size: 1.1rem;
+        .section-header {
+            margin-top: 30px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            background-color: #e9ecef;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .table th, .table td {
+            vertical-align: middle;
         }
     </style>
 </head>
 <body>
 <div class="container">
+    <!-- Header -->
     <div class="header-row">
         <div class="action-buttons">
             <a href="/employees" class="btn btn-primary">⬅ Back to Employees</a>
         </div>
-        <h3 class="header-title">Calculate Salary</h3>
+        <h3 class="header-title">Salary Details Preview</h3>
         <div style="width: 120px;"></div>
     </div>
 
-    <!-- Salary calculation form -->
+    <!-- Salary Form -->
     <form method="get" action="/employees/calculate-salary" class="row g-3 mb-4" id="salaryForm">
         <div class="col-md-3">
             <input type="text" name="empCode" class="form-control" placeholder="EMP CODE" required
@@ -62,58 +71,163 @@
         </div>
         <div class="col-md-3 d-flex gap-2">
             <button type="submit" class="btn btn-success flex-fill">Calculate</button>
-            <button type="button" class="btn btn-warning flex-fill"
-                    onclick="downloadPdf()">Download PDF</button>
+            <button type="button" class="btn btn-warning flex-fill" onclick="downloadPdf()">Download PDF</button>
         </div>
     </form>
 
-    <!-- Error message -->
+    <!-- Error Message -->
     <div th:if="${errorMessage}" class="alert alert-danger">
         <span th:text="${errorMessage}"></span>
     </div>
 
-    <!-- Salary Summary -->
-<!--    <div th:if="${attendanceList != null}">-->
-<!--        <div class="summary">-->
-<!--            <p><strong>Employee:</strong> <span th:text="${employee != null ? employee.firstNme + ' ' + employee.lastName : ''}"></span></p>-->
-<!--            <p><strong>Present Days:</strong> <span th:text="${presentDays}"></span></p>-->
-<!--            <p><strong>Total Salary:</strong> ₹<span th:text="${#numbers.formatDecimal(totalSalary, 2, 2)}"></span></p>-->
-<!--        </div>-->
-<!--    </div>-->
+    <!-- Salary Details Preview -->
+    <div th:if="${employee != null}" class="table-container">
 
-    <!-- Salary Summary -->
-    <div th:if="${attendanceList != null}">
-        <div class="summary">
-            <p th:if="${employee != null}">
-                <strong>Employee:</strong>
-                <span th:text="${employee.name}"></span>
-            </p>
-            <p><strong>Present Days:</strong> <span th:text="${presentDays}"></span></p>
-            <p><strong>Total Salary:</strong> ₹<span th:text="${#numbers.formatDecimal(totalSalary, 2, 2)}"></span></p>
-        </div>
-    </div>
-
-
-    <!-- Attendance Table -->
-    <div th:if="${attendanceList != null}" class="table-container table-responsive">
+        <!-- Employee Info -->
+        <div class="section-header">Employee Information</div>
         <table class="table table-bordered">
-            <thead>
+            <tbody>
             <tr>
-                <th>Date</th>
-                <th>Status</th>
-                <th>Check-In</th>
-                <th>Check-Out</th>
-                <th>Total Hours</th>
+                <th>Employee Name</th>
+                <td th:text="${employee.name}"></td>
+                <th>Employee Code</th>
+                <td th:text="${employee.empCode}"></td>
+            </tr>
+            <tr>
+                <th>Department</th>
+                <td th:text="${employee.department}"></td>
+                <th>Designation</th>
+                <td th:text="${employee.designation}"></td>
+            </tr>
+            <tr>
+                <th>Monthly Salary</th>
+                <td th:text="|₹ ${employee.salary}|">₹ 0.00</td>
+                <th>Salary Period</th>
+                <td th:text="${param.start} + ' to ' + ${param.end}"></td>
+            </tr>
+            <tr>
+                <th>Date Of Birth</th>
+                <td th:text="${#temporals.format(employee.dateOfBirth, 'dd-MM-yyyy')}"></td>
+                <th>Date Of Joining</th>
+                <td th:text="${#temporals.format(employee.dateOfJoining, 'dd-MM-yyyy')}"></td>
+            </tr>
+            </tbody>
+        </table>
+
+        <!-- Attendance Summary -->
+        <div class="section-header">Attendance Summary</div>
+        <table class="table table-bordered text-center">
+            <thead class="table-light">
+            <tr>
+                <th>Total Working Days</th>
+                <th>Present Days</th>
+                <th>Absent Days</th>
+                <th>Overtime Hours</th>
+                <th>Late Hours</th>
             </tr>
             </thead>
             <tbody>
-            <tr th:each="att : ${attendanceList}">
-                <td th:text="${att.date}"></td>
-                <td th:text="${att.status}"></td>
-                <td th:text="${att.checkInDateTime != null ? #temporals.format(att.checkInDateTime, 'hh:mm a') : '—'}"></td>
-                <td th:text="${att.checkOutDateTime != null ? #temporals.format(att.checkOutDateTime, 'hh:mm a') : '—'}"></td>
-                <td th:text="${att.getFormattedTotalHours}"></td>
+            <tr>
+                <td th:text="${attendanceList.size()}"></td>
+                <td th:text="${presentDays}"></td>
+                <td th:text="${attendanceList.size() - presentDays}"></td>
+                <td th:text="${totalOvertimeHours}"></td>
+                <td th:text="${totalLateHours}"></td>
             </tr>
+            </tbody>
+        </table>
+
+        <!-- Earnings -->
+        <div class="section-header">Earnings</div>
+        <table class="table table-bordered text-center">
+            <thead class="table-light">
+            <tr>
+                <th>Component</th>
+                <th>Amount (₹)</th>
+                <th>Notes</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>Basic Salary</td>
+                <td th:text="|₹ ${#numbers.formatDecimal(employee.salary,2,2)}|">₹ 0.00</td>
+                <td>Fixed monthly</td>
+            </tr>
+            <tr>
+                <td>HRA</td>
+                <td th:text="${hra != null ? hra : 'NA'}">NA</td>
+                <td>20% of Basic</td>
+            </tr>
+            <tr>
+                <td>Conveyance</td>
+                <td th:text="${conveyance != null ? conveyance : 'NA'}">NA</td>
+                <td>Fixed</td>
+            </tr>
+            <tr>
+                <td>Other Allowances</td>
+                <td th:text="${otherAllowances != null ? otherAllowances : 'NA'}">NA</td>
+                <td>Medical / Special</td>
+            </tr>
+            <tr>
+                <td>Overtime Pay</td>
+                <td th:text="${overtimePay}"></td>
+                <td>Calculated from hours worked</td>
+            </tr>
+            <tr class="table-light">
+                <th>Gross Salary</th>
+                <th th:text="|₹ ${#numbers.formatDecimal(totalSalary,2,2)}|">₹ 0.00</th>
+                <th></th>
+            </tr>
+            </tbody>
+        </table>
+
+        <!-- Deductions -->
+        <div class="section-header">Deductions</div>
+        <table class="table table-bordered text-center">
+            <thead class="table-light">
+            <tr>
+                <th>Component</th>
+                <th>Amount (₹)</th>
+                <th>Notes</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>Tax / TDS</td>
+                <td th:text="${tax != null ? tax : 'NA'}">NA</td>
+                <td>Based on salary</td>
+            </tr>
+            <tr>
+                <td>Absence Deduction</td>
+                <td th:text="${absenceDeduction != null ? absenceDeduction : 'NA'}">NA</td>
+                <td>Daily Rate × Absent Days</td>
+            </tr>
+            <tr>
+                <td>Advance / Loan</td>
+                <td th:text="${advancePayment != null ? advancePayment : 'NA'}">NA</td>
+                <td>Already received</td>
+            </tr>
+            <tr>
+                <td>Provident Fund / Other</td>
+                <td th:text="${providentFund != null ? providentFund : 'NA'}">NA</td>
+                <td>Fixed Contribution</td>
+            </tr>
+            <tr class="table-light">
+                <th>Total Deductions</th>
+                <td th:text="${totalDeductions != null ? totalDeductions : 'NA'}">NA</td>
+                <th></th>
+            </tr>
+            </tbody>
+        </table>
+
+        <!-- Net Salary -->
+        <div class="section-header">Net Salary</div>
+        <table class="table table-bordered text-center">
+            <tbody>
+                <tr>
+                    <th>Net Payable Salary</th>
+                    <th th:text="|₹ ${#numbers.formatDecimal(totalSalary, 2, 2)}|">₹ 0.00</th>
+                </tr>
             </tbody>
         </table>
     </div>
@@ -138,7 +252,6 @@
             `/employees/calculate-salary/pdf?empCode=${empCode}&start=${start}&end=${end}`;
     }
 
-    // Prevent invalid date range on calculate form
     document.getElementById("salaryForm").addEventListener("submit", function (e) {
         const start = new Date(document.querySelector('[name="start"]').value);
         const end = new Date(document.querySelector('[name="end"]').value);

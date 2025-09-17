@@ -1,7 +1,6 @@
 package com.rcm.engineering.service.impl;
 
 import com.rcm.engineering.domain.Challan;
-import com.rcm.engineering.domain.ChallanItem;
 import com.rcm.engineering.repository.ChallanRepository;
 import com.rcm.engineering.service.ChallanService;
 import org.slf4j.Logger;
@@ -9,8 +8,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Year;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 @Service
 @Transactional
@@ -26,6 +29,31 @@ public class ChallanServiceImpl implements ChallanService {
     @Override
     public Challan saveChallan(Challan challan) {
         log.info("Service Request to saveChallan: {}", challan);
+
+        String companyCode = "RCM";
+        String outCh = "OUT";
+        String financialYear = String.valueOf(Year.now().getValue());
+
+        String refChNo;
+        boolean exists;
+        do {
+
+            LocalDate today = LocalDate.now();
+            LocalDateTime now = LocalDateTime.now();
+            String day = String.format("%02d", today.getDayOfMonth());
+            String month = String.format("%02d", today.getMonthValue());
+            String hour = String.format("%02d", now.getHour());
+            String minute = String.format("%02d", now.getMinute());
+
+            String dm = day + month;
+            String hm = hour + minute;
+
+            refChNo = companyCode + "/" + outCh + "/" + financialYear + "/" + dm + "/" + hm;
+            exists = challanRepository.existsByRefChNo(refChNo);
+            challan.setRefChNo(refChNo);
+        } while (exists);
+        challan.setRefChNo(refChNo);
+
         if (challan.getItems() != null) {
             challan.getItems().forEach(item -> {
                 item.setChallan(challan);

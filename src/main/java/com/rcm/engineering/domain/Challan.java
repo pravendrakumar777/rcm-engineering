@@ -22,6 +22,8 @@ public class Challan {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String challanNo;
+    @Column(name = "ref_ch_no")
+    private String refChNo;
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime date;
@@ -67,6 +69,14 @@ public class Challan {
         this.challanNo = challanNo;
     }
 
+    public String getRefChNo() {
+        return refChNo;
+    }
+
+    public void setRefChNo(String refChNo) {
+        this.refChNo = refChNo;
+    }
+
     public LocalDateTime getDate() {
         return date;
     }
@@ -95,12 +105,12 @@ public class Challan {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Challan challan = (Challan) o;
-        return Objects.equals(id, challan.id) && Objects.equals(challanNo, challan.challanNo) && Objects.equals(date, challan.date) && Objects.equals(customerName, challan.customerName) && Objects.equals(items, challan.items);
+        return Objects.equals(id, challan.id) && Objects.equals(challanNo, challan.challanNo) && Objects.equals(refChNo, challan.refChNo) && Objects.equals(date, challan.date) && Objects.equals(customerName, challan.customerName) && Objects.equals(items, challan.items);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, challanNo, date, customerName, items);
+        return Objects.hash(id, challanNo, refChNo, date, customerName, items);
     }
 
     @Override
@@ -108,6 +118,7 @@ public class Challan {
         return "Challan{" +
                 "id=" + id +
                 ", challanNo='" + challanNo + '\'' +
+                ", refChNo='" + refChNo + '\'' +
                 ", date=" + date +
                 ", customerName='" + customerName + '\'' +
                 ", items=" + items +
