@@ -125,7 +125,6 @@ public class EmployeeController {
         return employeeRepository.findAll();
     }
 
-
     @GetMapping("/calculate-salary")
     public String calculateSalary(
             @RequestParam(required = false) String empCode,
@@ -148,6 +147,8 @@ public class EmployeeController {
                 double monthlySalary = employee.getSalary();
                 double dailyRate = monthlySalary / 30.0;
                 double hourlyRate = dailyRate / 8.0;
+                double perMinuteRate = hourlyRate / 60.0;
+
 
                 long totalWorkedMinutes = 0;
                 long totalOvertimeMinutes = 0;
