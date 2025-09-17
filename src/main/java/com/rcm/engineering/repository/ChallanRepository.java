@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ChallanRepository extends JpaRepository<Challan, Long> {
+
+    boolean existsByRefChNo(String refChNo);
 }

@@ -123,70 +123,6 @@ public class EmployeeController {
         return employeeRepository.findAll();
     }
 
-    /*
-    @GetMapping("/calculate-salary")
-    public String calculateSalary(
-            @RequestParam(required = false) String empCode,
-            @RequestParam(required = false) String start,
-            @RequestParam(required = false) String end,
-            Model model,
-            HttpServletResponse response) throws IOException {
-
-        if (empCode != null && start != null && end != null) {
-            try {
-                LocalDate s = LocalDate.parse(start);
-                LocalDate e = LocalDate.parse(end);
-
-                List<Attendance> attendanceList = attendanceService.getAttendance(empCode, s, e)
-                        .stream()
-                        .filter(Objects::nonNull)
-                        .collect(Collectors.toList());
-
-                model.addAttribute("attendanceList", attendanceList);
-
-                Employee employee = employeeRepository.findByEmpCode(empCode)
-                        .orElseThrow(() -> new RuntimeException("Employee not found"));
-
-                double monthlySalary = employee.getSalary();
-                double dailyRate = monthlySalary / 30.0;
-                double hourlyRate = dailyRate / 8.0;
-                double totalWorkedHours = 0.0;
-
-                for (Attendance att : attendanceList) {
-                    if (att.getStatus() == Attendance.Status.PRESENT) {
-                        LocalDateTime checkIn = att.getCheckInDateTime();
-                        LocalDateTime checkOut = att.getCheckOutDateTime();
-
-                        if (checkIn != null && checkOut != null) {
-                            Duration duration = Duration.between(checkIn, checkOut);
-                            double hoursWorked = duration.toMinutes() / 60.0;
-                            totalWorkedHours += hoursWorked;
-                        }
-                    }
-                }
-
-                long presentDays = attendanceList.stream()
-                        .filter(att -> att.getStatus() == Attendance.Status.PRESENT)
-                        .count();
-
-                double totalSalary = totalWorkedHours * hourlyRate;
-
-                model.addAttribute("employee", employee);
-                model.addAttribute("presentDays", presentDays);
-                model.addAttribute("totalSalary", totalSalary);
-
-                response.setContentType("application/pdf");
-                response.setHeader("Content-Disposition", "attachment; filename=payslip.pdf");
-                PdfGeneratorUtil.generatePayslip(employee, attendanceList, presentDays, totalSalary, response.getOutputStream());
-
-            } catch (Exception ex) {
-                model.addAttribute("errorMessage", "Employee not found or invalid data.");
-            }
-        }
-        return "calculate-salary";
-    }
-     */
-
     @GetMapping("/calculate-salary")
     public String showSalary(
             @RequestParam(required = false) String empCode,
@@ -275,15 +211,10 @@ public class EmployeeController {
         long presentDays = attendanceList.stream()
                 .filter(att -> att.getStatus() == Attendance.Status.PRESENT)
                 .count();
-
         double totalSalary = totalWorkedHours * hourlyRate;
-
-        // PDF Response
         response.setContentType("application/pdf");
         response.setHeader("Content-Disposition", "attachment; filename=payslip.pdf");
 
         PdfGeneratorUtil.generatePayslip(employee, attendanceList, presentDays, totalSalary, response.getOutputStream());
     }
-
-
 }

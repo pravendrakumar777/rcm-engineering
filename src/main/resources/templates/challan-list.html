@@ -90,8 +90,9 @@
         <table class="table table-bordered table-hover" id="challanTable">
             <thead class="table-light">
             <tr>
-                <th>Challan No</th>
-                <th>OEM Supplier</th>
+                <th>Challan No.</th>
+                <th>OEM Supplier / Vendor Partner’s</th>
+                <th>Challan Ref No</th>
                 <th>Created Date</th>
                 <th>Action</th>
             </tr>
@@ -148,6 +149,7 @@
                 tr.innerHTML = `
                     <td>${escapeHtml(challan.challanNo)}</td>
                     <td>${escapeHtml(challan.customerName)}</td>
+                    <td>${escapeHtml(challan.refChNo)}</td>
                     <td>${escapeHtml(fmtDate(challan.date))}</td>
                     <td>
                         <button class="btn btn-sm btn-info" onclick="viewChallan(${challan.id})">👁 View</button>
@@ -183,7 +185,6 @@
                 itemsRows += `<tr>
                     <td>${idx + 1}</td>
                     <td>${escapeHtml(item.description || "-")}</td>
-                    <td>${escapeHtml(item.refChNo || "-")}</td>
                     <td>${escapeHtml(item.process || "-")}</td>
                     <td>${escapeHtml(item.hsnCode || "-")}</td>
                     <td>${escapeHtml(item.unit || "-")}</td>
@@ -203,13 +204,14 @@
                     <td class="text-right">${totalWeight.toFixed(2)}</td>
                     <td></td><td></td>
                     <td class="text-right">${totalPieces}</td>
-                    <td class="text-right">${totalAmount.toFixed(2)}</td>
+                    <td class="text-right">₹ ${totalAmount.toFixed(2)}</td>
                 </tr>`;
             }
 
             document.getElementById("challanDetails").innerHTML = `
                 <p><strong>Challan No :</strong> ${challan.challanNo}</p>
                 <p><strong>OEM Supplier :</strong> ${challan.customerName}</p>
+                <p><strong>Challan Ref No :</strong> ${challan.refChNo}</p>
                 <p><strong>Date :</strong> ${fmtDate(challan.date)}</p>
                 <hr>
                 <h6>Items:</h6>
@@ -219,13 +221,12 @@
                             <tr>
                                 <th>S.No</th>
                                 <th>Item Name</th>
-                                <th>Ref. Ch. No.</th>
-                                <th>Process</th>
+                                <th>Process (Job Work)</th>
                                 <th>HSN Code</th>
                                 <th>Unit</th>
                                 <th>Weight (Kg)</th>
                                 <th>Pcs/Kg</th>
-                                <th>Rate (₹/pc)</th>
+                                <th>Rate (₹/Pcs)</th>
                                 <th>Total Pcs</th>
                                 <th>Amount (₹)</th>
                             </tr>
