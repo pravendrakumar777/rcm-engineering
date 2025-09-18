@@ -101,7 +101,7 @@
             </tr>
             <tr>
                 <th>Monthly Salary</th>
-                <td th:text="|₹ ${employee.salary}|">₹ 0.00</td>
+                <td th:text="|₹ ${#numbers.formatDecimal(monthlySalary, 2, 2)}|">₹ 0.00</td>
                 <th>Salary Period</th>
                 <td th:text="${param.start} + ' to ' + ${param.end}"></td>
             </tr>
@@ -123,16 +123,14 @@
                 <th>Present Days</th>
                 <th>Absent Days</th>
                 <th>Total Hours</th>
-                <th>OT Hours</th>
             </tr>
             </thead>
             <tbody>
             <tr>
-                <td th:text="${attendanceList.size()}"></td>
+                <td th:text="${workingDays}"></td>
                 <td th:text="${presentDays}"></td>
-                <td th:text="${attendanceList.size() - presentDays}"></td>
-                <td th:text="${totalHoursWithOvertime}"></td>
-                <td th:text="${overtimeHours}"></td>
+                <td th:text="${absentDays}"></td>
+                <td th:text="${workedHours}"></td>
             </tr>
             </tbody>
         </table>
@@ -170,7 +168,7 @@
             </tr>
             <tr>
                 <td>Overtime Pay</td>
-                <td th:text="|₹ ${overtimePay}|">₹ 0.00</td>
+                <td th:text="${overtime != null ? overtime : 'NA'}">₹ 0.00</td>
                 <td>Calculated from hours worked</td>
             </tr>
             <tr class="table-light">
@@ -224,10 +222,10 @@
         <div class="section-header">Net Salary</div>
         <table class="table table-bordered text-center">
             <tbody>
-                <tr>
-                    <th>Net Payable Salary (₹)</th>
-                    <th th:text="|₹ ${#numbers.formatDecimal(totalSalary, 2, 2)}|">₹ 0.00</th>
-                </tr>
+            <tr>
+                <th>Net Payable Salary (₹)</th>
+                <th th:text="|₹ ${#numbers.formatDecimal(totalSalary, 2, 2)}|">₹ 0.00</th>
+            </tr>
             </tbody>
         </table>
     </div>
