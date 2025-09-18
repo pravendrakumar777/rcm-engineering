@@ -17,8 +17,8 @@ import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -131,6 +131,7 @@ public class EmployeeController {
             @RequestParam(required = false) String start,
             @RequestParam(required = false) String end,
             Model model) {
+
         if (empCode != null && start != null && end != null) {
             try {
                 LocalDate s = LocalDate.parse(start);
@@ -145,66 +146,39 @@ public class EmployeeController {
                         .orElseThrow(() -> new RuntimeException("Employee not found"));
 
                 double monthlySalary = employee.getSalary();
-                double dailyRate = monthlySalary / 30.0;
-                double hourlyRate = dailyRate / 8.0;
-                double perMinuteRate = hourlyRate / 60.0;
+                long workingDays = ChronoUnit.DAYS.between(s, e) + 1;
+                int workingHoursPerDay = 8;
+                long totalMinutesInPeriod = workingDays * workingHoursPerDay * 60;
 
-
-                long totalWorkedMinutes = 0;
-                long totalOvertimeMinutes = 0;
-                long totalLateMinutes = 0;
-
-                LocalTime shiftStart = LocalTime.of(9, 0);
-                int standardWorkingMinutes = 8 * 60;
-
+                Duration totalDuration = Duration.ZERO;
+                long presentDays = 0;
+                long absentDays = 0;
                 for (Attendance att : attendanceList) {
-                    if (att.getStatus() == Attendance.Status.PRESENT &&
-                            att.getCheckInDateTime() != null &&
-                            att.getCheckOutDateTime() != null) {
-
-                        long dailyMinutes = Duration.between(att.getCheckInDateTime(), att.getCheckOutDateTime()).toMinutes();
-                        totalWorkedMinutes += dailyMinutes;
-
-                        if (dailyMinutes > standardWorkingMinutes) {
-                            totalOvertimeMinutes += (dailyMinutes - standardWorkingMinutes);
-                        }
-
-                        LocalTime checkIn = att.getCheckInDateTime().toLocalTime();
-                        if (checkIn.isAfter(shiftStart)) {
-                            totalLateMinutes += Duration.between(shiftStart, checkIn).toMinutes();
-                        }
+                    if (att.getStatus() == Attendance.Status.PRESENT) {
+                        presentDays++;
+                    } else if (att.getStatus() == Attendance.Status.ABSENT) {
+                        absentDays++;
+                    }
+                    if (att.getCheckInDateTime() != null && att.getCheckOutDateTime() != null) {
+                        Duration dailyDuration = Duration.between(att.getCheckInDateTime(), att.getCheckOutDateTime());
+                        totalDuration = totalDuration.plus(dailyDuration);
                     }
                 }
 
-                long presentDays = attendanceList.stream()
-                        .filter(att -> att.getStatus() == Attendance.Status.PRESENT)
-                        .count();
-
-                double baseSalary = presentDays * dailyRate;
-                double overtimePay = (totalOvertimeMinutes / 60.0) * hourlyRate;
-                double totalSalary = baseSalary + overtimePay;
-
+                long totalWorkedMinutes = totalDuration.toMinutes();
                 String workedHours = (totalWorkedMinutes / 60) + " Hrs " + (totalWorkedMinutes % 60) + " Mins";
-                String overtimeHours = (totalOvertimeMinutes / 60) + " Hrs " + (totalOvertimeMinutes % 60) + " Mins";
-                String lateHours = (totalLateMinutes / 60) + " Hrs " + (totalLateMinutes % 60) + " Mins";
-
-                BigDecimal baseSal = BigDecimal.valueOf(baseSalary).setScale(2, RoundingMode.HALF_UP);
-                BigDecimal otPay = BigDecimal.valueOf(overtimePay).setScale(2, RoundingMode.HALF_UP);
-                BigDecimal totalSal = BigDecimal.valueOf(totalSalary).setScale(2, RoundingMode.HALF_UP);
+                double perMinuteRate = monthlySalary / (30.0 * workingHoursPerDay * 60.0);
+                double totalSalary = totalWorkedMinutes * perMinuteRate;
 
                 model.addAttribute("employee", employee);
                 model.addAttribute("attendanceList", attendanceList);
+                model.addAttribute("workingDays", workingDays);
                 model.addAttribute("presentDays", presentDays);
-
+                model.addAttribute("absentDays", absentDays);
                 model.addAttribute("workedHours", workedHours);
-                model.addAttribute("overtimeHours", overtimeHours);
-                model.addAttribute("lateHours", lateHours);
-
-                model.addAttribute("baseSalary", baseSal);
-                model.addAttribute("overtimePay", otPay);
-                model.addAttribute("totalSalary", totalSal);
-                String totalHoursWithOvertime = (totalWorkedMinutes / 60) + " Hrs " + (totalWorkedMinutes % 60) + " Mins";
-                model.addAttribute("totalHoursWithOvertime", totalHoursWithOvertime);
+                model.addAttribute("monthlySalary", monthlySalary);
+                model.addAttribute("perMinuteRate", BigDecimal.valueOf(perMinuteRate).setScale(2, RoundingMode.HALF_UP));
+                model.addAttribute("totalSalary", BigDecimal.valueOf(totalSalary).setScale(2, RoundingMode.HALF_UP));
 
             } catch (Exception ex) {
                 model.addAttribute("errorMessage", "Employee not found or invalid data.");
