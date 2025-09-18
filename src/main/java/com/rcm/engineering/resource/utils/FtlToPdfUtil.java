@@ -9,14 +9,17 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateExceptionHandler;
 import freemarker.template.Version;
+import org.springframework.core.io.ClassPathResource;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
+import java.nio.file.Files;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +38,12 @@ public class FtlToPdfUtil {
         cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
         Template template = cfg.getTemplate("challan.ftl");
         Map<String, Object> model = new HashMap<>();
+
+        ClassPathResource resource = new ClassPathResource("static/images/logo.png");
+        byte[] imageBytes = Files.readAllBytes(resource.getFile().toPath());
+        String base64Logo = Base64.getEncoder().encodeToString(imageBytes);
+        model.put("logoBase64", base64Logo);
+
         model.put("challan", challan);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         model.put("formattedDate", challan.getDate().format(formatter));
@@ -106,7 +115,11 @@ public class FtlToPdfUtil {
             long totalHours = totalMinutes / 60;
             long remainingMinutes = totalMinutes % 60;
             model.put("totalWorkedHours", String.format("%d Hrs %d Mins", totalHours, remainingMinutes));
-            model.put("logoPath", "/static/images/logo.png");
+            ClassPathResource resource = new ClassPathResource("static/images/logo.png");
+            byte[] imageBytes = Files.readAllBytes(resource.getFile().toPath());
+            String base64Logo = Base64.getEncoder().encodeToString(imageBytes);
+
+            model.put("logoBase64", base64Logo);
             Configuration freemarkerConfig = getFreemarkerConfig();
             Template template = freemarkerConfig.getTemplate("payslip.ftl");
             StringWriter stringWriter = new StringWriter();

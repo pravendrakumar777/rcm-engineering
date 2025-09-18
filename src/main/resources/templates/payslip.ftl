@@ -4,25 +4,57 @@
 <meta charset = "UTF-8">
     <title>Payslip</title>
     <style>
-        body { font-family: Arial, sans-serif; font-size: 12px; }
-        h2, h3 { margin: 5px 0; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
-        td, th { border: 1px solid #000; padding: 5px; }
-.no-border td, .no-border th { border: none; }
-.header { text-align: left; }
-.center { text-align: center; }
-.bold { font-weight: bold; }
+        body {
+font-family: Arial, sans-serif;
+font-size: 12px;
+}
+
+        h2, h3 {
+margin: 5px 0;
+}
+
+        table {
+width: 100%;
+border-collapse: collapse;
+margin-bottom: 10px;
+}
+
+        td, th {
+border: 1px solid #000;
+padding: 5px;
+}
+
+.no-border td, .no-border th {
+border: none;
+}
+
+.header {
+text-align: left;
+}
+
+.center {
+text-align: center;
+}
+
+.bold {
+font-weight: bold;
+}
+
+/* Logo styling */
+.logo {
+width: 150px;
+height: 150px;
+object-fit: contain;
+}
 </style>
 </head>
 <body>
 
-<!-- Header -->
-<table class="no-border">
+<!--Header with Logo + Company Info -->
+<table class = "no-border">
         <tr>
-            <td style="width:20%;">
-                <#if logoPath??>
-                    <img src="${logoPath}" alt="Company Logo" width="60" height="60"/>
-                </#if>
+            <td style="width:20%; vertical-align: top;">
+                <img src="data:image/png;base64,${logoBase64}" alt="Company Logo" class="logo" width="150" height="150"/>
             </td>
             <td style="width:80%;">
                 <h2>RCM ENGINEERING & MANUFACTURING</h2>
@@ -105,7 +137,6 @@
                     <td>${att.totalHours}</td>
                 </tr>
             </#list>
-
             <tr>
                 <td><b>Status Summary</b></td>
                 <td><b>P-${presentCount}d, A-${absentCount}d</b></td>
@@ -115,6 +146,5 @@
             </tr>
         </tbody>
     </table>
-
 </body>
 </html>
