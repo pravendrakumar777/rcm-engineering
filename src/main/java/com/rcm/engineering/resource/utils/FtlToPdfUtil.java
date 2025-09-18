@@ -14,6 +14,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -27,7 +28,7 @@ public class FtlToPdfUtil {
     static String processTemplateForChallan(Challan challan) throws Exception {
         Configuration cfg = new Configuration(Configuration.VERSION_2_3_31);
         cfg.setClassLoaderForTemplateLoading(
-                PdfGeneratorUtil.class.getClassLoader(),
+                FtlToPdfUtil.class.getClassLoader(),
                 "/templates"
         );
         cfg.setDefaultEncoding("UTF-8");
@@ -61,11 +62,9 @@ public class FtlToPdfUtil {
                                        long presentDays,
                                        double totalSalary,
                                        OutputStream out) {
-
         try {
             Map<String, Object> model = new HashMap<>();
             model.put("emp", emp);
-            model.put("records", records);
             model.put("presentDays", presentDays);
             model.put("totalSalary", totalSalary);
 
@@ -74,12 +73,10 @@ public class FtlToPdfUtil {
                 String monthYear = firstDate.format(DateTimeFormatter.ofPattern("MMMM yyyy"));
                 model.put("monthYear", monthYear);
             }
-            DateTimeFormatter commonFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-            String strDob = emp.getDateOfBirth().format(commonFormat);
-            String strDoj = emp.getDateOfJoining().format(commonFormat);
 
-            model.put("dob", strDob);
-            model.put("doj", strDoj);
+            DateTimeFormatter commonFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+            model.put("dob", emp.getDateOfBirth().format(commonFormat));
+            model.put("doj", emp.getDateOfJoining().format(commonFormat));
 
             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
             DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm a");
@@ -90,19 +87,25 @@ public class FtlToPdfUtil {
                 m.put("status", att.getStatus().toString());
                 m.put("checkIn", att.getCheckInDateTime() != null ? att.getCheckInDateTime().format(timeFormatter).toUpperCase() : "—");
                 m.put("checkOut", att.getCheckOutDateTime() != null ? att.getCheckOutDateTime().format(timeFormatter).toUpperCase() : "—");
-                m.put("totalHours", att.getFormattedTotalHours());
+
+                String workingHours = "0 Hrs 0 Mins";
+                if (att.getCheckInDateTime() != null && att.getCheckOutDateTime() != null) {
+                    Duration duration = Duration.between(att.getCheckInDateTime(), att.getCheckOutDateTime());
+                    long hours = duration.toHours();
+                    long minutes = duration.toMinutes() % 60;
+                    workingHours = String.format("%d Hrs %d Mins", hours, minutes);
+                }
+                m.put("totalHours", workingHours);
                 return m;
             }).collect(Collectors.toList());
-
             model.put("records", formattedRecords);
-            double totalWorkedHours = records.stream()
-                    .mapToDouble(att -> {
-                        if (att.getCheckInDateTime() != null && att.getCheckOutDateTime() != null) {
-                            return java.time.Duration.between(att.getCheckInDateTime(), att.getCheckOutDateTime()).toMinutes() / 60.0;
-                        }
-                        return 0.0;
-                    }).sum();
-            model.put("totalWorkedHours", String.format("%.2f Hrs", totalWorkedHours));
+            long totalMinutes = records.stream()
+                    .filter(att -> att.getCheckInDateTime() != null && att.getCheckOutDateTime() != null)
+                    .mapToLong(att -> Duration.between(att.getCheckInDateTime(), att.getCheckOutDateTime()).toMinutes())
+                    .sum();
+            long totalHours = totalMinutes / 60;
+            long remainingMinutes = totalMinutes % 60;
+            model.put("totalWorkedHours", String.format("%d Hrs %d Mins", totalHours, remainingMinutes));
             model.put("logoPath", "/static/images/logo.png");
             Configuration freemarkerConfig = getFreemarkerConfig();
             Template template = freemarkerConfig.getTemplate("payslip.ftl");
@@ -110,7 +113,6 @@ public class FtlToPdfUtil {
             template.process(model, stringWriter);
             String htmlContent = stringWriter.toString();
             HtmlConverter.convertToPdf(htmlContent, out);
-
         } catch (Exception e) {
             throw new RuntimeException("Error generating PDF", e);
         }

@@ -3,7 +3,6 @@ package com.rcm.engineering.resource;
 import com.rcm.engineering.domain.Challan;
 import com.rcm.engineering.domain.ChallanItem;
 import com.rcm.engineering.resource.utils.FtlToPdfUtil;
-import com.rcm.engineering.resource.utils.PdfGeneratorUtil;
 import com.rcm.engineering.service.ChallanService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,23 +12,19 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
 public class ChallanResource {
+
     private static final Logger log = LoggerFactory.getLogger(ChallanResource.class);
     private final ChallanService challanService;
-    private final PdfGeneratorUtil pdfGeneratorUtil;
 
-    public ChallanResource(ChallanService challanService, PdfGeneratorUtil pdfGeneratorUtil) {
+    public ChallanResource(ChallanService challanService) {
         this.challanService = challanService;
-        this.pdfGeneratorUtil = pdfGeneratorUtil;
     }
 
 
