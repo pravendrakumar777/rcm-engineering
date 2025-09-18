@@ -46,9 +46,9 @@ public class PdfGeneratorUtil {
                                             List<Attendance> records,
                                             long presentDays,
                                             double totalSalary) throws Exception {
-        String htmlContent = FtlToPdfUtil.processTemplateForPayslip(emp, records, presentDays, totalSalary);
+        //String htmlContent = FtlToPdfUtil.processTemplateForPayslip(emp, records, presentDays, totalSalary);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        HtmlConverter.convertToPdf(htmlContent, out);
+        //HtmlConverter.convertToPdf(htmlContent, out);
         return out.toByteArray();
     }
 

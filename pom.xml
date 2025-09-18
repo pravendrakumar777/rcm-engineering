@@ -49,6 +49,11 @@
 			<artifactId>spring-boot-configuration-processor</artifactId>
 			<optional>true</optional>
 		</dependency>
+        <dependency>
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
+            <version>2.3.32</version>
+        </dependency>
 		<dependency>
 			<groupId>com.itextpdf</groupId>
 			<artifactId>kernel</artifactId>
@@ -68,7 +73,7 @@
 		<dependency>
 			<groupId>org.freemarker</groupId>
 			<artifactId>freemarker</artifactId>
-			<version>2.3.31</version>
+            <version>2.3.32</version>
 		</dependency>
 		<dependency>
 			<groupId>org.liquibase</groupId>
@@ -83,11 +88,11 @@
 
 	<dependencyManagement>
 		<dependencies>
-			<dependency>
-				<groupId>org.freemarker</groupId>
-				<artifactId>freemarker</artifactId>
-				<version>2.3.31</version>
-			</dependency>
+<!--			<dependency>-->
+<!--				<groupId>org.freemarker</groupId>-->
+<!--				<artifactId>freemarker</artifactId>-->
+<!--				<version>2.3.31</version>-->
+<!--			</dependency>-->
 		</dependencies>
 	</dependencyManagement>
 

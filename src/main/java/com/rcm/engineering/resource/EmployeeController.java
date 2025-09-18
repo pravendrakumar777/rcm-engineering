@@ -4,7 +4,7 @@ import com.itextpdf.io.exceptions.IOException;
 import com.rcm.engineering.domain.Attendance;
 import com.rcm.engineering.domain.Employee;
 import com.rcm.engineering.repository.EmployeeRepository;
-import com.rcm.engineering.resource.utils.PdfGeneratorUtil;
+import com.rcm.engineering.resource.utils.FtlToPdfUtil;
 import com.rcm.engineering.service.AttendanceService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -201,7 +201,6 @@ public class EmployeeController {
                 .stream()
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
-
         Employee employee = employeeRepository.findByEmpCode(empCode)
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
 
@@ -222,10 +221,10 @@ public class EmployeeController {
         long presentDays = attendanceList.stream()
                 .filter(att -> att.getStatus() == Attendance.Status.PRESENT)
                 .count();
+
         double totalSalary = totalWorkedHours * hourlyRate;
         response.setContentType("application/pdf");
         response.setHeader("Content-Disposition", "attachment; filename=payslip.pdf");
-
-        PdfGeneratorUtil.generatePayslip(employee, attendanceList, presentDays, totalSalary, response.getOutputStream());
+        FtlToPdfUtil.generatePayslip(employee, attendanceList, presentDays, totalSalary, response.getOutputStream());
     }
 }
