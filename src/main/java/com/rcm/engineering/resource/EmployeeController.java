@@ -88,7 +88,7 @@ public class EmployeeController {
                 return "redirect:/employees?error=notfound";
             }
         }
-        String empCode = "RCMEM" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("ddMMyyyyHHmmss"));
+        String empCode = "RCMEC" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("ddMMyyyyHHmmss"));
         employee.setEmpCode(empCode);
         employeeRepository.save(employee);
         redirectAttributes.addFlashAttribute("success", "Employee saved successfully.");
@@ -223,8 +223,12 @@ public class EmployeeController {
                 .count();
 
         double totalSalary = totalWorkedHours * hourlyRate;
+        String currentMonth = LocalDate.now().format(DateTimeFormatter.ofPattern("MMMM_yyyy"));
+        String emCode = employee.getEmpCode();
+        String fileName = emCode + "_" + currentMonth + "_payslip.pdf";
+
         response.setContentType("application/pdf");
-        response.setHeader("Content-Disposition", "attachment; filename=payslip.pdf");
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName);
         FtlToPdfUtil.generatePayslip(employee, attendanceList, presentDays, totalSalary, response.getOutputStream());
     }
 }

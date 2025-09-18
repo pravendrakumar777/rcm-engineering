@@ -2,6 +2,7 @@ package com.rcm.engineering.resource;
 
 import com.rcm.engineering.domain.Challan;
 import com.rcm.engineering.domain.ChallanItem;
+import com.rcm.engineering.repository.ChallanRepository;
 import com.rcm.engineering.resource.utils.FtlToPdfUtil;
 import com.rcm.engineering.service.ChallanService;
 import org.slf4j.Logger;
@@ -12,9 +13,12 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
@@ -22,9 +26,11 @@ public class ChallanResource {
 
     private static final Logger log = LoggerFactory.getLogger(ChallanResource.class);
     private final ChallanService challanService;
+    private final ChallanRepository challanRepository;
 
-    public ChallanResource(ChallanService challanService) {
+    public ChallanResource(ChallanService challanService, ChallanRepository challanRepository) {
         this.challanService = challanService;
+        this.challanRepository = challanRepository;
     }
 
 
@@ -60,10 +66,15 @@ public class ChallanResource {
         try {
             Challan challan = challanService.getChallanById(id);
             byte[] pdfBytes = FtlToPdfUtil.generateChallanPDF(challan);
+
+            String currentMonth = LocalDate.now().format(DateTimeFormatter.ofPattern("MMMM_yyyy"));
+            String challnNo = challan.getChallanNo();
+            String fileName = challnNo + "_" + currentMonth  + "_challan.pdf";
+
             return ResponseEntity.ok()
                     .contentLength(pdfBytes.length)
                     .contentType(MediaType.APPLICATION_PDF)
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=challan_" + challan.getId() + ".pdf")
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName)
                     .body(new ByteArrayResource(pdfBytes));
         } catch (Exception e) {
             log.error("PDF download failed", e);
