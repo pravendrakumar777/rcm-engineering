@@ -1,14 +1,13 @@
 package com.rcm.engineering.resource.utils;
 
 import com.itextpdf.html2pdf.HtmlConverter;
+import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
 import com.rcm.engineering.domain.Attendance;
 import com.rcm.engineering.domain.Challan;
 import com.rcm.engineering.domain.ChallanItem;
 import com.rcm.engineering.domain.Employee;
-import freemarker.template.Configuration;
-import freemarker.template.Template;
-import freemarker.template.TemplateExceptionHandler;
-import freemarker.template.Version;
+import com.rcm.engineering.repository.EmployeeRepository;
+import freemarker.template.*;
 import org.springframework.core.io.ClassPathResource;
 
 import java.io.ByteArrayOutputStream;
@@ -24,8 +23,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
+@org.springframework.context.annotation.Configuration
 public class FtlToPdfUtil {
+
+    private final EmployeeRepository employeeRepository;
+
+    public FtlToPdfUtil(EmployeeRepository employeeRepository) {
+        this.employeeRepository = employeeRepository;
+    }
 
     // challan PDF
     static String processTemplateForChallan(Challan challan) throws Exception {
@@ -64,7 +69,6 @@ public class FtlToPdfUtil {
         HtmlConverter.convertToPdf(htmlContent, out);
         return out.toByteArray();
     }
-
     // payslip PDF
     public static void generatePayslip(Employee emp,
                                        List<Attendance> records,
@@ -86,10 +90,8 @@ public class FtlToPdfUtil {
             DateTimeFormatter commonFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy");
             model.put("dob", emp.getDateOfBirth().format(commonFormat));
             model.put("doj", emp.getDateOfJoining().format(commonFormat));
-
             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
             DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm a");
-
             List<Map<String, Object>> formattedRecords = records.stream().map(att -> {
                 Map<String, Object> m = new HashMap<>();
                 m.put("date", att.getDate() != null ? att.getDate().format(dateFormatter) : "—");
@@ -118,7 +120,6 @@ public class FtlToPdfUtil {
             ClassPathResource resource = new ClassPathResource("static/images/logo.png");
             byte[] imageBytes = Files.readAllBytes(resource.getFile().toPath());
             String base64Logo = Base64.getEncoder().encodeToString(imageBytes);
-
             model.put("logoBase64", base64Logo);
             Configuration freemarkerConfig = getFreemarkerConfig();
             Template template = freemarkerConfig.getTemplate("payslip.ftl");
@@ -136,5 +137,52 @@ public class FtlToPdfUtil {
         cfg.setClassForTemplateLoading(FtlToPdfUtil.class, "/templates");
         cfg.setDefaultEncoding("UTF-8");
         return cfg;
+    }
+
+    // Profile
+    public byte[] generateEmployeeProfile(String empCode, Configuration freemarkerConfig) {
+        Employee employee = employeeRepository.findByEmpCode(empCode)
+                .orElseThrow(() -> new RuntimeException("Employee not found with empCode: " + empCode));
+        try {
+
+            DateTimeFormatter commonFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+            Map<String, Object> model = new HashMap<>();
+            model.put("employee", employee);
+            model.put("generatedOn", LocalDate.now());
+            model.put("dob", employee.getDateOfBirth().format(commonFormat));
+            model.put("doj", employee.getDateOfJoining().format(commonFormat));
+
+            ClassPathResource resource = new ClassPathResource("static/images/logo.png");
+            byte[] imageBytes = Files.readAllBytes(resource.getFile().toPath());
+            String base64Logo = Base64.getEncoder().encodeToString(imageBytes);
+            model.put("logoBase64", base64Logo);
+
+            Template template = freemarkerConfig.getTemplate("profile.ftl");
+            String html = processTemplate(template, model);
+            return generatePdfFromHtml(html);
+        } catch (IOException | TemplateException ex) {
+            throw new RuntimeException("Error generating PDF from FTL", ex);
+        }
+    }
+
+    private static String processTemplate(Template template, Map<String, Object> dataModel)
+            throws IOException, TemplateException {
+        try (StringWriter writer = new StringWriter()) {
+            template.process(dataModel, writer);
+            return writer.toString();
+        }
+    }
+
+    private static byte[] generatePdfFromHtml(String html) throws IOException {
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            PdfRendererBuilder builder = new PdfRendererBuilder();
+            builder.useFastMode();
+            builder.withHtmlContent(html, null);
+            builder.toStream(outputStream);
+            builder.run();
+            return outputStream.toByteArray();
+        } catch (Exception ex) {
+            throw new IOException("PDF rendering failed", ex);
+        }
     }
 }
