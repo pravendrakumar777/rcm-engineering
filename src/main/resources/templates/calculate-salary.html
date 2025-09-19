@@ -71,7 +71,8 @@
         </div>
         <div class="col-md-3 d-flex gap-2">
             <button type="submit" class="btn btn-success flex-fill">Calculate</button>
-            <button type="button" class="btn btn-warning flex-fill" onclick="downloadPdf()">Download PDF</button>
+            <button type="button" class="btn btn-warning flex-fill" onclick="downloadPdf()">PDF</button>
+            <button type="button" class="btn btn-warning flex-fill" onclick="downloadProfile()">Profile</button>
         </div>
     </form>
 
@@ -250,6 +251,26 @@
             `/employees/calculate-salary/pdf?empCode=${empCode}&start=${start}&end=${end}`;
     }
 
+    document.getElementById("salaryForm").addEventListener("submit", function (e) {
+        const start = new Date(document.querySelector('[name="start"]').value);
+        const end = new Date(document.querySelector('[name="end"]').value);
+        if (start > end) {
+            e.preventDefault();
+            alert("Start date must be before end date.");
+        }
+    });
+
+    function downloadProfile() {
+        const empCode = document.querySelector('[name="empCode"]').value;
+
+        if (!empCode) {
+            alert("Please enter Employee Code before downloading Profile.");
+            return;
+        }
+
+        // New endpoint format
+        window.location.href = `/employees/${empCode}/profile`;
+    }
     document.getElementById("salaryForm").addEventListener("submit", function (e) {
         const start = new Date(document.querySelector('[name="start"]').value);
         const end = new Date(document.querySelector('[name="end"]').value);

@@ -94,7 +94,7 @@
             <a href="/challans" class="btn btn-primary btn-new">⬅ Back to Challans</a>
             <a href="/attendance" class="btn btn-info btn-new">📅 Mark Attendance</a>
         </div>
-        <h3 class="header-title">Onboarded Employees List</h3>
+        <h3 class="header-title">Onboarded Employees</h3>
         <div style="width: 120px;"></div>
     </div>
 
@@ -157,5 +157,16 @@
         </table>
     </div>
 </div>
+
+<script>
+    function downloadProfile(empCode) {
+        const link = document.createElement('a');
+        link.href = `/employees/${empCode}/profile`;
+        link.download = `employee-profile-${empCode}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+</script>
 </body>
 </html>

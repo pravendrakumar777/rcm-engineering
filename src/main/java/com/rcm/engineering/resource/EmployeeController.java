@@ -6,11 +6,15 @@ import com.rcm.engineering.domain.Employee;
 import com.rcm.engineering.repository.EmployeeRepository;
 import com.rcm.engineering.resource.utils.FtlToPdfUtil;
 import com.rcm.engineering.service.AttendanceService;
+import com.rcm.engineering.service.EmployeeService;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -28,10 +32,12 @@ public class EmployeeController {
 
     private final EmployeeRepository employeeRepository;
     private final AttendanceService attendanceService;
+    private final EmployeeService employeeService;
 
-    public EmployeeController(EmployeeRepository employeeRepository, AttendanceService attendanceService) {
+    public EmployeeController(EmployeeRepository employeeRepository, AttendanceService attendanceService, EmployeeService employeeService) {
         this.employeeRepository = employeeRepository;
         this.attendanceService = attendanceService;
+        this.employeeService = employeeService;
     }
 
     @GetMapping
@@ -230,5 +236,27 @@ public class EmployeeController {
         response.setContentType("application/pdf");
         response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName);
         FtlToPdfUtil.generatePayslip(employee, attendanceList, presentDays, totalSalary, response.getOutputStream());
+    }
+
+    // Download Employee Profile
+    @GetMapping("/{empCode}/profile")
+    public ResponseEntity<byte[]> profilePDF(@PathVariable String empCode) {
+        try {
+            byte[] pdfBytes = employeeService.generateEmployeeProfilePdf(empCode);
+            if (pdfBytes == null || pdfBytes.length == 0) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            }
+
+            String currentMonth = LocalDate.now().format(DateTimeFormatter.ofPattern("MMMM_yyyy"));
+            String fileName = empCode + "_" + currentMonth + "_profile.pdf";
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName)
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .body(pdfBytes);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }
