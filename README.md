@@ -7,7 +7,8 @@ $ mysqldump -u root -p rcm_db > D:\db\your_dump.sql
 $ Enter Your Password
 
 RCM ENGINEERING APPLICATION DEPLOY ON JENKINS CREDENTIALS & DETAILS
-Jenkins Details
+
+Jenkins Credentials Details
 Username : rcmengineering
 Genkins Password : 546985e10ada46e1bd639266a4de635b
 
