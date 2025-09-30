@@ -43,6 +43,36 @@ $ docker build -t rcm-engineering-app .
 
 From Powershell terminal
 $ docker images
+
+======================================================================================================================================
+Jenkins Details
+Username : rcmengineering
+Genkins Password : 546985e10ada46e1bd639266a4de635b
+
+Application Build with Docker 
+From Gitbash Application root
+$ mvn clean package -DskipTests
+$ docker build -t rcm-engineering-app .
+
+From Powershell terminal
+$ docker images
+Run with Docker
+$ docker run -d -p 8081:8081 --name rcm-engineering rcm-engineering-app
+Check Logs
+$ docker logs -f rcm-engineering
+
+Check Running Container
+$ docker ps
+Stop container 
+$ docker stop rcm-engineering
+Check all
+$ docker ps -a
+remove Image
+$ docker rm rcm-engineering
+delete All Images 
+$ docker rmi rcm-engineering-app
+======================================================================================================================================
+
 Run with Docker
 $ docker run -d -p 8081:8081 --name rcm-engineering rcm-engineering-app
 Check Logs
