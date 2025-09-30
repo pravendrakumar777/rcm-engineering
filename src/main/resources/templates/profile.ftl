@@ -3,14 +3,16 @@
 <html>
 <head>
 <meta charset="UTF-8"/>
-    <title>Employee Profile</title>
-    <style>
-        body { font-family: Arial, sans-serif; }
-        h1 { color: #2d2d2d; }
+<title>Employee Profile</title>
+<style>
+    body { font-family: Arial, sans-serif; }
+    h1 { color: #2d2d2d; text-align: center; }
+h3 { margin-top: 20px; color: #333; }
 table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { padding: 8px 12px; border: 1px solid #ccc; text-align: left; }
-th { background-color: #f4f4f4; }
-.section-title { background-color: #e0e0e0; font-weight: bold; text-transform: uppercase; padding: 8px; }
+    th, td { padding: 8px 12px; border: 1px solid #ccc; text-align: left; }
+th { background-color: #f9f9f9; width: 20%; }
+td { width: 30%; }
+.section-title { background-color: #e0e0e0; font-weight: bold; text-transform: uppercase; padding: 8px; text-align: left; }
 .no-border td { border: none; }
 .logo { margin-right: 10px; }
 </style>
@@ -37,39 +39,91 @@ th { background-color: #f4f4f4; }
 
 <hr/>
 
-<!-- Existing Content -->
 <h1>Employee Profile</h1>
-<p><strong>Generated on:</strong> ${generatedOn?html}</p>
+<p>Generated on: ${.now?string("dd-MM-yyyy")}</p>
 
+<!-- Employee Information -->
+<h3 class="section-title">Employee Information</h3>
 <table>
-    <tr><th class="section-title" colspan="2">Basic Details</th></tr>
-    <tr><th>Employee Code</th><td>${employee.empCode?html}</td></tr>
-    <tr><th>Name</th><td>${employee.name?html}</td></tr>
-    <tr><th>Gender</th><td>${employee.gender?html}</td></tr>
-    <tr><th>Email</th><td>${employee.email?html}</td></tr>
-    <tr><th>Mobile</th><td>${employee.mobile?html}</td></tr>
-    <tr><th>Date of Birth</th><td>${dob?html}</td></tr>
-    <tr><th>Manager</th><td>${employee.manager?html}</td></tr>
+    <tr>
+        <th>Name</th>
+        <td>${employee.name?html}</td>
+        <th>Emp Code</th>
+        <td>${employee.empCode?html}</td>
+    </tr>
+    <tr>
+        <th>Gender</th>
+        <td>${employee.gender?html}</td>
+        <th>Email</th>
+        <td>${employee.email?html}</td>
+    </tr>
+    <tr>
+        <th>Mobile</th>
+        <td>${employee.mobile?html}</td>
+        <th>Manager</th>
+        <td>${employee.manager?html}</td>
+    </tr>
+    <tr>
+        <th>DOB</th>
+        <td>${dob?html}</td>
+        <th>DOJ</th>
+        <td>${doj?html}</td>
+    </tr>
+</table>
 
-    <tr><th class="section-title" colspan="2">Address</th></tr>
-    <tr><th>Address</th><td>${employee.address?html}</td></tr>
-    <tr><th>City</th><td>${employee.city?html}</td></tr>
-    <tr><th>State</th><td>${employee.state?html}</td></tr>
-    <tr><th>Postal Code</th><td>${employee.postalCode?html}</td></tr>
-    <tr><th>Country</th><td>${employee.country?html}</td></tr>
+<!-- Address -->
+<h3 class="section-title">Address</h3>
+<table>
+    <tr>
+        <th>Village</th>
+        <td>${employee.address?html}</td>
+        <th>City</th>
+        <td>${employee.city?html}</td>
+    </tr>
+    <tr>
+        <th>State</th>
+        <td>${employee.state?html}</td>
+        <th>Postal Code</th>
+        <td>${employee.postalCode?html}</td>
+    </tr>
+    <tr>
+        <th>Country</th>
+        <td colspan="3">${employee.country?html}</td>
+    </tr>
+</table>
 
-    <tr><th class="section-title" colspan="2">Job Details</th></tr>
-    <tr><th>Department</th><td>${employee.department?html}</td></tr>
-    <tr><th>Designation</th><td>${employee.designation?html}</td></tr>
-    <tr><th>Date of Joining</th><td>${doj?html}</td></tr>
+<!-- Job Details -->
+<h3 class="section-title">Job Details</h3>
+<table>
+    <tr>
+        <th>Department</th>
+        <td>${employee.department?html}</td>
+        <th>Designation</th>
+        <td>${employee.designation?html}</td>
+    </tr>
+</table>
 
-    <tr><th class="section-title" colspan="2">Financial Details</th></tr>
-    <tr><th>PAN Number</th><td>${employee.panNumber?html}</td></tr>
-    <tr><th>Aadhaar Number</th><td>${employee.aadhaarNumber?html}</td></tr>
-    <tr><th>Bank Name</th><td>${employee.bankName?html}</td></tr>
-    <tr><th>Account Number</th><td>${employee.bankAccountNumber?html}</td></tr>
-    <tr><th>IFSC Code</th><td>${employee.ifscCode?html}</td></tr>
-    <tr><th>Salary</th><td>${employee.salary?string("0.00")}</td></tr>
+<!-- Financial Details -->
+<h3 class="section-title">Financial Details</h3>
+<table>
+    <tr>
+        <th>PAN</th>
+        <td>${employee.panNumber?html}</td>
+        <th>Aadhaar</th>
+        <td>${employee.aadhaarNumber?html}</td>
+    </tr>
+    <tr>
+        <th>Bank Name</th>
+        <td>${employee.bankName?html}</td>
+        <th>A/C No.</th>
+        <td>${employee.bankAccountNumber?html}</td>
+    </tr>
+    <tr>
+        <th>IFSC Code</th>
+        <td>${employee.ifscCode?html}</td>
+        <th>Salary</th>
+        <td>₹ ${employee.salary?string("0.00")}</td>
+    </tr>
 </table>
 
 </body>
