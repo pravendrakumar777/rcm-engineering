@@ -34,4 +34,16 @@ Prod :
 mvn clean package -Pprod -DskipTests
 java -jar target/rcm-engineering-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod --server.port=8083
 
+Docker Deployment Dewtails
 
+Application Build with Docker 
+From Gitbash Application root
+$ mvn clean package -DskipTests
+$ docker build -t rcm-engineering-app .
+
+From Powershell terminal
+$ docker images
+Run with Docker
+$ docker run -d -p 8081:8081 --name rcm-engineering rcm-engineering-app
+Check Logs
+$ docker logs -f rcm-engineering
