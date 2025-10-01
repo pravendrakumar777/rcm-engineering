@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Attendance Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        .card-summary {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card-summary .card {
+            flex: 1;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .status-present {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .status-absent {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        table {
+            border-radius: 8px;
+            overflow: hidden;
+            background: white;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3>Attendance Dashboard -
+            <span th:text="${#temporals.format(today, 'dd-MM-yyyy')}"></span>
+        </h3>
+        <div>
+            <a href="/employees" class="btn btn-primary">⬅ Back to Employees</a>
+            <a href="/attendance" class="btn btn-info">📅 Mark Attendance</a>
+            <a href="/challans" class="btn btn-primary btn-new">⬅ Back to Challans</a>
+        </div>
+    </div>
+
+    <div class="card-summary">
+        <div class="card p-3">
+            <div>Total Employees</div>
+            <div th:text="${totalEmployees}"></div>
+        </div>
+        <div class="card p-3 text-success">
+            <div>Present</div>
+            <div th:text="${presentCount}"></div>
+        </div>
+        <div class="card p-3 text-danger">
+            <div>Absent</div>
+            <div th:text="${absentCount}"></div>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <thead class="table-primary">
+            <tr>
+                <th>EMP Code</th>
+                <th>Name</th>
+                <th>Status</th>
+                <th>Check-In</th>
+                <th>Check-Out</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="att : ${allAttendance}">
+                <td th:text="${att.employee != null ? att.employee.empCode : att.empCode}"></td>
+                <td>
+                    <span th:if="${att.employee != null}" th:text="${att.employee.name}"></span>
+                    <span th:unless="${att.employee != null}" th:text="${att.name != null ? att.name : '—'}"></span>
+                </td>
+                <td>
+                    <span th:text="${att.status}"
+                          th:classappend="${att.status == T(com.rcm.engineering.domain.Attendance.Status).PRESENT} ? 'status-present' : 'status-absent'">
+                    </span>
+                </td>
+                <td th:text="${att.checkInDateTime != null ? #temporals.format(att.checkInDateTime, 'hh:mm a') : '—'}"></td>
+                <td th:text="${att.checkOutDateTime != null ? #temporals.format(att.checkOutDateTime, 'hh:mm a') : '—'}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div th:if="${#lists.isEmpty(allAttendance)}" class="alert alert-warning mt-3">
+        No attendance records found for today.
+    </div>
+</div>
+</body>
+</html>

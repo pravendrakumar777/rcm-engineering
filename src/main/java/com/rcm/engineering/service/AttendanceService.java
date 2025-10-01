@@ -81,4 +81,8 @@ public class AttendanceService {
         absent.setCheckOutDateTime(null);
         return absent;
     }
+
+    public List<Attendance> getAllAttendance(LocalDate startDate, LocalDate endDate) {
+        return attendanceRepository.findByDateBetween(startDate, endDate);
+    }
 }

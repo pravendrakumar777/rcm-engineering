@@ -1,7 +1,6 @@
 package com.rcm.engineering.resource;
 
 import com.rcm.engineering.domain.Attendance;
-import com.rcm.engineering.repository.EmployeeRepository;
 import com.rcm.engineering.service.AttendanceService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -22,11 +21,9 @@ import java.util.stream.Collectors;
 public class AttendanceController {
 
     private final AttendanceService attendanceService;
-    private final EmployeeRepository employeeRepository;
 
-    public AttendanceController(AttendanceService attendanceService, EmployeeRepository employeeRepository) {
+    public AttendanceController(AttendanceService attendanceService) {
         this.attendanceService = attendanceService;
-        this.employeeRepository = employeeRepository;
     }
 
     @GetMapping
@@ -137,5 +134,35 @@ public class AttendanceController {
             }
         }
         return "attendance-report";
+    }
+
+    // dashboard
+    @GetMapping("/dashboard")
+    public String attendanceDashboard(Model model) {
+        LocalDate today = LocalDate.now();
+        List<Attendance> allAttendance = attendanceService.getAllAttendance(today, today);
+
+        // Separate Present & Absent employees
+        List<Attendance> presentEmployees = allAttendance.stream()
+                .filter(att -> Attendance.Status.PRESENT.equals(att.getStatus()))
+                .collect(Collectors.toList());
+
+        List<Attendance> absentEmployees = allAttendance.stream()
+                .filter(att -> Attendance.Status.ABSENT.equals(att.getStatus()))
+                .collect(Collectors.toList());
+
+        long totalEmployees = allAttendance.size();
+        long presentCount = presentEmployees.size();
+        long absentCount = absentEmployees.size();
+
+        model.addAttribute("today", today);
+        model.addAttribute("totalEmployees", totalEmployees);
+        model.addAttribute("presentCount", presentCount);
+        model.addAttribute("absentCount", absentCount);
+        model.addAttribute("allAttendance", allAttendance);
+        model.addAttribute("presentEmployees", presentEmployees);
+        model.addAttribute("absentEmployees", absentEmployees);
+
+        return "attendance-dashboard";
     }
 }
