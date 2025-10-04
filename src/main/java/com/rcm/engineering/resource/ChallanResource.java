@@ -14,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Year;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
@@ -109,6 +111,18 @@ public class ChallanResource {
     }
 
     private String generateChallanNo() {
-        return "RCMCN" + System.currentTimeMillis();
+        String financialYear = String.valueOf(Year.now().getValue());
+        LocalDate today = LocalDate.now();
+        LocalDateTime now = LocalDateTime.now();
+        String day = String.format("%02d", today.getDayOfMonth());
+        String month = String.format("%02d", today.getMonthValue());
+        String hour = String.format("%02d", now.getHour());
+        String minute = String.format("%02d", now.getMinute());
+        String seconds = String.format("%02d", now.getSecond());
+
+        String dm = day + month;
+        String hm = hour + minute;
+
+        return "RCMCN" + financialYear + dm + hm + seconds;
     }
 }

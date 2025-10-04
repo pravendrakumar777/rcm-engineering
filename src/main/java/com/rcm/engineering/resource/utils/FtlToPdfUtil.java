@@ -33,6 +33,13 @@ public class FtlToPdfUtil {
     }
 
     // challan PDF
+    public static byte[] generateChallanPDF(Challan challan) throws Exception {
+        String htmlContent = processTemplateForChallan(challan);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        HtmlConverter.convertToPdf(htmlContent, out);
+        return out.toByteArray();
+    }
+
     static String processTemplateForChallan(Challan challan) throws Exception {
         Configuration cfg = new Configuration(Configuration.VERSION_2_3_31);
         cfg.setClassLoaderForTemplateLoading(
@@ -50,7 +57,7 @@ public class FtlToPdfUtil {
         model.put("logoBase64", base64Logo);
 
         model.put("challan", challan);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
         model.put("formattedDate", challan.getDate().format(formatter));
         double grandTotal = challan.getItems()
                 .stream()
@@ -63,12 +70,6 @@ public class FtlToPdfUtil {
         }
     }
 
-    public static byte[] generateChallanPDF(Challan challan) throws Exception {
-        String htmlContent = processTemplateForChallan(challan);
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        HtmlConverter.convertToPdf(htmlContent, out);
-        return out.toByteArray();
-    }
     // payslip PDF
     public static void generatePayslip(Employee emp,
                                        List<Attendance> records,
