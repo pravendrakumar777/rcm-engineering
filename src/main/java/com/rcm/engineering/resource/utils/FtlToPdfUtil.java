@@ -57,7 +57,7 @@ public class FtlToPdfUtil {
         model.put("logoBase64", base64Logo);
 
         model.put("challan", challan);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss a");
         model.put("formattedDate", challan.getDate().format(formatter));
         double grandTotal = challan.getItems()
                 .stream()
