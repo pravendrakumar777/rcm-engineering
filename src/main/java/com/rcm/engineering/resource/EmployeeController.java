@@ -7,6 +7,7 @@ import com.rcm.engineering.repository.EmployeeRepository;
 import com.rcm.engineering.resource.utils.FtlToPdfUtil;
 import com.rcm.engineering.service.AttendanceService;
 import com.rcm.engineering.service.EmployeeService;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -42,7 +43,8 @@ public class EmployeeController {
 
     @GetMapping
     public String listEmployees(Model model) {
-        model.addAttribute("employees", employeeRepository.findAll());
+        //model.addAttribute("employees", employeeRepository.findAll());
+        model.addAttribute("employees", employeeRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt")));
         return "employee-list";
     }
 
