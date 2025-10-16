@@ -8,7 +8,7 @@ public class ChallanPageController {
 
     @GetMapping("/")
     public String homeRedirect() {
-        return "redirect:/challans";
+        return "redirect:/login";
     }
 
     @GetMapping("/challans")

@@ -43,10 +43,20 @@ public class EmployeeController {
 
     @GetMapping
     public String listEmployees(Model model) {
-        //model.addAttribute("employees", employeeRepository.findAll());
         model.addAttribute("employees", employeeRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt")));
         return "employee-list";
     }
+
+    /*
+    @GetMapping
+    public String listEmployees(Model model) {
+        List<Employee> sortedEmployees = employeeRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"));
+        model.addAttribute("employees", sortedEmployees);
+        model.addAttribute("pageTitle", "Onboarded Employees");
+        model.addAttribute("content", "employee-list :: content");
+        return "layout";
+    }
+     */
 
     @GetMapping("/form")
     public String showCreateForm(Model model) {
