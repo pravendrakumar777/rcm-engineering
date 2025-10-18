@@ -3,6 +3,9 @@ package com.rcm.engineering.resource;
 import com.rcm.engineering.domain.Attendance;
 import com.rcm.engineering.service.AttendanceService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -139,6 +142,16 @@ public class AttendanceController {
     // dashboard
     @GetMapping("/dashboard")
     public String attendanceDashboard(Model model) {
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
+            String role = auth.getAuthorities().stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .findFirst()
+                    .orElse("USER");
+            model.addAttribute("currentRole", role);
+        }
+
         LocalDate today = LocalDate.now();
         List<Attendance> allAttendance = attendanceService.getAllAttendance(today, today);
 

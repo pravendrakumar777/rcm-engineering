@@ -1,21 +1,88 @@
-<!--=======================================================================================-->
+<!--=============================================================================================-->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Attendance Calendar</title>
+
+    <!-- Bootstrap CSS & JS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
     <style>
         body {
-            background-color: #f8f9fa;
             font-family: Arial, sans-serif;
+            margin: 0;
+            overflow-x: hidden;
+            background-color: #f8f9fa;
         }
 
-        .container {
-            margin-top: 40px;
+        /* Flex container for sidebar + main content */
+        .main-container {
+            display: flex;
+            min-height: 100vh;
         }
 
+        /* Sidebar */
+        .sidebar {
+            width: 80px;
+            background-color: #1c655d;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: all 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .sidebar img {
+            width: 60px;
+            margin: 20px 0 30px 0;
+            transition: 0.3s;
+        }
+
+        .sidebar:hover {
+            width: 240px;
+        }
+
+        .sidebar:hover img {
+            width: 100px;
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 0;
+            width: 100%;
+        }
+
+        .nav-links li { width: 100%; }
+
+        .nav-links a {
+            display: flex;
+            align-items: center;
+            color: white;
+            text-decoration: none;
+            padding: 12px 20px;
+            white-space: nowrap;
+            transition: background 0.3s, padding-left 0.3s;
+        }
+
+        .nav-links a:hover, .nav-links a.active { background-color: #136f64; padding-left: 25px; }
+        .nav-links i { font-size: 1.3rem; min-width: 40px; text-align: center; }
+        .nav-links span { opacity: 0; transition: opacity 0.3s; font-size: 15px; }
+        .sidebar:hover .nav-links span { opacity: 1; }
+
+        .mt-auto { margin-top: auto; }
+
+        /* Main content */
+        .content-area {
+            flex-grow: 1;
+            padding: 20px;
+            min-width: 0;
+        }
+
+        /* Header */
         .header-row {
             display: flex;
             justify-content: space-between;
@@ -24,12 +91,11 @@
             margin-bottom: 20px;
         }
 
-        .header-title {
-            flex-grow: 1;
-            text-align: center;
-            margin: 0;
-        }
+        .header-title { flex-grow: 1; text-align: center; margin: 0; }
 
+        .btn-new { white-space: nowrap; }
+
+        /* Calendar */
         .calendar {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
@@ -47,22 +113,13 @@
             transition: 0.2s;
         }
 
-        .day:hover {
-            background: #eee;
-        }
+        .day:hover { background: #eee; }
 
-        .present {
-            background-color: #a8e6a3 !important;
-        }
+        .present { background-color: #a8e6a3 !important; }
+        .absent { background-color: #f7a8a8 !important; }
+        .future-absent { background-color: #ffe08a !important; }
 
-        .absent {
-            background-color: #f7a8a8 !important;
-        }
-
-        .empty {
-            background: #f1f1f1;
-            cursor: default;
-        }
+        .empty { background: #f1f1f1; cursor: default; }
 
         .header-day {
             font-weight: bold;
@@ -71,15 +128,6 @@
             padding: 10px;
             border-radius: 6px;
             text-align: center;
-        }
-
-        select {
-            margin: 5px;
-            padding: 6px;
-        }
-
-        .btn-new {
-            white-space: nowrap;
         }
 
         .status-indicators {
@@ -109,17 +157,8 @@
             display: inline-block;
         }
 
-        .checkin-box {
-            background-color: green;
-        }
-
-        .checkout-box {
-            background-color: red;
-        }
-
-        .future-absent {
-            background-color: #ffe08a !important;
-        }
+        .checkin-box { background-color: green; }
+        .checkout-box { background-color: red; }
 
         .current-day {
             border: 2px solid #007bff !important;
@@ -128,34 +167,61 @@
             opacity: 1 !important;
             pointer-events: auto !important;
         }
-
-        .present {
-            background-color: #a8e6a3 !important;
-        }
-
     </style>
 </head>
+
 <body>
-<div class="container">
-    <div class="header-row">
-        <div>
-            <a href="/employees" class="btn btn-success btn-new">👨‍💼 Manage Employees</a>
-            <a href="/challans" class="btn btn-primary btn-new ms-2">⬅ Back to Challans</a>
-            <a href="/attendance/report" class="btn btn-warning">📄 View Attendance Report</a>
+<div class="main-container">
+    <!-- Sidebar -->
+    <div th:fragment="sidebar" class="sidebar">
+        <img src="/images/logo.png" alt="Logo">
+        <ul class="nav-links">
+            <li><a th:href="@{/attendance/dashboard}" class="active"><i class="bi bi-speedometer2"></i> <span>Dashboard</span></a></li>
+            <li><a th:href="@{/employees}"><i class="bi bi-people"></i> <span>Employees</span></a></li>
+            <li><a th:href="@{/attendance}"><i class="bi bi-calendar-check"></i> <span>Attendance</span></a></li>
+            <li><a class="dropdown-toggle text-white" data-bs-toggle="collapse" href="#reportsSubmenu" role="button" aria-expanded="false" aria-controls="reportsSubmenu"><i class="bi bi-bar-chart-line"></i> <span>Reports</span></a>
+                <ul class="collapse nav flex-column ms-3" id="reportsSubmenu">
+                    <li><a th:href="@{/employees/calculate-salary}" class="text-white d-flex align-items-center py-2"><i class="bi bi-currency-rupee me-2"></i> <span>Salary</span></a></li>
+                    <li><a th:href="@{/challans}" class="text-white d-flex align-items-center py-2"><i class="bi bi-clipboard-data me-2"></i> <span>Challans</span></a></li>
+                    <li><a th:href="@{/employees/calculate-salary}" class="text-white d-flex align-items-center py-2"><i class="bi bi-person-lines-fill me-2"></i> <span>Profiles</span></a></li>
+                </ul>
+            </li>
+            <li><a th:href="@{/accounts}"><i class="bi bi-person-badge"></i> <span>Accounts</span></a></li>
+            <li><a th:href="@{/settings}"><i class="bi bi-gear"></i> <span>Settings</span></a></li>
+            <li><a th:href="@{/whatsnew}"><i class="bi bi-lightbulb"></i> <span>What's New</span></a></li>
+            <li><a th:href="@{/supports}"><i class="bi bi-life-preserver"></i> <span>Supports</span></a></li>
+            <li><a th:href="@{/more}"><i class="bi bi-stack"></i> <span>More Options</span></a></li>
+            <li><a th:href="@{/extra}"><i class="bi bi-box-seam"></i> <span>Extra Link</span></a></li>
+        </ul>
+
+        <div class="mt-auto w-100">
+            <form th:action="@{/logout}" method="post" id="logoutForm">
+                <a href="#" class="d-flex align-items-center text-white text-decoration-none py-3 px-3 logout-link"
+                   onclick="document.getElementById('logoutForm').submit(); return false;">
+                    <i class="bi bi-box-arrow-right fs-5 me-2"></i>
+                    <span>Logout</span>
+                </a>
+            </form>
         </div>
-        <h3 class="header-title">Attendance Calendar</h3>
-        <div style="width: 120px;"></div>
     </div>
 
-    <div class="mb-3">
-        <label for="employeeSelect" class="form-label">Employee:</label>
-        <select id="employeeSelect" class="form-select d-inline-block w-auto"></select>
+    <!-- Content Area -->
+    <div class="content-area">
+        <div class="header-row">
+            <h3 class="header-title">Attendance Calendar</h3>
+            <div style="width: 120px;"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="employeeSelect" class="form-label">Employee:</label>
+            <select id="employeeSelect" class="form-select d-inline-block w-auto"></select>
+        </div>
+
+        <div id="calendar" class="calendar"></div>
     </div>
-
-    <div id="calendar" class="calendar"></div>
-
 </div>
 
+<!-- JS -->
 <script>
     const employeeSelect = document.getElementById("employeeSelect");
     const calendarDiv = document.getElementById("calendar");
@@ -188,7 +254,7 @@
         const firstDay = new Date(year, month, 1).getDay();
         const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-        ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"].forEach(d => {
+        ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"].forEach(d => {
             const div = document.createElement('div');
             div.className = 'header-day';
             div.innerText = d;
@@ -202,11 +268,11 @@
         }
 
         for (let d = 1; d <= daysInMonth; d++) {
-            const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+            const dateStr = `${year}-${String(month + 1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
             const div = document.createElement('div');
             div.className = 'day';
-            div.innerHTML = `<div>${d}</div>`;
             div.dataset.date = dateStr;
+            div.innerHTML = `<div>${d}</div>`;
             div.onclick = () => toggleAttendance(empCode, dateStr, div);
             calendarDiv.appendChild(div);
         }
@@ -215,35 +281,26 @@
     }
 
     async function loadAttendance(empCode, year, month, daysInMonth) {
-        const start = `${year}-${String(month + 1).padStart(2, '0')}-01`;
-        const end = `${year}-${String(month + 1).padStart(2, '0')}-${daysInMonth}`;
+        const start = `${year}-${String(month + 1).padStart(2,'0')}-01`;
+        const end = `${year}-${String(month + 1).padStart(2,'0')}-${daysInMonth}`;
         const res = await fetch(`/attendance/api/${empCode}/month?start=${start}&end=${end}`);
         const data = await res.json();
         const map = {};
         data.forEach(a => map[a.date] = a);
 
         const todayStr = new Date().toISOString().split('T')[0];
-        document.querySelectorAll('.day').forEach((d) => {
+        document.querySelectorAll('.day').forEach(d => {
             const dayNum = parseInt(d.innerText);
             if (!dayNum) return;
 
             const dateStr = d.dataset.date;
             const record = map[dateStr];
 
-            let checkIn = '';
-            let checkOut = '';
-            const today = new Date().toISOString().split('T')[0];
-
+            let checkIn = '', checkOut = '';
             if (record) {
                 if (record.status === "ABSENT") {
-                    if (dateStr > today) {
-                        d.classList.add('future-absent');
-                    } else {
-                        d.classList.add('absent');
-                    }
-                } else {
-                    d.classList.add('present');
-                }
+                    d.classList.add(dateStr > todayStr ? 'future-absent' : 'absent');
+                } else { d.classList.add('present'); }
 
                 checkIn = formatTimeWithMeridiem(record.checkInDateTime);
                 checkOut = formatTimeWithMeridiem(record.checkOutDateTime);
@@ -273,33 +330,23 @@
 
     async function toggleAttendance(empCode, date, div) {
         const todayStr = new Date().toISOString().split('T')[0];
-        if (date !== todayStr) {
-            alert("You can only mark attendance for today.");
-            return;
-        }
+        if (date !== todayStr) { alert("You can only mark attendance for today."); return; }
 
         const now = new Date();
-        const timestamp = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}T${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+        const timestamp = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}T${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
         const status = "PRESENT";
 
         const alreadyCheckedIn = div.getAttribute("data-checkin");
         const alreadyCheckedOut = div.getAttribute("data-checkout");
         const params = new URLSearchParams({empCode, date, status});
 
-        if (!alreadyCheckedIn) {
-            params.append("checkInDateTime", timestamp);
-        } else if (!alreadyCheckedOut) {
-            params.append("checkOutDateTime", timestamp);
-        } else {
-            alert("Already checked in and out for today.");
-            return;
-        }
+        if (!alreadyCheckedIn) params.append("checkInDateTime", timestamp);
+        else if (!alreadyCheckedOut) params.append("checkOutDateTime", timestamp);
+        else { alert("Already checked in and out for today."); return; }
 
-        const res = await fetch(`/attendance/api/mark?${params.toString()}`, {
-            method: "POST"
-        });
-
+        const res = await fetch(`/attendance/api/mark?${params.toString()}`, { method: "POST" });
         const data = await res.json();
+
         const checkInTime = data.checkInDateTime ? formatTimeWithMeridiem(data.checkInDateTime) : "";
         const checkOutTime = data.checkOutDateTime ? formatTimeWithMeridiem(data.checkOutDateTime) : "";
 
@@ -318,7 +365,5 @@
     employeeSelect.addEventListener('change', renderCalendar);
     window.onload = loadEmployees;
 </script>
-
 </body>
 </html>
-
