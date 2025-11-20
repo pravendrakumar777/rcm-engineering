@@ -41,14 +41,6 @@ public class EmployeeController {
         this.employeeService = employeeService;
     }
 
-    /*
-    @GetMapping
-    public String listEmployees(Model model) {
-        model.addAttribute("employees", employeeRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt")));
-        return "employee-list";
-    }
-     */
-
     @GetMapping
     public String listEmployees(Model model) {
         model.addAttribute("employees", employeeRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt")));
