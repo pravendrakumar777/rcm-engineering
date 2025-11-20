@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Accounts</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+
+<div class="container mt-4">
+    <h2>Accounts</h2>
+
+    <table class="table table-bordered mt-3" id="accountsTable">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Employee ID</th>
+            <th>Account Type</th>
+            <th>Bank</th>
+            <th>Balance</th>
+            <th>Last Paid</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        $.ajax({
+            url: "/api/accounts/fetch-all",
+            method: "GET",
+            success: function (data) {
+                var tbody = $("#accountsTable tbody");
+
+                data.forEach(function (acc) {
+                    var row = "<tr>" +
+                        "<td>" + acc.accountId + "</td>" +
+                        "<td>" + acc.employeeId + "</td>" +
+                        "<td>" + acc.accountType + "</td>" +
+                        "<td>" + acc.bankName + "</td>" +
+                        "<td>" + acc.currentBalance + "</td>" +
+                        "<td>" + acc.lastPaidDate + "</td>" +
+                        "</tr>";
+
+                    tbody.append(row);
+                });
+            }
+        });
+
+    });
+</script>
+
+</body>
+</html>
