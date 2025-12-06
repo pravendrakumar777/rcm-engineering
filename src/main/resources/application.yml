@@ -1,0 +1,31 @@
+spring:
+  kafka:
+    producer:
+      properties:
+        enable.idempotence: true
+        acks: all
+      bootstrap-servers: localhost:9092
+
+  cloud:
+    stream:
+      kafka:
+        binder:
+          brokers: localhost:9092
+      bindings:
+        employee-pre-onboarding-request-output:
+          destination: ems.pre.onboarding.req
+          content-type: application/json
+
+        employee-pre-onboarding-request-input:
+          destination: ems.pre.onboarding.req
+          group: pre-onboarding-consumer
+          content-type: application/json
+
+        employee-approval-status-output:
+          destination: ems.approval.status
+          content-type: application/json
+
+        employee-approval-status-input:
+          destination: ems.approval.status
+          group: approval-status-consumer
+          content-type: application/json

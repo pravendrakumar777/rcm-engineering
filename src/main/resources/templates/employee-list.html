@@ -1,9 +1,8 @@
-<!--========================================================================================-->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Onboarded Employees</title>
+    <title>Pre Onboarded Employees</title>
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -18,11 +17,7 @@
         }
 
         /* Flex container for sidebar + main content */
-        .main-container {
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-        }
+        .main-container { display: flex; height: 100vh; overflow: hidden; }
 
         /* Sidebar */
         .sidebar {
@@ -37,31 +32,12 @@
             flex-shrink: 0;
         }
 
-        .sidebar img {
-            width: 60px;
-            height: auto;
-            margin: 20px 0 30px 0;
-            transition: 0.3s;
-        }
+        .sidebar img { width: 60px; height: auto; margin: 20px 0 30px 0; transition: 0.3s; }
+        .sidebar:hover { width: 240px; }
+        .sidebar:hover img { width: 100px; }
 
-        .sidebar:hover {
-            width: 240px;
-        }
-
-        .sidebar:hover img {
-            width: 100px;
-        }
-
-        .nav-links {
-            list-style: none;
-            padding: 0;
-            width: 100%;
-        }
-
-        .nav-links li {
-            width: 100%;
-        }
-
+        .nav-links { list-style: none; padding: 0; width: 100%; }
+        .nav-links li { width: 100%; }
         .nav-links a {
             display: flex;
             align-items: center;
@@ -71,31 +47,12 @@
             white-space: nowrap;
             transition: background 0.3s, padding-left 0.3s;
         }
+        .nav-links a:hover, .nav-links a.active { background-color: #136f64; padding-left: 25px; }
+        .nav-links i { font-size: 1.3rem; min-width: 40px; text-align: center; }
+        .nav-links span { opacity: 0; transition: opacity 0.3s; font-size: 15px; }
+        .sidebar:hover .nav-links span { opacity: 1; }
 
-        .nav-links a:hover, .nav-links a.active {
-            background-color: #136f64;
-            padding-left: 25px;
-        }
-
-        .nav-links i {
-            font-size: 1.3rem;
-            min-width: 40px;
-            text-align: center;
-        }
-
-        .nav-links span {
-            opacity: 0;
-            transition: opacity 0.3s;
-            font-size: 15px;
-        }
-
-        .sidebar:hover .nav-links span {
-            opacity: 1;
-        }
-
-        .mt-auto {
-            margin-top: auto;
-        }
+        .mt-auto { margin-top: auto; }
 
         /* Main content */
         .content-area {
@@ -104,96 +61,40 @@
             padding: 20px;
             transition: margin-left 0.3s ease;
         }
+        .sidebar:hover ~ .content-area { margin-left: 160px; }
 
-        .sidebar:hover ~ .content-area {
-            margin-left: 160px;
-        }
+        .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; }
+        .header-title { flex-grow: 1; text-align: center; margin: 0; }
+        .btn-new { white-space: nowrap; }
+        .action-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
 
-        .header-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .header-title {
-            flex-grow: 1;
-            text-align: center;
-            margin: 0;
-        }
-
-        .btn-new {
-            white-space: nowrap;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .table-container {
-            overflow-x: auto;
-            width: 100%;
-        }
-
-        table {
-            width: 100%;
-            min-width: 2000px;
-            border-collapse: collapse;
-            background: white;
-            font-size: 0.9rem;
-        }
-
+        .table-container { overflow-x: auto; width: 100%; }
+        table { width: 100%; min-width: 1200px; border-collapse: collapse; background: white; font-size: 0.9rem; }
         th, td {
             border: 1px solid #ddd;
             padding: 10px;
             text-align: left;
             vertical-align: middle;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            white-space: normal;
         }
+        th { background-color: #007bff; color: white; position: sticky; top: 0; z-index: 1; }
+        td a { white-space: nowrap; }
+        .btn-edit { min-width: 100px; padding-left: 20px; padding-right: 20px; text-align: center; }
 
-        th {
-            background-color: #007bff;
-            color: white;
-            position: sticky;
-            top: 0;
-            z-index: 1;
-        }
-
-        td a {
-            white-space: nowrap;
-        }
-
-        @media (max-width: 768px) {
-            th, td {
-                font-size: 0.8rem;
-                padding: 8px;
-            }
-        }
-
-        .btn-edit {
-            min-width: 100px;
-            padding-left: 20px;
-            padding-right: 20px;
-            text-align: center;
-        }
+        @media (max-width: 768px) { th, td { font-size: 0.8rem; padding: 8px; } }
     </style>
 </head>
 <body>
 
 <div class="main-container">
-    <!-- Sidebar Fragment -->
+    <!-- Sidebar fragment untouched -->
     <div th:fragment="sidebar" class="sidebar">
         <img src="/images/logo.png" alt="Logo">
         <ul class="nav-links">
             <li><a th:href="@{/attendance/dashboard}" class="active"><i class="bi bi-speedometer2"></i> <span>Dashboard</span></a></li>
             <li><a th:href="@{/employees}"><i class="bi bi-people"></i> <span>Employees</span></a></li>
             <li><a th:href="@{/attendance}"><i class="bi bi-calendar-check"></i> <span>Attendance</span></a></li>
-            <li><a class="dropdown-toggle text-white" data-bs-toggle="collapse" href="#reportsSubmenu" role="button" aria-expanded="false" aria-controls="reportsSubmenu"><i class="bi bi-bar-chart-line"></i> <span>Reports</span></a>
+            <li><a class="dropdown-toggle text-white" data-bs-toggle="collapse" href="#reportsSubmenu"><i class="bi bi-bar-chart-line"></i> <span>Reports</span></a>
                 <ul class="collapse nav flex-column ms-3" id="reportsSubmenu">
                     <li><a th:href="@{/employees/calculate-salary}" class="text-white d-flex align-items-center py-2"><i class="bi bi-currency-rupee me-2"></i> <span>Salary</span></a></li>
                     <li><a th:href="@{/challans}" class="text-white d-flex align-items-center py-2"><i class="bi bi-clipboard-data me-2"></i> <span>Challans</span></a></li>
@@ -207,7 +108,6 @@
             <li><a th:href="@{/more}"><i class="bi bi-stack"></i> <span>More Options</span></a></li>
             <li><a th:href="@{/extra}"><i class="bi bi-box-seam"></i> <span>Extra Link</span></a></li>
         </ul>
-
         <div class="mt-auto w-100">
             <form th:action="@{/logout}" method="post" id="logoutForm">
                 <a href="#" class="d-flex align-items-center text-white text-decoration-none py-3 px-3 logout-link"
@@ -223,9 +123,9 @@
     <div class="content-area container-fluid">
         <div class="header-row">
             <div class="action-buttons">
-                <a href="/employees/form" class="btn btn-success btn-new">➕ Employee Onboarding</a>
+                <a href="/employees/form" class="btn btn-success btn-new">➕ Pre Onboarding</a>
             </div>
-            <h3 class="header-title">Onboarded Employees</h3>
+            <h3 class="header-title">Pre Onboarded Employees</h3>
             <div style="width: 120px;"></div>
         </div>
 
@@ -235,25 +135,8 @@
                 <tr>
                     <th>EMP Code</th>
                     <th>Name</th>
-                    <th>Mobile</th>
-                    <th>Gender</th>
-                    <th>Email</th>
-                    <th>DOB</th>
-                    <th>Address</th>
-                    <th>City</th>
-                    <th>State</th>
-                    <th>PIN</th>
-                    <th>Country</th>
-                    <th>Department</th>
                     <th>Manager</th>
-                    <th>Designation</th>
-                    <th>DOJ</th>
-                    <th>PAN</th>
-                    <th>Aadhaar</th>
-                    <th>Bank Name</th>
-                    <th>A/C No.</th>
-                    <th>IFSC</th>
-                    <th>Salary</th>
+                    <th>Status</th>
                     <th>Actions</th>
                 </tr>
                 </thead>
@@ -261,27 +144,13 @@
                 <tr th:each="emp : ${employees}">
                     <td th:text="${emp.empCode}"></td>
                     <td th:text="${emp.name}"></td>
-                    <td th:text="${emp.mobile}"></td>
-                    <td th:text="${emp.gender}"></td>
-                    <td th:text="${emp.email}"></td>
-                    <td th:text="${#temporals.format(emp.dateOfBirth, 'dd-MM-yyyy')}"></td>
-                    <td th:text="${emp.address}"></td>
-                    <td th:text="${emp.city}"></td>
-                    <td th:text="${emp.state}"></td>
-                    <td th:text="${emp.postalCode}"></td>
-                    <td th:text="${emp.country}"></td>
-                    <td th:text="${emp.department}"></td>
                     <td th:text="${emp.manager}"></td>
-                    <td th:text="${emp.designation}"></td>
-                    <td th:text="${#temporals.format(emp.dateOfJoining, 'dd-MM-yyyy')}"></td>
-                    <td th:text="${emp.panNumber}"></td>
-                    <td th:text="${emp.aadhaarNumber}"></td>
-                    <td th:text="${emp.bankName}"></td>
-                    <td th:text="${emp.bankAccountNumber}"></td>
-                    <td th:text="${emp.ifscCode}"></td>
-                    <td th:text="${emp.salary}"></td>
+                    <td th:text="${emp.status}"></td>
                     <td>
                         <a th:href="@{'/employees/edit/' + ${emp.empCode}}" class="btn btn-sm btn-info btn-edit" title="Edit">✏️ Edit</a>
+                        <!-- CM Approve/Reject -->
+                        <a href="javascript:void(0)" class="btn btn-sm btn-warning btn-edit"
+                           onclick="openCmPopup([[${emp.empCode}]])">CM</a>
                     </td>
                 </tr>
                 </tbody>
@@ -290,9 +159,45 @@
     </div>
 </div>
 
-<!-- JS -->
+<!-- CM Modal -->
+<div class="modal fade" id="cmPopup" tabindex="-1">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header py-2">
+                <h6 class="modal-title">Employee Action</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <p>Select an action:</p>
+                <button id="approveBtn" class="btn btn-success btn-sm w-100 mb-2">✔ Approve</button>
+                <button id="rejectBtn" class="btn btn-danger btn-sm w-100">❌ Reject</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+    let selectedEmpCode = null;
+
+    function openCmPopup(empCode) {
+        selectedEmpCode = empCode;
+        new bootstrap.Modal(document.getElementById('cmPopup')).show();
+    }
+
+    document.getElementById('approveBtn').onclick = () => takeEmployeeAction(selectedEmpCode, 'approve');
+    document.getElementById('rejectBtn').onclick = () => takeEmployeeAction(selectedEmpCode, 'reject');
+
+    function takeEmployeeAction(empCode, action) {
+        fetch('/api/employees/actions?empCode=' + empCode + '&action=' + action, { method: 'POST' })
+            .then(r => r.text())
+            .then(msg => {
+                alert(msg);
+                location.reload();
+            })
+            .catch(console.error);
+    }
+
     function downloadProfile(empCode) {
         const link = document.createElement('a');
         link.href = `/employees/${empCode}/profile`;
