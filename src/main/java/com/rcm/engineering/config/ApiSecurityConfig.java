@@ -13,12 +13,11 @@ public class ApiSecurityConfig {
     @Bean
     public SecurityFilterChain apiFilterChain(HttpSecurity http) throws Exception {
         http
-                .antMatcher("/api/**")
-                .antMatcher("/attendance/**")
+                //.antMatcher("/api/**")
+                //.antMatcher("/attendance/**")
                 .csrf().disable()
                 .authorizeRequests()
                 .anyRequest().permitAll();
-
         return http.build();
     }
 }

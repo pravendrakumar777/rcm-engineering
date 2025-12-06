@@ -1,31 +1,16 @@
-package com.rcm.engineering.domain;
+package com.rcm.engineering.domain.events;
 
 import com.rcm.engineering.domain.enumerations.EmployeeStatus;
-import org.springframework.format.annotation.DateTimeFormat;
-
-import javax.persistence.*;
-import java.io.Serializable;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Objects;
 
-@Entity
-@Table(name = "rcm_employee", uniqueConstraints = @UniqueConstraint(columnNames = "empCode"))
-public class Employee implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class EmployeeEvent {
+    private String empCode;
     private String name;
     private String mobile;
     private String gender;
     private String email;
     private String manager;
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateOfBirth;
-    @Column(nullable = false, unique = true)
-    private String empCode;
     private String address;
     private String city;
     private String state;
@@ -33,33 +18,48 @@ public class Employee implements Serializable {
     private String country;
     private String department;
     private String designation;
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateOfJoining;
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDate dateOfExit;
     private String panNumber;
     private String aadhaarNumber;
     private String bankName;
     private String bankAccountNumber;
     private String ifscCode;
     private Double salary;
-    @Column(nullable = true, updatable = false)
-    private LocalDateTime createdAt;
+    private EmployeeStatus status;
 
-    @Enumerated(EnumType.STRING)
-    private EmployeeStatus status = EmployeeStatus.PENDING;
+    public EmployeeEvent(){}
 
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
+    public EmployeeEvent(String empCode, String name, String mobile, String gender, String email, String manager, LocalDate dateOfBirth, String address, String city, String state, String postalCode, String country, String department, String designation, LocalDate dateOfJoining, String panNumber, String aadhaarNumber, String bankName, String bankAccountNumber, String ifscCode, Double salary, EmployeeStatus status) {
+        this.empCode = empCode;
+        this.name = name;
+        this.mobile = mobile;
+        this.gender = gender;
+        this.email = email;
+        this.manager = manager;
+        this.dateOfBirth = dateOfBirth;
+        this.address = address;
+        this.city = city;
+        this.state = state;
+        this.postalCode = postalCode;
+        this.country = country;
+        this.department = department;
+        this.designation = designation;
+        this.dateOfJoining = dateOfJoining;
+        this.panNumber = panNumber;
+        this.aadhaarNumber = aadhaarNumber;
+        this.bankName = bankName;
+        this.bankAccountNumber = bankAccountNumber;
+        this.ifscCode = ifscCode;
+        this.salary = salary;
+        this.status = status;
     }
 
-    public Long getId() {
-        return id;
+    public String getEmpCode() {
+        return empCode;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setEmpCode(String empCode) {
+        this.empCode = empCode;
     }
 
     public String getName() {
@@ -108,14 +108,6 @@ public class Employee implements Serializable {
 
     public void setDateOfBirth(LocalDate dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
-    }
-
-    public String getEmpCode() {
-        return empCode;
-    }
-
-    public void setEmpCode(String empCode) {
-        this.empCode = empCode;
     }
 
     public String getAddress() {
@@ -182,14 +174,6 @@ public class Employee implements Serializable {
         this.dateOfJoining = dateOfJoining;
     }
 
-    public LocalDate getDateOfExit() {
-        return dateOfExit;
-    }
-
-    public void setDateOfExit(LocalDate dateOfExit) {
-        this.dateOfExit = dateOfExit;
-    }
-
     public String getPanNumber() {
         return panNumber;
     }
@@ -238,14 +222,6 @@ public class Employee implements Serializable {
         this.salary = salary;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
     public EmployeeStatus getStatus() {
         return status;
     }
@@ -255,29 +231,15 @@ public class Employee implements Serializable {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Employee employee = (Employee) o;
-        return Objects.equals(id, employee.id) && Objects.equals(name, employee.name) && Objects.equals(mobile, employee.mobile) && Objects.equals(gender, employee.gender) && Objects.equals(email, employee.email) && Objects.equals(manager, employee.manager) && Objects.equals(dateOfBirth, employee.dateOfBirth) && Objects.equals(empCode, employee.empCode) && Objects.equals(address, employee.address) && Objects.equals(city, employee.city) && Objects.equals(state, employee.state) && Objects.equals(postalCode, employee.postalCode) && Objects.equals(country, employee.country) && Objects.equals(department, employee.department) && Objects.equals(designation, employee.designation) && Objects.equals(dateOfJoining, employee.dateOfJoining) && Objects.equals(dateOfExit, employee.dateOfExit) && Objects.equals(panNumber, employee.panNumber) && Objects.equals(aadhaarNumber, employee.aadhaarNumber) && Objects.equals(bankName, employee.bankName) && Objects.equals(bankAccountNumber, employee.bankAccountNumber) && Objects.equals(ifscCode, employee.ifscCode) && Objects.equals(salary, employee.salary) && Objects.equals(createdAt, employee.createdAt) && status == employee.status;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, mobile, gender, email, manager, dateOfBirth, empCode, address, city, state, postalCode, country, department, designation, dateOfJoining, dateOfExit, panNumber, aadhaarNumber, bankName, bankAccountNumber, ifscCode, salary, createdAt, status);
-    }
-
-    @Override
     public String toString() {
-        return "Employee{" +
-                "id=" + id +
+        return "EmployeeEvent{" +
+                "empCode='" + empCode + '\'' +
                 ", name='" + name + '\'' +
                 ", mobile='" + mobile + '\'' +
                 ", gender='" + gender + '\'' +
                 ", email='" + email + '\'' +
                 ", manager='" + manager + '\'' +
                 ", dateOfBirth=" + dateOfBirth +
-                ", empCode='" + empCode + '\'' +
                 ", address='" + address + '\'' +
                 ", city='" + city + '\'' +
                 ", state='" + state + '\'' +
@@ -286,14 +248,12 @@ public class Employee implements Serializable {
                 ", department='" + department + '\'' +
                 ", designation='" + designation + '\'' +
                 ", dateOfJoining=" + dateOfJoining +
-                ", dateOfExit=" + dateOfExit +
                 ", panNumber='" + panNumber + '\'' +
                 ", aadhaarNumber='" + aadhaarNumber + '\'' +
                 ", bankName='" + bankName + '\'' +
                 ", bankAccountNumber='" + bankAccountNumber + '\'' +
                 ", ifscCode='" + ifscCode + '\'' +
                 ", salary=" + salary +
-                ", createdAt=" + createdAt +
                 ", status=" + status +
                 '}';
     }

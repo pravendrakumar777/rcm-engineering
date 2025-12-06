@@ -6,7 +6,7 @@ import com.rcm.engineering.domain.Employee;
 import com.rcm.engineering.repository.EmployeeRepository;
 import com.rcm.engineering.resource.utils.FtlToPdfUtil;
 import com.rcm.engineering.service.AttendanceService;
-import com.rcm.engineering.service.EmployeeService;
+import com.rcm.engineering.service.impl.EmployeeServiceImpl;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -33,9 +33,9 @@ public class EmployeeController {
 
     private final EmployeeRepository employeeRepository;
     private final AttendanceService attendanceService;
-    private final EmployeeService employeeService;
+    private final EmployeeServiceImpl employeeService;
 
-    public EmployeeController(EmployeeRepository employeeRepository, AttendanceService attendanceService, EmployeeService employeeService) {
+    public EmployeeController(EmployeeRepository employeeRepository, AttendanceService attendanceService, EmployeeServiceImpl employeeService) {
         this.employeeRepository = employeeRepository;
         this.attendanceService = attendanceService;
         this.employeeService = employeeService;

@@ -92,7 +92,7 @@ td { text-align: center; }
 <!-- Notes -->
 <p class="section-title">Notes:</p>
 <div class="notes">
-    1. This challan is issued for Job Work purpose only.<br>
+    1. This challan is issued for job work purpose only.<br>
     2. The goods belong to ${challan.customerName!""}.<br>
     3. RCM ENGINEERING has carried out machining processes (Tapping, Turning, Learning, Drilling, Chamfering, etc.).<br>
     4. No transfer of ownership of goods is involved.
