@@ -87,11 +87,9 @@ public class EmployeeResource {
             case "approve":
                 newStatus = EmployeeStatus.ACTIVE;
                 break;
-
             case "reject":
                 newStatus = EmployeeStatus.REJECTED;
                 break;
-
             default:
                 return ResponseEntity.badRequest().body("Invalid action: use approve/reject");
         }
