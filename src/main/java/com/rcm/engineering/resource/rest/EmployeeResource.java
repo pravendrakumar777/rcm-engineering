@@ -78,22 +78,32 @@ public class EmployeeResource {
     }
 
     @PostMapping("/employees/actions")
-    public ResponseEntity<?> actionOnClick(@RequestParam String empCode,
-                                           @RequestParam String action) {
+    public ResponseEntity<String> actionOnClick(@RequestParam String empCode,
+                                                @RequestParam String action) {
         log.info("REST Request to actionOnClick: {}", empCode);
-        EmployeeStatus newStatus;
+        Employee emp = employeeRepository.findByEmpCode(empCode).orElse(null);
+        if (emp == null) {
+            return ResponseEntity.badRequest().body("Employee not found for EmpCode: " + empCode);
+        }
+        // Block if already ACTIVE or REJECTED
+        if (emp.getStatus() == EmployeeStatus.ACTIVE || emp.getStatus() == EmployeeStatus.CANCEL) {
+            return ResponseEntity.badRequest().body("Already taken the action on this EmpCode: " + empCode);
+        }
 
+        if (emp.getStatus() != EmployeeStatus.PENDING) {
+            return ResponseEntity.badRequest().body("Action not allowed. Current status: " + emp.getStatus());
+        }
+
+        // Decide new status based on action
         switch (action.toLowerCase()) {
             case "approve":
-                newStatus = EmployeeStatus.ACTIVE;
-                break;
+                employeeService.updateStatus(empCode, EmployeeStatus.ACTIVE);
+                return ResponseEntity.ok("Employee status changed to ACTIVE");
             case "reject":
-                newStatus = EmployeeStatus.REJECTED;
-                break;
+                employeeService.updateStatus(empCode, EmployeeStatus.CANCEL);
+                return ResponseEntity.ok("Employee status changed to CANCEL");
             default:
                 return ResponseEntity.badRequest().body("Invalid action: use approve/reject");
         }
-        employeeService.updateStatus(empCode, newStatus);
-        return ResponseEntity.ok("Employee status changed to " + newStatus);
     }
 }

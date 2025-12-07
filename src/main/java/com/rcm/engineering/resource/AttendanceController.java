@@ -2,6 +2,7 @@ package com.rcm.engineering.resource;
 
 import com.rcm.engineering.domain.Attendance;
 import com.rcm.engineering.service.AttendanceService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -15,6 +16,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -34,10 +36,9 @@ public class AttendanceController {
         return "attendance";
     }
 
-
     @PostMapping("/api/mark")
     @ResponseBody
-    public ResponseEntity<Attendance> markAttendance(
+    public ResponseEntity<?> markAttendance(
             @RequestParam String empCode,
             @RequestParam String date,
             @RequestParam Attendance.Status status,
@@ -52,8 +53,16 @@ public class AttendanceController {
         LocalDateTime checkIn = parseDateTime(checkInDateTime);
         LocalDateTime checkOut = parseDateTime(checkOutDateTime);
 
-        Attendance updated = attendanceService.markAttendance(empCode, parsedDate, status, checkIn, checkOut);
-        return ResponseEntity.ok(updated);
+        try {
+            Attendance updated = attendanceService.markAttendance(empCode, parsedDate, status, checkIn, checkOut);
+            return ResponseEntity.ok(updated);
+        } catch (IllegalStateException ex) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Collections.singletonMap("error", ex.getMessage()));
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest()
+                    .body(Collections.singletonMap("error", ex.getMessage()));
+        }
     }
 
     private LocalDateTime parseDateTime(String input) {

@@ -88,7 +88,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         if (employee.getStatus() == EmployeeStatus.APPROVED) {
             employee.setStatus(EmployeeStatus.ACTIVE);
         } else {
-            employee.setStatus(EmployeeStatus.REJECTED);
+            employee.setStatus(EmployeeStatus.CANCEL);
         }
         employeeRepository.save(employee);
         log.info("Employee status updated to {}", employee.getStatus());
@@ -98,8 +98,10 @@ public class EmployeeServiceImpl implements EmployeeService {
     public void updateStatus(String empCode, EmployeeStatus newStatus) {
         Employee emp = employeeRepository.findByEmpCode(empCode).orElse(null);
         if (emp != null) {
-            emp.setStatus(newStatus);
-            employeeRepository.save(emp);
+            if(emp.getStatus() == EmployeeStatus.PENDING) {
+                emp.setStatus(newStatus);
+                employeeRepository.save(emp);
+            }
         }
     }
 }

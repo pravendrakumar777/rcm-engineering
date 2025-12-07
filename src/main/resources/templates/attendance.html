@@ -176,14 +176,19 @@
     <div th:fragment="sidebar" class="sidebar">
         <img src="/images/logo.png" alt="Logo">
         <ul class="nav-links">
-            <li><a th:href="@{/attendance/dashboard}" class="active"><i class="bi bi-speedometer2"></i> <span>Dashboard</span></a></li>
+            <li><a th:href="@{/attendance/dashboard}" class="active"><i class="bi bi-speedometer2"></i>
+                <span>Dashboard</span></a></li>
             <li><a th:href="@{/employees}"><i class="bi bi-people"></i> <span>Employees</span></a></li>
             <li><a th:href="@{/attendance}"><i class="bi bi-calendar-check"></i> <span>Attendance</span></a></li>
-            <li><a class="dropdown-toggle text-white" data-bs-toggle="collapse" href="#reportsSubmenu" role="button" aria-expanded="false" aria-controls="reportsSubmenu"><i class="bi bi-bar-chart-line"></i> <span>Reports</span></a>
+            <li><a class="dropdown-toggle text-white" data-bs-toggle="collapse" href="#reportsSubmenu" role="button"
+                   aria-expanded="false" aria-controls="reportsSubmenu"><i class="bi bi-bar-chart-line"></i> <span>Reports</span></a>
                 <ul class="collapse nav flex-column ms-3" id="reportsSubmenu">
-                    <li><a th:href="@{/employees/calculate-salary}" class="text-white d-flex align-items-center py-2"><i class="bi bi-currency-rupee me-2"></i> <span>Salary</span></a></li>
-                    <li><a th:href="@{/challans}" class="text-white d-flex align-items-center py-2"><i class="bi bi-clipboard-data me-2"></i> <span>Challans</span></a></li>
-                    <li><a th:href="@{/employees/calculate-salary}" class="text-white d-flex align-items-center py-2"><i class="bi bi-person-lines-fill me-2"></i> <span>Profiles</span></a></li>
+                    <li><a th:href="@{/employees/calculate-salary}" class="text-white d-flex align-items-center py-2"><i
+                            class="bi bi-currency-rupee me-2"></i> <span>Salary</span></a></li>
+                    <li><a th:href="@{/challans}" class="text-white d-flex align-items-center py-2"><i
+                            class="bi bi-clipboard-data me-2"></i> <span>Challans</span></a></li>
+                    <li><a th:href="@{/employees/calculate-salary}" class="text-white d-flex align-items-center py-2"><i
+                            class="bi bi-person-lines-fill me-2"></i> <span>Profiles</span></a></li>
                 </ul>
             </li>
             <li><a th:href="@{/accounts}"><i class="bi bi-person-badge"></i> <span>Accounts</span></a></li>
@@ -240,7 +245,8 @@
     async function loadEmployees() {
         const res = await fetch('/employees/api');
         const employees = await res.json();
-        employeeSelect.innerHTML = employees.map(e => `<option value="${e.empCode}">${e.name}</option>`).join('');
+        const activeEmployees = employees.filter(e => e.status === "ACTIVE");
+        employeeSelect.innerHTML = activeEmployees.map(e => `<option value="${e.empCode}">${e.name}</option>`).join('');
         renderCalendar();
     }
 
@@ -345,7 +351,13 @@
         else { alert("Already checked in and out for today."); return; }
 
         const res = await fetch(`/attendance/api/mark?${params.toString()}`, { method: "POST" });
+        if (!res.ok) {
+            const err = await res.json();
+            alert(err.error);
+            return;
+        }
         const data = await res.json();
+        console.log("Attendance marked:", data);
 
         const checkInTime = data.checkInDateTime ? formatTimeWithMeridiem(data.checkInDateTime) : "";
         const checkOutTime = data.checkOutDateTime ? formatTimeWithMeridiem(data.checkOutDateTime) : "";
