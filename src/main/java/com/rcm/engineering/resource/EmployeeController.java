@@ -3,6 +3,7 @@ package com.rcm.engineering.resource;
 import com.itextpdf.io.exceptions.IOException;
 import com.rcm.engineering.domain.Attendance;
 import com.rcm.engineering.domain.Employee;
+import com.rcm.engineering.domain.enumerations.EmployeeStatus;
 import com.rcm.engineering.repository.EmployeeRepository;
 import com.rcm.engineering.resource.utils.FtlToPdfUtil;
 import com.rcm.engineering.service.AttendanceService;
@@ -41,9 +42,28 @@ public class EmployeeController {
         this.employeeService = employeeService;
     }
 
+    @GetMapping("/pre-onboarding")
+    public String preOnboardingList(Model model) {
+        //model.addAttribute("employees", employeeRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt")));
+        List<Employee> onboardingEmployees = employeeRepository
+                .findAll(Sort.by(Sort.Direction.DESC, "createdAt"))
+                .stream()
+                .filter(emp -> emp.getStatus() == EmployeeStatus.PENDING || emp.getStatus() == EmployeeStatus.CANCEL)
+                .collect(Collectors.toList());
+
+        model.addAttribute("employees", onboardingEmployees);
+        model.addAttribute("onboardingPage", "employees");
+        return "pre-onboarding-employee-list";
+    }
+
     @GetMapping
     public String listEmployees(Model model) {
-        model.addAttribute("employees", employeeRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt")));
+        List<Employee> activeEmployees = employeeRepository
+                .findAll(Sort.by(Sort.Direction.DESC, "createdAt"))
+                .stream()
+                .filter(emp -> emp.getStatus() == EmployeeStatus.ACTIVE)
+                .collect(Collectors.toList());
+        model.addAttribute("employees", activeEmployees);
         model.addAttribute("activePage", "employees");
         return "employee-list";
     }

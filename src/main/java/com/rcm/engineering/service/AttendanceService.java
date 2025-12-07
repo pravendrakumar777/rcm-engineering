@@ -2,6 +2,7 @@ package com.rcm.engineering.service;
 
 import com.rcm.engineering.domain.Attendance;
 import com.rcm.engineering.domain.Employee;
+import com.rcm.engineering.domain.enumerations.EmployeeStatus;
 import com.rcm.engineering.repository.AttendanceRepository;
 import com.rcm.engineering.repository.EmployeeRepository;
 import org.springframework.stereotype.Service;
@@ -30,12 +31,15 @@ public class AttendanceService {
     public Attendance markAttendance(String empCode, LocalDate date, Attendance.Status status,
                                      LocalDateTime checkInDateTime, LocalDateTime checkOutDateTime) {
 
-        //Employee emp = employeeRepository.findByEmpCode(empCode).orElseThrow(() -> new RuntimeException("Employee not found"));
         Optional<Employee> empOpt = employeeRepository.findByEmpCode(empCode);
         if (!empOpt.isPresent()) {
             throw new IllegalArgumentException("Employee with empCode " + empCode + " not found.");
         }
         Employee emp = empOpt.get();
+        // Block attendance if employee status is PENDING or CANCEL
+        if (emp.getStatus() == EmployeeStatus.PENDING || emp.getStatus() == EmployeeStatus.CANCEL) {
+            throw new IllegalStateException("Attendance cannot be marked for employee with status " + emp.getStatus());
+        }
         Optional<Attendance> existingOpt = attendanceRepository.findByEmployeeAndDate(emp, date);
         Attendance attendance;
 
@@ -53,7 +57,6 @@ public class AttendanceService {
                 attendance.setCheckOutDateTime(checkOutDateTime);
             }
         }
-
         return attendanceRepository.save(attendance);
     }
 

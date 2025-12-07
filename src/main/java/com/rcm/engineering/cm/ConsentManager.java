@@ -40,7 +40,7 @@ public class ConsentManager {
             EmployeeEventDTO dto = mapper.readValue(payload, EmployeeEventDTO.class);
             // CM internal approval decision
             boolean approve = true;
-            EmployeeStatus newStatus = approve ? EmployeeStatus.APPROVED : EmployeeStatus.REJECTED;
+            EmployeeStatus newStatus = approve ? EmployeeStatus.APPROVED : EmployeeStatus.CANCEL;
             Optional<Employee> existingOpt = employeeRepository.findByEmpCode(dto.getEmpCode());
 
             if (existingOpt.isPresent()) {
