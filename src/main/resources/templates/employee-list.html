@@ -134,7 +134,14 @@
         <img src="/images/logo.png" alt="Logo">
         <ul class="nav-links">
             <li><a th:href="@{/attendance/dashboard}" class="active"><i class="bi bi-speedometer2"></i> <span>Dashboard</span></a></li>
-            <li><a th:href="@{/employees}"><i class="bi bi-people"></i> <span>Employees</span></a></li>
+<!--            <li><a th:href="@{/employees}"><i class="bi bi-people"></i> <span>Employees</span></a></li>-->
+            <li><a class="dropdown-toggle text-white" data-bs-toggle="collapse" href="#employeesSubmenu"><i class="bi bi-people"></i> <span>Employees</span></a>
+                <ul class="collapse nav flex-column ms-2" id="employeesSubmenu">
+                    <li><a th:href="@{/employees/pre-onboarding}" class="bi text-white align-items-center py-2"><i class="bi bi-pre-onboarding-list me-2"></i><span>Pre-Onboarding</span></a></li>
+                    <li><a th:href="@{/employees}" class="text-white d-flex align-items-center py-2"><i class="bi bi-onboarded-employee-list me-2"></i><span>Post‑Onboarding</span></a></li>
+                </ul>
+            </li>
+
             <li><a th:href="@{/attendance}"><i class="bi bi-calendar-check"></i> <span>Attendance</span></a></li>
             <li><a class="dropdown-toggle text-white" data-bs-toggle="collapse" href="#reportsSubmenu"><i class="bi bi-bar-chart-line"></i> <span>Reports</span></a>
                 <ul class="collapse nav flex-column ms-3" id="reportsSubmenu">
@@ -165,9 +172,8 @@
     <div class="content-area container-fluid">
         <div class="header-row">
             <div class="action-buttons">
-                <a href="/employees/form" class="btn btn-success btn-new">➕ Pre Onboarding</a>
             </div>
-            <h3 class="header-title">Pre Onboarded Employees</h3>
+            <h3 class="header-title">Post Onboarding</h3>
             <div style="width: 120px;"></div>
         </div>
 
@@ -200,7 +206,7 @@
                     <td>
                         <a th:href="@{'/employees/edit/' + ${emp.empCode}}" class="btn btn-sm btn-info btn-edit" title="Edit">✏️ Edit</a>
                         <!-- CM Approve/Reject -->
-                        <a href="javascript:void(0)" class="btn btn-sm btn-warning btn-edit cm-btn" th:attr="data-empcode=${emp.empCode}">CM</a>
+<!--                        <a href="javascript:void(0)" class="btn btn-sm btn-warning btn-edit cm-btn" th:attr="data-empcode=${emp.empCode}">CM</a>-->
                     </td>
                 </tr>
                 </tbody>

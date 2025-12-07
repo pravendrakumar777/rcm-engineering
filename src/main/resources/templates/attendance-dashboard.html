@@ -189,7 +189,12 @@
     <img src="/images/logo.png" alt="RCM Logo">
     <ul class="nav-links">
         <li><a th:href="@{/attendance/dashboard}" class="active"><i class="bi bi-speedometer2"></i> <span>Dashboard</span></a></li>
-        <li><a th:href="@{/employees}"><i class="bi bi-people"></i> <span>Employees</span></a></li>
+        <li><a class="dropdown-toggle text-white" data-bs-toggle="collapse" href="#employeesSubmenu"><i class="bi bi-people"></i> <span>Employees</span></a>
+            <ul class="collapse nav flex-column ms-2" id="employeesSubmenu">
+                <li><a th:href="@{/employees/pre-onboarding}" class="bi text-white align-items-center py-2"><i class="bi bi-pre-onboarding-list me-2"></i><span>Pre-Onboarding</span></a></li>
+                <li><a th:href="@{/employees}" class="text-white d-flex align-items-center py-2"><i class="bi bi-onboarded-employee-list me-2"></i><span>Post‑Onboarding</span></a></li>
+            </ul>
+        </li>
         <li><a th:href="@{/attendance}"><i class="bi bi-calendar-check"></i> <span>Attendance</span></a></li>
         <li><a class="dropdown-toggle text-white" data-bs-toggle="collapse" href="#reportsSubmenu" role="button" aria-expanded="false" aria-controls="reportsSubmenu"><i class="bi bi-bar-chart-line"></i> <span>Reports</span></a>
             <ul class="collapse nav flex-column ms-3" id="reportsSubmenu">
