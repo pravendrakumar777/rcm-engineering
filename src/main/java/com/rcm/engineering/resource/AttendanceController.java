@@ -1,6 +1,9 @@
 package com.rcm.engineering.resource;
 
 import com.rcm.engineering.domain.Attendance;
+import com.rcm.engineering.domain.Employee;
+import com.rcm.engineering.domain.enumerations.EmployeeStatus;
+import com.rcm.engineering.repository.EmployeeRepository;
 import com.rcm.engineering.service.AttendanceService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,9 +29,11 @@ import java.util.stream.Collectors;
 public class AttendanceController {
 
     private final AttendanceService attendanceService;
+    private final EmployeeRepository employeeRepository;
 
-    public AttendanceController(AttendanceService attendanceService) {
+    public AttendanceController(AttendanceService attendanceService, EmployeeRepository employeeRepository) {
         this.attendanceService = attendanceService;
+        this.employeeRepository = employeeRepository;
     }
 
     @GetMapping
@@ -177,6 +182,11 @@ public class AttendanceController {
         long presentCount = presentEmployees.size();
         long absentCount = absentEmployees.size();
 
+        // Fetch employees by EmployeeStatus
+        List<Employee> activeEmployees = employeeRepository.findByStatus(EmployeeStatus.ACTIVE);
+        List<Employee> pendingEmployees = employeeRepository.findByStatus(EmployeeStatus.PENDING);
+        List<Employee> cancelEmployees = employeeRepository.findByStatus(EmployeeStatus.CANCEL);
+
         model.addAttribute("today", today);
         model.addAttribute("totalEmployees", totalEmployees);
         model.addAttribute("presentCount", presentCount);
@@ -185,6 +195,10 @@ public class AttendanceController {
         model.addAttribute("presentEmployees", presentEmployees);
         model.addAttribute("absentEmployees", absentEmployees);
 
+        // Add employee status group
+        model.addAttribute("activeEmployees", activeEmployees);
+        model.addAttribute("pendingEmployees", pendingEmployees);
+        model.addAttribute("cancelEmployees", cancelEmployees);
         return "attendance-dashboard";
     }
 }

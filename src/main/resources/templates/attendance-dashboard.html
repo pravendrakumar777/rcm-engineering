@@ -264,6 +264,16 @@
         </div>
     </div>
 
+
+<!--    ===========================================================================================================-->
+
+    <!-- Employee Status Distribution -->
+    <div class="chart-box mt-4">
+        <h6 class="text-center fw-semibold">Employee Status Distribution</h6>
+        <canvas id="employeeStatusChart"></canvas>
+    </div>
+    <!--    ===========================================================================================================-->
+
     <!-- No Attendance Found -->
     <div th:if="${#lists.isEmpty(allAttendance)}"
          class="alert alert-warning mt-4 text-center fw-semibold">
@@ -359,6 +369,49 @@
         }
     });
     /*]]>*/
+
+        // Employee Status Distribution Chart
+        const statusLabels = ['Active', 'Pending', 'Cancelled'];
+        const statusCounts = [16, 7, 10]; // Replace with Thymeleaf variables if dynamic
+
+        const ctxStatus = document.getElementById('employeeStatusChart').getContext('2d');
+        new Chart(ctxStatus, {
+            type: 'bar',
+            data: {
+                labels: statusLabels,
+                datasets: [{
+                    label: 'Employee Count',
+                    data: statusCounts,
+                    backgroundColor: ['#28a745', '#ffc107', '#dc3545'], // green, yellow, red
+                    borderRadius: 6,
+                    hoverOffset: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    title: {
+                        display: true,
+                        text: 'Employee Status Distribution'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.label}: ${context.parsed.y} employees`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Number of Employees' },
+                        ticks: { stepSize: 1 }
+                    }
+                }
+            }
+        });
 </script>
 </body>
 </html>

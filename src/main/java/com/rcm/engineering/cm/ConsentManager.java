@@ -3,7 +3,6 @@ package com.rcm.engineering.cm;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.rcm.engineering.config.BindingChannel;
 import com.rcm.engineering.domain.Employee;
 import com.rcm.engineering.domain.dto.EmployeeEventDTO;
 import com.rcm.engineering.domain.enumerations.EmployeeStatus;
@@ -11,9 +10,7 @@ import com.rcm.engineering.repository.EmployeeRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
-import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -28,8 +25,8 @@ public class ConsentManager {
         this.employeeRepository = employeeRepository;
     }
 
-    @ServiceActivator(inputChannel = BindingChannel.PRE_ONBOARDING_REQUEST_INPUT)
-    @Transactional
+    //@ServiceActivator(inputChannel = BindingChannel.PRE_ONBOARDING_REQUEST_INPUT)
+    //@Transactional
     public void preOnboardingRequestSubscriber(byte[] payload) {
         try {
             log.info("📥 CM RECEIVED PRE-ONBOARDING REQUEST RAW :: {}", new String(payload));

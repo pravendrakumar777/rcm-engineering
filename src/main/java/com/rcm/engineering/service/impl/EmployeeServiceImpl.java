@@ -66,12 +66,12 @@ public class EmployeeServiceImpl implements EmployeeService {
                 saveEmp.getStatus()
         );
         try {
-            MessageChannel preOnboardingMessageChannel = bindingChannel.preOnboardingRequestOutput();
-            boolean sent = preOnboardingMessageChannel.send(MessageBuilder.withPayload(event).build());
-            if (!sent) {
-                throw new RuntimeException("KAFKA PUBLISH FAILED FOR PRE-ONBOARDING: " + event.getEmpCode());
-            }
-            log.info("PRE-ONBOARDING EVENT PUBLISHED SUCCESSFULLY: {}", event);
+            //MessageChannel preOnboardingMessageChannel = bindingChannel.preOnboardingRequestOutput();
+            //boolean sent = preOnboardingMessageChannel.send(MessageBuilder.withPayload(event).build());
+//            if (!sent) {
+//                throw new RuntimeException("KAFKA PUBLISH FAILED FOR PRE-ONBOARDING: " + event.getEmpCode());
+//            }
+            //log.info("PRE-ONBOARDING EVENT PUBLISHED SUCCESSFULLY: {}", event);
         } catch (Exception ex) {
             log.error("Error publishing pre-onboarding event to Kafka: {}", ex.getMessage(), ex);
             throw ex;
