@@ -1,5 +1,6 @@
 package com.rcm.engineering.resource.rest;
 
+import com.rcm.engineering.constants.ApplicationConstants;
 import com.rcm.engineering.domain.Employee;
 import com.rcm.engineering.domain.enumerations.EmployeeStatus;
 import com.rcm.engineering.repository.EmployeeRepository;
@@ -39,7 +40,7 @@ public class EmployeeResource {
     @GetMapping("/employees/list")
     public ResponseEntity<List<Employee>> getAll() {
         log.info("REST Request to getAll: {}, {}");
-        List<Employee> result = employeeRepository.findAll();
+        List<Employee> result = employeeService.getAllActive();
         return ResponseEntity.ok().body(result);
     }
 
@@ -83,27 +84,37 @@ public class EmployeeResource {
         log.info("REST Request to actionOnClick: {}", empCode);
         Employee emp = employeeRepository.findByEmpCode(empCode).orElse(null);
         if (emp == null) {
-            return ResponseEntity.badRequest().body("Employee not found for EmpCode: " + empCode);
+            return ResponseEntity.badRequest().body(ApplicationConstants.EMPLOYEE_NOT_FOUND);
         }
+
+        if (emp.getCreatedAt() != null) {
+            LocalDateTime cutoff = emp.getCreatedAt().plusDays(5);
+            if (LocalDateTime.now().isAfter(cutoff)) {
+                emp.setStatus(EmployeeStatus.CANCEL);
+                employeeRepository.save(emp);
+                return ResponseEntity.badRequest()
+                        .body(ApplicationConstants.PRE_ONBOARDING_EXPIRED);
+            }
+        }
+
         // Block if already ACTIVE or REJECTED
         if (emp.getStatus() == EmployeeStatus.ACTIVE || emp.getStatus() == EmployeeStatus.CANCEL) {
-            return ResponseEntity.badRequest().body("Already taken the action on this EmpCode: " + empCode);
+            return ResponseEntity.badRequest().body(ApplicationConstants.ACTION_ALREADY_TAKEN);
         }
 
         if (emp.getStatus() != EmployeeStatus.PENDING) {
-            return ResponseEntity.badRequest().body("Action not allowed. Current status: " + emp.getStatus());
+            return ResponseEntity.badRequest().body(ApplicationConstants.ACTION_NOT_ALLOWED + emp.getStatus());
         }
 
-        // Decide new status based on action
         switch (action.toLowerCase()) {
             case "approve":
                 employeeService.updateStatus(empCode, EmployeeStatus.ACTIVE);
-                return ResponseEntity.ok("Employee status changed to ACTIVE");
+                return ResponseEntity.ok(ApplicationConstants.STATUS_ACTIVE);
             case "reject":
                 employeeService.updateStatus(empCode, EmployeeStatus.CANCEL);
-                return ResponseEntity.ok("Employee status changed to CANCEL");
+                return ResponseEntity.ok(ApplicationConstants.STATUS_CANCELLED);
             default:
-                return ResponseEntity.badRequest().body("Invalid action: use approve/reject");
+                return ResponseEntity.badRequest().body(ApplicationConstants.INVALID_ACTION);
         }
     }
 }

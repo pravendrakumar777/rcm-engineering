@@ -88,4 +88,8 @@ public class AttendanceService {
     public List<Attendance> getAllAttendance(LocalDate startDate, LocalDate endDate) {
         return attendanceRepository.findByDateBetween(startDate, endDate);
     }
+
+    public List<Attendance> getAttendanceByEmpCode(String empCode) {
+        return attendanceRepository.findByEmployee_EmpCode(empCode);
+    }
 }

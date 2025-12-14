@@ -44,7 +44,6 @@ public class EmployeeController {
 
     @GetMapping("/pre-onboarding")
     public String preOnboardingList(Model model) {
-        //model.addAttribute("employees", employeeRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt")));
         List<Employee> onboardingEmployees = employeeRepository
                 .findAll(Sort.by(Sort.Direction.DESC, "createdAt"))
                 .stream()
@@ -57,7 +56,7 @@ public class EmployeeController {
     }
 
     @GetMapping
-    public String listEmployees(Model model) {
+    public String postOnboardingList(Model model) {
         List<Employee> activeEmployees = employeeRepository
                 .findAll(Sort.by(Sort.Direction.DESC, "createdAt"))
                 .stream()

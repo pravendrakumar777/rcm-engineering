@@ -124,6 +124,14 @@
           border: 2px solid black !important;
         }
 
+        .btn-view {
+            min-width: 80px;
+            text-align: center;
+        }
+        .modal-body .row {
+            padding: 6px 0;
+            border-bottom: 1px solid #eee;
+        }
     </style>
 </head>
 <body>
@@ -205,8 +213,25 @@
                     </td>
                     <td>
                         <a th:href="@{'/employees/edit/' + ${emp.empCode}}" class="btn btn-sm btn-info btn-edit" title="Edit">✏️ Edit</a>
-                        <!-- CM Approve/Reject -->
-<!--                        <a href="javascript:void(0)" class="btn btn-sm btn-warning btn-edit cm-btn" th:attr="data-empcode=${emp.empCode}">CM</a>-->
+                        <button type="button" class="btn btn-sm btn-primary btn-view" data-bs-toggle="modal" data-bs-target="#employeeDetailModal"
+                                th:attr="data-empcode=${emp.empCode},
+                                data-name=${emp.name},
+                                data-gender=${emp.gender},
+                                data-manager=${emp.manager},
+                                data-status=${emp.status},
+                                data-email=${emp.email},
+                                data-mobile=${emp.mobile},
+                                data-address=${emp.address},
+                                data-city=${emp.city},
+                                data-pan=${emp.panNumber},
+                                data-aad=${emp.aadhaarNumber},
+                                data-bank=${emp.bankName},
+                                data-acc=${emp.bankAccountNumber},
+                                data-ifsc=${emp.ifscCode},
+                                data-salary=${emp.salary},
+                                data-dob=${emp.dateOfBirth},
+                                data-doj=${emp.dateOfJoining},
+                        ">👁️ View</button>
                     </td>
                 </tr>
                 </tbody>
@@ -214,66 +239,113 @@
         </div>
     </div>
 </div>
-
-<!-- CM Modal -->
-<div class="modal fade" id="cmPopup" tabindex="-1" aria-labelledby="cmPopupLabel" aria-hidden="true">
-    <div class="modal-dialog modal-sm modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header py-2">
-                <h6 class="modal-title" id="cmPopupLabel">Actions</h6>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<!-- Employee Detail Modal -->
+<div class="modal fade" id="employeeDetailModal" tabindex="-1" aria-labelledby="employeeDetailLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content shadow-lg rounded-4 border-0">
+            <div class="modal-header text-white" style="background: linear-gradient(90deg,#007bff,#00c6ff);">
+                <h5 class="modal-title fw-semibold" id="employeeDetailLabel">
+                    <i class="bi bi-person-circle me-2"></i>Employee Information
+                </h5>
             </div>
-            <div class="modal-body text-center">
-                <p id="selectedEmpText" class="mb-3 text-muted"></p>
-                <button id="approveBtn" class="btn btn-success btn-sm w-100 mb-2">✔ Approve</button>
-                <button id="rejectBtn" class="btn btn-danger btn-sm w-100">❌ Cancel</button>
+            <div class="modal-body p-4 text-dark" style="background-color:#f9fafc;">
+                <div class="container-fluid">
+                    <!-- Top Row -->
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100 shadow-sm border-0">
+                                <div class="card-header bg-primary text-white fw-bold">Personal Details</div>
+                                <div class="card-body text-dark">
+                                    <p><strong>EMP Code:</strong> <span id="modalEmpCode"></span></p>
+                                    <p><strong>Name:</strong> <span id="modalEmpName"></span></p>
+                                    <p><strong>Gender:</strong> <span id="modalEmpGender"></span></p>
+                                    <p><strong>DOB:</strong> <span id="modalEmpDOB"></span></p>
+                                    <p><strong>Address:</strong> <span id="modalEmpAddress"></span></p>
+                                    <p><strong>City:</strong> <span id="modalEmpCity"></span></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100 shadow-sm border-0">
+                                <div class="card-header bg-success text-white fw-bold">Job Details</div>
+                                <div class="card-body text-dark">
+                                    <p><strong>Manager:</strong> <span id="modalEmpManager"></span></p>
+                                    <p><strong>Status:</strong> <span id="modalEmpStatus"></span></p>
+                                    <p><strong>DOJ:</strong> <span id="modalEmpDOJ"></span></p>
+                                    <p><strong>Salary:</strong> <span id="modalEmpSalary"></span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Row -->
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100 shadow-sm border-0">
+                                <div class="card-header bg-info text-white fw-bold">Contact Details</div>
+                                <div class="card-body text-dark">
+                                    <p><strong>Email:</strong> <span id="modalEmpEmail"></span></p>
+                                    <p><strong>Mobile:</strong> <span id="modalEmpMobile"></span></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100 shadow-sm border-0">
+                                <div class="card-header bg-warning text-dark fw-bold">Identity & Bank Details</div>
+                                <div class="card-body text-dark">
+                                    <p><strong>PAN:</strong> <span id="modalEmpPan"></span></p>
+                                    <p><strong>Aadhaar:</strong> <span id="modalEmpAadhaar"></span></p>
+                                    <p><strong>Bank Name:</strong> <span id="modalEmpBank"></span></p>
+                                    <p><strong>Account:</strong> <span id="modalEmpAccount"></span></p>
+                                    <p><strong>IFSC:</strong> <span id="modalEmpIfsc"></span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="modal-footer bg-light rounded-bottom-4">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle me-1"></i>Cancel</button>
             </div>
         </div>
     </div>
 </div>
-<!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    let selectedEmpCode = null;
 
-    function openCmPopup(empCode) {
-        selectedEmpCode = empCode;
-        document.getElementById('selectedEmpText').textContent = '' + empCode;
-        const cmModal = new bootstrap.Modal(document.getElementById('cmPopup'));
-        cmModal.show();
-    }
-
-    // Attach click listeners after DOM is ready
     document.addEventListener('DOMContentLoaded', () => {
-        document.querySelectorAll('.cm-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const empCode = this.getAttribute('data-empcode');
-                openCmPopup(empCode);
-            });
+        const modal = document.getElementById('employeeDetailModal');
+        modal.addEventListener('show.bs.modal', event => {
+            const button = event.relatedTarget;
+
+            function formatDate(dateStr) {
+              const [year, month, day] = dateStr.split("-");
+              return `${day}-${month}-${year}`;
+            }
+            document.getElementById('modalEmpCode').textContent = button.getAttribute('data-empcode');
+            document.getElementById('modalEmpName').textContent = button.getAttribute('data-name');
+            document.getElementById('modalEmpGender').textContent = button.getAttribute('data-gender');
+            document.getElementById('modalEmpManager').textContent = button.getAttribute('data-manager');
+            document.getElementById('modalEmpStatus').textContent = button.getAttribute('data-status');
+            document.getElementById('modalEmpEmail').textContent = button.getAttribute('data-email');
+            document.getElementById('modalEmpMobile').textContent = button.getAttribute('data-mobile');
+            document.getElementById("modalEmpDOB").textContent = formatDate(button.getAttribute("data-dob"));
+            document.getElementById("modalEmpDOJ").textContent = formatDate(button.getAttribute("data-doj"));
+            document.getElementById('modalEmpAddress').textContent = button.getAttribute('data-address');
+            document.getElementById('modalEmpCity').textContent = button.getAttribute('data-city');
+            document.getElementById('modalEmpPan').textContent = button.getAttribute('data-pan');
+            document.getElementById('modalEmpAadhaar').textContent = button.getAttribute('data-aad');
+            document.getElementById('modalEmpBank').textContent = button.getAttribute('data-bank');
+            document.getElementById('modalEmpAccount').textContent = button.getAttribute('data-acc');
+            document.getElementById('modalEmpIfsc').textContent = button.getAttribute('data-ifsc');
+            document.getElementById('modalEmpSalary').textContent = button.getAttribute('data-salary');
         });
     });
-
-    document.getElementById('approveBtn').onclick = () => {
-        if (selectedEmpCode) takeEmployeeAction(selectedEmpCode, 'approve');
-    };
-
-    document.getElementById('rejectBtn').onclick = () => {
-        if (selectedEmpCode) takeEmployeeAction(selectedEmpCode, 'reject');
-    };
-
-
-    function takeEmployeeAction(empCode, action) {
-        fetch('/api/employees/actions?empCode=' + empCode + '&action=' + action, { method: 'POST' })
-            .then(r => r.text())
-            .then(msg => {
-                alert(msg);
-                location.reload();
-            })
-            .catch(err => {
-                console.error("Action failed", err);
-                alert("Something went wrong. Please try again.");
-            });
-    }
 
     function downloadProfile(empCode) {
         const link = document.createElement('a');
