@@ -62,7 +62,6 @@ object-fit: contain;
                     KH NO: 513/1, 513/2,<br/>
                     VILL BASAI, NEAR BASAI FLYOVER - GURUGRAM HR. 122001<br/>
                     Mob: 9639200584, 7819929402 | Email: cs29680881@gmail.com<br/>
-                    GSTIN: 06ABCDE1234F1Z5 | CIN: U12345UP2020PTC123456
                 </p>
             </td>
         </tr>

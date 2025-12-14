@@ -18,4 +18,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 
     List<Employee> findByStatus(EmployeeStatus status);
 
+    @Query("SELECT e FROM Employee e WHERE UPPER(e.status) = 'ACTIVE'")
+    List<Employee> findAllActiveEmployees();
 }

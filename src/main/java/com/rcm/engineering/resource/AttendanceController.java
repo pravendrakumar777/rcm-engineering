@@ -153,7 +153,6 @@ public class AttendanceController {
         return "attendance-report";
     }
 
-    // dashboard
     @GetMapping("/dashboard")
     public String attendanceDashboard(Model model) {
 
@@ -169,7 +168,6 @@ public class AttendanceController {
         LocalDate today = LocalDate.now();
         List<Attendance> allAttendance = attendanceService.getAllAttendance(today, today);
 
-        // Separate Present & Absent employees
         List<Attendance> presentEmployees = allAttendance.stream()
                 .filter(att -> Attendance.Status.PRESENT.equals(att.getStatus()))
                 .collect(Collectors.toList());
@@ -182,7 +180,6 @@ public class AttendanceController {
         long presentCount = presentEmployees.size();
         long absentCount = absentEmployees.size();
 
-        // Fetch employees by EmployeeStatus
         List<Employee> activeEmployees = employeeRepository.findByStatus(EmployeeStatus.ACTIVE);
         List<Employee> pendingEmployees = employeeRepository.findByStatus(EmployeeStatus.PENDING);
         List<Employee> cancelEmployees = employeeRepository.findByStatus(EmployeeStatus.CANCEL);
@@ -195,7 +192,6 @@ public class AttendanceController {
         model.addAttribute("presentEmployees", presentEmployees);
         model.addAttribute("absentEmployees", absentEmployees);
 
-        // Add employee status group
         model.addAttribute("activeEmployees", activeEmployees);
         model.addAttribute("pendingEmployees", pendingEmployees);
         model.addAttribute("cancelEmployees", cancelEmployees);
