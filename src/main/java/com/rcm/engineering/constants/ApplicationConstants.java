@@ -13,4 +13,7 @@ public class ApplicationConstants {
     public static final String PRE_ONBOARDING_EXPIRED = "Your Pre‑Onboarding has been cancelled because 5 days are complete.";
     public static final String STATUS_ACTIVE = "Employee status changed to ACTIVE";
     public static final String STATUS_CANCELLED = "Employee status changed to CANCEL";
+    public static final String INVALID_CREDENTIALS = "Invalid username or password length";
+    public static final String USER_REGISTERED_SUCCESSFULLY = "User registered successfully";
+    public static final String LOGIN_SUCCESS = "Login Successfully";
 }

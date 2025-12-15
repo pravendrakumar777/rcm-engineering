@@ -7,13 +7,14 @@ import com.rcm.engineering.repository.EmployeeRepository;
 import com.rcm.engineering.service.AttendanceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,5 +75,51 @@ public class AttendanceRestController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(attendances);
+    }
+
+
+    @PostMapping("/mark/{empCode}")
+    public ResponseEntity<?> markAttendance(
+            @RequestParam String empCode,
+            @RequestParam String date,
+            @RequestParam Attendance.Status status,
+            @RequestParam(required = false) String checkInDateTime,
+            @RequestParam(required = false) String checkOutDateTime) {
+
+        LocalDate parsedDate;
+        try {
+            parsedDate = LocalDate.parse(date);
+        } catch (DateTimeParseException e) {
+            return ResponseEntity.badRequest()
+                    .body(Collections.singletonMap("error", "Invalid date format. Expected yyyy-MM-dd"));
+        }
+
+        LocalDate today = LocalDate.now();
+        if (!parsedDate.equals(today)) {
+            return ResponseEntity.badRequest()
+                    .body(Collections.singletonMap("error", "Attendance can only be marked for today"));
+        }
+
+        LocalDateTime checkIn = parseDateTime(checkInDateTime);
+        LocalDateTime checkOut = parseDateTime(checkOutDateTime);
+
+        try {
+            Attendance updated = attendanceService.markAttendance(empCode, parsedDate, status, checkIn, checkOut);
+            return ResponseEntity.ok(updated);
+        } catch (IllegalStateException ex) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Collections.singletonMap("error", ex.getMessage()));
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest()
+                    .body(Collections.singletonMap("error", ex.getMessage()));
+        }
+    }
+    private LocalDateTime parseDateTime(String dateTime) {
+        if (dateTime == null || dateTime.isEmpty()) return null;
+        try {
+            return LocalDateTime.parse(dateTime);
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException("Invalid datetime format. Expected yyyy-MM-ddTHH:mm:ss");
+        }
     }
 }
