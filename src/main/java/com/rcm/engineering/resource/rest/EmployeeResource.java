@@ -28,6 +28,14 @@ public class EmployeeResource {
         this.employeeService = employeeService;
     }
 
+    @GetMapping("/employees/{empCode}")
+    public ResponseEntity<Employee> getEmpByEmpCode(@PathVariable String empCode) {
+        log.info("REST Request to getEmpByEmpCode: {}", empCode);
+        return employeeRepository.findByEmpCode(empCode)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @PostMapping("/employees/create")
     public ResponseEntity<?> saveEmployee(@RequestBody Employee employee) {
         log.info("REST Request to createEmployee: {}", employee);
