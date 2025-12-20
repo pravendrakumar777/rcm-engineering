@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Attendance Export</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light p-5">
+
+<div class="container bg-white p-4 rounded shadow">
+    <h3 class="mb-4 text-center">Export Attendance Records</h3>
+
+    <div class="mb-3">
+        <label for="empCode" class="form-label">EMPLOYEE CODE</label>
+        <input type="text" id="empCode" class="form-control" placeholder="EMP CODE" required>
+    </div>
+
+    <div class="mb-3">
+        <label for="fromDate" class="form-label">START DATE</label>
+        <input type="date" id="fromDate" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+        <label for="toDate" class="form-label">END DATE</label>
+        <input type="date" id="toDate" class="form-control" required>
+    </div>
+
+    <div class="d-flex gap-3">
+        <button type="button" class="btn btn-success flex-fill" onclick="exportAttendanceCSV('csv')">📤 Export CSV</button>
+        <button type="button" class="btn btn-warning flex-fill" onclick="exportAttendanceExcel('excel')">📊 Export Excel</button>
+    </div>
+</div>
+
+<script>
+    function exportAttendanceCSV(type) {
+        const empCode = document.getElementById("empCode").value;
+        const fromDate = document.getElementById("fromDate").value;
+        const toDate = document.getElementById("toDate").value;
+
+        if (!empCode || !fromDate || !toDate) {
+            alert("Please enter EMP Code, From Date, and To Date");
+            return;
+        }
+
+        // Build endpoint URL
+        const url = `/api/attendance/export/csv/?empCode=${empCode}&fromDate=${fromDate}&toDate=${toDate}`;
+
+        // Trigger download
+        window.location.href = url;
+    }
+</script>
+
+<script>
+    function exportAttendanceExcel(type) {
+        const empCode = document.getElementById("empCode").value;
+        const fromDate = document.getElementById("fromDate").value;
+        const toDate = document.getElementById("toDate").value;
+
+        if (!empCode || !fromDate || !toDate) {
+            alert("Please enter EMP Code, From Date, and To Date");
+            return;
+        }
+
+        // Build endpoint URL
+        const url = `/api/attendance/export/excel/?empCode=${empCode}&fromDate=${fromDate}&toDate=${toDate}`;
+
+        // Trigger download
+        window.location.href = url;
+    }
+</script>
+</body>
+</html>

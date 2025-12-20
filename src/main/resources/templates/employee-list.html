@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Pre Onboarded Employees</title>
+    <title></title>
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -142,7 +142,6 @@
         <img src="/images/logo.png" alt="Logo">
         <ul class="nav-links">
             <li><a th:href="@{/attendance/dashboard}" class="active"><i class="bi bi-speedometer2"></i> <span>Dashboard</span></a></li>
-<!--            <li><a th:href="@{/employees}"><i class="bi bi-people"></i> <span>Employees</span></a></li>-->
             <li><a class="dropdown-toggle text-white" data-bs-toggle="collapse" href="#employeesSubmenu"><i class="bi bi-people"></i> <span>Employees</span></a>
                 <ul class="collapse nav flex-column ms-2" id="employeesSubmenu">
                     <li><a th:href="@{/employees/pre-onboarding}" class="bi text-white align-items-center py-2"><i class="bi bi-pre-onboarding-list me-2"></i><span>Pre-Onboarding</span></a></li>
@@ -156,6 +155,7 @@
                     <li><a th:href="@{/employees/calculate-salary}" class="text-white d-flex align-items-center py-2"><i class="bi bi-currency-rupee me-2"></i> <span>Salary</span></a></li>
                     <li><a th:href="@{/challans}" class="text-white d-flex align-items-center py-2"><i class="bi bi-clipboard-data me-2"></i> <span>Challans</span></a></li>
                     <li><a th:href="@{/employees/calculate-salary}" class="text-white d-flex align-items-center py-2"><i class="bi bi-person-lines-fill me-2"></i> <span>Profiles</span></a></li>
+                    <li><a th:href="@{/attendance/export}" class="text-white d-flex align-items-center py-2"><i class="bi bi-box-arrow-up me-2"></i><span>Exports</span></a></li>
                 </ul>
             </li>
             <li><a th:href="@{/accounts}"><i class="bi bi-person-badge"></i> <span>Accounts</span></a></li>

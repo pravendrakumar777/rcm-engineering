@@ -92,4 +92,12 @@ public class AttendanceService {
     public List<Attendance> getAttendanceByEmpCode(String empCode) {
         return attendanceRepository.findByEmployee_EmpCode(empCode);
     }
+
+    public List<Attendance> getAttendanceBetween(LocalDate fromDate, LocalDate toDate) {
+        return attendanceRepository.findByDateBetween(fromDate, toDate);
+    }
+
+    public List<Attendance> getAttendanceForEmployeeBetween(String empCode, LocalDate fromDate, LocalDate toDate) {
+        return attendanceRepository.findByEmployeeEmpCodeAndDateBetween(empCode, fromDate, toDate);
+    }
 }

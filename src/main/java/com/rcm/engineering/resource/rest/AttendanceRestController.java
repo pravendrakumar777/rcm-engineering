@@ -4,13 +4,17 @@ import com.rcm.engineering.domain.Attendance;
 import com.rcm.engineering.domain.Employee;
 import com.rcm.engineering.domain.enumerations.EmployeeStatus;
 import com.rcm.engineering.repository.EmployeeRepository;
+import com.rcm.engineering.resource.utils.ExportUtils;
 import com.rcm.engineering.service.AttendanceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
@@ -120,6 +124,50 @@ public class AttendanceRestController {
             return LocalDateTime.parse(dateTime);
         } catch (DateTimeParseException e) {
             throw new IllegalArgumentException("Invalid datetime format. Expected yyyy-MM-ddTHH:mm:ss");
+        }
+    }
+
+    @GetMapping("/export/csv")
+    public void exportCsv(@RequestParam String empCode,
+                          @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
+                          @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
+                          HttpServletResponse response) throws IOException {
+        log.info("CSV export requested for empCode={} from {} to {}", empCode, fromDate, toDate);
+
+        response.setContentType("text/csv");
+        response.setHeader("Content-Disposition", "attachment; filename=attendance-csv-" + empCode + ".csv");
+
+        List<Attendance> records = attendanceService.getAttendanceForEmployeeBetween(empCode, fromDate, toDate);
+        log.debug("Fetched {} attendance records for empCode={}", records.size(), empCode);
+
+        try {
+            ExportUtils.writeAttendanceCSV(records, response.getOutputStream());
+            log.info("CSV export completed successfully for empCode={}", empCode);
+        } catch (Exception e) {
+            log.error("Error during CSV export for empCode={}", empCode, e);
+            throw e;
+        }
+    }
+
+    @GetMapping("/export/excel")
+    public void exportExcel(@RequestParam String empCode,
+                            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
+                            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
+                            HttpServletResponse response) throws IOException {
+        log.info("Excel export requested for empCode={} from {} to {}", empCode, fromDate, toDate);
+
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setHeader("Content-Disposition", "attachment; filename=attendance-excel-" + empCode + ".xlsx");
+
+        List<Attendance> records = attendanceService.getAttendanceForEmployeeBetween(empCode, fromDate, toDate);
+        log.debug("Fetched {} attendance records for empCode={}", records.size(), empCode);
+
+        try {
+            ExportUtils.writeAttendanceExcel(records, response.getOutputStream());
+            log.info("Excel export completed successfully for empCode={}", empCode);
+        } catch (Exception e) {
+            log.error("Error during Excel export for empCode={}", empCode, e);
+            throw e;
         }
     }
 }

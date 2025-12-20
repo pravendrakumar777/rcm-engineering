@@ -16,10 +16,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -78,6 +82,7 @@ public class EmployeeController {
     public String saveEmployee(@ModelAttribute Employee employee, RedirectAttributes redirectAttributes) {
         if (employee.getEmpCode() != null && !employee.getEmpCode().isEmpty()) {
             Optional<Employee> existingEmployee = employeeRepository.findByEmpCode(employee.getEmpCode());
+
             if (existingEmployee.isPresent()) {
                 Employee existing = existingEmployee.get();
 
@@ -102,6 +107,7 @@ public class EmployeeController {
                 existing.setBankAccountNumber(employee.getBankAccountNumber());
                 existing.setIfscCode(employee.getIfscCode());
                 existing.setSalary(employee.getSalary());
+                //existing.setPhotoUrl("/uploads/" + fileName);
 
                 if (existing.getCreatedAt() == null) {
                     existing.setCreatedAt(LocalDateTime.now());

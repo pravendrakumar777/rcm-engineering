@@ -197,4 +197,9 @@ public class AttendanceController {
         model.addAttribute("cancelEmployees", cancelEmployees);
         return "attendance-dashboard";
     }
+
+    @GetMapping("/export")
+    public String showExportPage() {
+        return "attendance-export";
+    }
 }
