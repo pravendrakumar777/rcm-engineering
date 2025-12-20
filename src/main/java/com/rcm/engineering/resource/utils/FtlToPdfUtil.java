@@ -71,11 +71,8 @@ public class FtlToPdfUtil {
     }
 
     // payslip PDF
-    public static void generatePayslip(Employee emp,
-                                       List<Attendance> records,
-                                       long presentDays,
-                                       double totalSalary,
-                                       OutputStream out) {
+    public static void generatePayslip(Employee emp, List<Attendance> records,
+                                       long presentDays, double totalSalary, OutputStream out) {
         try {
             Map<String, Object> model = new HashMap<>();
             model.put("emp", emp);

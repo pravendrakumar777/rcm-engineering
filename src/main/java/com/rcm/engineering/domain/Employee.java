@@ -49,6 +49,9 @@ public class Employee implements Serializable {
     @Enumerated(EnumType.STRING)
     private EmployeeStatus status = EmployeeStatus.PENDING;
 
+    @Column(name = "photo_url")
+    private String photoUrl;
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
@@ -252,6 +255,14 @@ public class Employee implements Serializable {
 
     public void setStatus(EmployeeStatus status) {
         this.status = status;
+    }
+
+    public String getPhotoUrl() {
+        return photoUrl;
+    }
+
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
     }
 
     @Override
