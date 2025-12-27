@@ -52,10 +52,14 @@ public class ChallanResource {
             Challan saved = challanService.saveChallan(challan);
             byte[] pdfBytes = FtlToPdfUtil.generateChallanPDF(saved);
 
+            String currentMonth = LocalDate.now().format(DateTimeFormatter.ofPattern("MMMM_yyyy"));
+            String challnNo = challan.getChallanNo();
+            String fileName = challnNo + "_" + currentMonth  + "_challan.pdf";
+
             return ResponseEntity.ok()
                     .contentLength(pdfBytes.length)
                     .contentType(MediaType.APPLICATION_PDF)
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=challan_" + saved.getId() + ".pdf")
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
                     .body(new ByteArrayResource(pdfBytes));
         } catch (Exception e) {
             log.error("PDF generation failed", e);
@@ -77,7 +81,7 @@ public class ChallanResource {
             return ResponseEntity.ok()
                     .contentLength(pdfBytes.length)
                     .contentType(MediaType.APPLICATION_PDF)
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
                     .body(new ByteArrayResource(pdfBytes));
         } catch (Exception e) {
             log.error("PDF download failed", e);
@@ -165,5 +169,12 @@ public class ChallanResource {
             log.error("CSV download failed", e);
             return ResponseEntity.status(500).build();
         }
+    }
+    // modify challan or add items
+    @PutMapping("/challans/upsert/items/{id}")
+    public ResponseEntity<Challan> upsertItem(@PathVariable Long id, @RequestBody ChallanItem item) {
+        log.info("REST Request to upsertItem");
+        Challan updated = challanService.upsertItemInChallan(id, item);
+        return ResponseEntity.ok(updated);
     }
 }

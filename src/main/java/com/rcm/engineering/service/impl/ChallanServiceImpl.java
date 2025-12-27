@@ -1,6 +1,7 @@
 package com.rcm.engineering.service.impl;
 
 import com.rcm.engineering.domain.Challan;
+import com.rcm.engineering.domain.ChallanItem;
 import com.rcm.engineering.repository.ChallanRepository;
 import com.rcm.engineering.service.ChallanService;
 import org.slf4j.Logger;
@@ -89,7 +90,37 @@ public class ChallanServiceImpl implements ChallanService {
 
     @Override
     public Challan getChallanById(Long id) {
+        log.info("Service Request to getChallanById: {}", id);
         Challan result = challanRepository.findById(id).get();
         return result;
+    }
+
+    @Override
+    @Transactional
+    public Challan upsertItemInChallan(Long challanId, ChallanItem item) {
+        log.info("Service Request to upsertItemInChallan: {}", challanId);
+        Challan challan = getChallanById(challanId);
+        if (item.getId() == null) {
+            item.setChallan(challan);
+            challan.getItems().add(item);
+        } else {
+            // item update
+            ChallanItem existing = challan.getItems().stream()
+                    .filter(ci -> ci.getId().equals(item.getId()))
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException("Item not found"));
+
+            existing.setDescription(item.getDescription());
+            existing.setWeight(item.getWeight());
+            existing.setPiecesPerKg(item.getPiecesPerKg());
+            existing.setRatePerPiece(item.getRatePerPiece());
+            existing.setTotalPieces(item.getTotalPieces());
+            existing.setTotalAmount(item.getTotalAmount());
+            existing.setProcess(item.getProcess());
+            existing.setHsnCode(item.getHsnCode());
+            existing.setUnit(item.getUnit());
+        }
+        challan.setModifiedDate(LocalDateTime.now());
+        return challanRepository.save(challan);
     }
 }

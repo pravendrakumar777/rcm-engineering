@@ -24,7 +24,7 @@ public class ChallanItem {
     private String hsnCode;
     private String unit;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "challan_id")
     @JsonBackReference
     private Challan challan;

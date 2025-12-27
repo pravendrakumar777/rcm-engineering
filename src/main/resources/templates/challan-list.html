@@ -154,6 +154,7 @@
                     <td>
                         <button class="btn btn-sm btn-info" onclick="viewChallan(${challan.id})">👁 View</button>
                         <a class="btn btn-sm btn-primary" href="/api/challan/download/${challan.id}">🖨️ PDF</a>
+                        <a class="btn btn-sm btn-warning" href="/challan/edit/${challan.id}">✏️ Edit</a>
                     </td>
                 `;
                 tbody.appendChild(tr);

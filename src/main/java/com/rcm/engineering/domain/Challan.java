@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -17,7 +15,6 @@ import java.util.Objects;
 @Entity
 @Table(name = "challan")
 public class Challan {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,6 +24,10 @@ public class Challan {
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime date;
+
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @Column(name = "modified_date")
+    private LocalDateTime modifiedDate;
 
     private String customerName;
     @OneToMany(mappedBy = "challan", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -99,6 +100,14 @@ public class Challan {
 
     public void setItems(List<ChallanItem> items) {
         this.items = items;
+    }
+
+    public LocalDateTime getModifiedDate() {
+        return modifiedDate;
+    }
+
+    public void setModifiedDate(LocalDateTime modifiedDate) {
+        this.modifiedDate = modifiedDate;
     }
 
     @Override

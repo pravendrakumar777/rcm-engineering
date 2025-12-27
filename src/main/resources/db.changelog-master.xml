@@ -58,7 +58,15 @@
         </preConditions>
 
         <addColumn tableName="challan">
-            <column name="ref_ch_no" type="varchar(255)"/>
+            <column name="modified_date" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20251227092411" author="Pravendra Kumar">
+        <addColumn tableName="challan">
+            <column name="modified_date" type="DATETIME">
+                <constraints nullable="true"/>
+            </column>
         </addColumn>
     </changeSet>
 </databaseChangeLog>
