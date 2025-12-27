@@ -36,41 +36,6 @@ public class AttendanceRestController {
         this.employeeRepository = employeeRepository;
     }
 
-    @GetMapping("/dashboard")
-    public Map<String, Object> attendanceDashboardData() {
-        Map<String, Object> response = new HashMap<>();
-
-        LocalDate today = LocalDate.now();
-        List<Attendance> allAttendance = attendanceService.getAllAttendance(today, today);
-        List<Attendance> presentEmployees = allAttendance.stream()
-                .filter(att -> Attendance.Status.PRESENT.equals(att.getStatus()))
-                .collect(Collectors.toList());
-
-        List<Attendance> absentEmployees = allAttendance.stream()
-                .filter(att -> Attendance.Status.ABSENT.equals(att.getStatus()))
-                .collect(Collectors.toList());
-
-        long totalEmployees = allAttendance.size();
-        long presentCount = presentEmployees.size();
-        long absentCount = absentEmployees.size();
-
-        List<Employee> activeEmployees = employeeRepository.findByStatus(EmployeeStatus.ACTIVE);
-        List<Employee> pendingEmployees = employeeRepository.findByStatus(EmployeeStatus.PENDING);
-        List<Employee> cancelEmployees = employeeRepository.findByStatus(EmployeeStatus.CANCEL);
-
-        response.put("today", today);
-        response.put("totalEmployees", totalEmployees);
-        response.put("presentCount", presentCount);
-        response.put("absentCount", absentCount);
-        response.put("allAttendance", allAttendance);
-        response.put("presentEmployees", presentEmployees);
-        response.put("absentEmployees", absentEmployees);
-        response.put("activeEmployees", activeEmployees);
-        response.put("pendingEmployees", pendingEmployees);
-        response.put("cancelEmployees", cancelEmployees);
-        return response;
-    }
-
     @GetMapping("/{empCode}")
     public ResponseEntity<List<Attendance>> getAttendanceByEmpCode(@PathVariable String empCode) {
         log.info("REST Request to getAttendanceByEmpCode: {}", empCode);
@@ -169,5 +134,41 @@ public class AttendanceRestController {
             log.error("Error during Excel export for empCode={}", empCode, e);
             throw e;
         }
+    }
+
+    @GetMapping("/dashboard")
+    public Map<String, Object> attendanceDashboard() {
+        log.info("REST Request to getAttendanceDashboard : {}");
+        Map<String, Object> response = new HashMap<>();
+        LocalDate today = LocalDate.now();
+        List<Attendance> allAttendance = attendanceService.getAllAttendance(today, today);
+
+        List<Attendance> presentEmployees = allAttendance.stream()
+                .filter(att -> Attendance.Status.PRESENT.equals(att.getStatus()))
+                .collect(Collectors.toList());
+
+        List<Attendance> absentEmployees = allAttendance.stream()
+                .filter(att -> Attendance.Status.ABSENT.equals(att.getStatus()))
+                .collect(Collectors.toList());
+
+        long totalEmployees = allAttendance.size();
+        long presentCount = presentEmployees.size();
+        long absentCount = absentEmployees.size();
+
+        List<Employee> activeEmployees = employeeRepository.findByStatus(EmployeeStatus.ACTIVE);
+        List<Employee> pendingEmployees = employeeRepository.findByStatus(EmployeeStatus.PENDING);
+        List<Employee> cancelEmployees = employeeRepository.findByStatus(EmployeeStatus.CANCEL);
+
+        response.put("today", today);
+        response.put("totalEmployees", totalEmployees);
+        response.put("presentCount", presentCount);
+        response.put("absentCount", absentCount);
+        response.put("allAttendance", allAttendance);
+        response.put("presentEmployees", presentEmployees);
+        response.put("absentEmployees", absentEmployees);
+        response.put("activeEmployees", activeEmployees);
+        response.put("pendingEmployees", pendingEmployees);
+        response.put("cancelEmployees", cancelEmployees);
+        return response;
     }
 }

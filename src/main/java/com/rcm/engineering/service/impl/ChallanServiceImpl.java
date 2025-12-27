@@ -78,6 +78,12 @@ public class ChallanServiceImpl implements ChallanService {
     @Override
     public List<Challan> getAll() {
         List<Challan> result = challanRepository.findAll();
+        result.sort((c1, c2) -> c2.getDate().compareTo(c1.getDate()));
+        log.info("Service Request to getAll: {}");
+        for (Challan challans : result) {
+            Long idNumber = challans.getId();
+            //log.info("PRIMARY ID NUMBER PRAVENDRA KUMAR: {}", idNumber);
+        }
         return result;
     }
 

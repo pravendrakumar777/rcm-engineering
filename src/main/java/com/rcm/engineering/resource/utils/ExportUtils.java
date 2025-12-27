@@ -1,14 +1,13 @@
 package com.rcm.engineering.resource.utils;
 
 import com.rcm.engineering.domain.Attendance;
+import com.rcm.engineering.domain.Challan;
+import com.rcm.engineering.domain.ChallanItem;
 import com.rcm.engineering.domain.Employee;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -108,5 +107,77 @@ public class ExportUtils {
             }
             workbook.write(os);
         }
+    }
+
+    public static byte[] generateChallanExcel(Challan challan) throws Exception {
+        try (Workbook workbook = new XSSFWorkbook()) {
+            Sheet sheet = workbook.createSheet("Challan");
+
+            int rowIdx = 0;
+            // Header
+            Row header = sheet.createRow(rowIdx++);
+            header.createCell(0).setCellValue("Challan No");
+            header.createCell(1).setCellValue("Ref No");
+            header.createCell(2).setCellValue("Vendor Partner’s");
+            header.createCell(3).setCellValue("Date");
+
+            Row headerValues = sheet.createRow(rowIdx++);
+            headerValues.createCell(0).setCellValue(challan.getChallanNo());
+            headerValues.createCell(1).setCellValue(challan.getRefChNo());
+            headerValues.createCell(2).setCellValue(challan.getCustomerName());
+            headerValues.createCell(3).setCellValue(challan.getDate().toString());
+
+            // Items Header
+            Row itemHeader = sheet.createRow(rowIdx++);
+            itemHeader.createCell(0).setCellValue("Item");
+            itemHeader.createCell(1).setCellValue("Weight");
+            //itemHeader.createCell(2).setCellValue("Quantity");
+            itemHeader.createCell(2).setCellValue("Rate/Piece");
+            itemHeader.createCell(3).setCellValue("Total Pieces");
+            itemHeader.createCell(4).setCellValue("Amount");
+
+            // Items
+            for (ChallanItem item : challan.getItems()) {
+                Row row = sheet.createRow(rowIdx++);
+                row.createCell(0).setCellValue(item.getDescription());
+                row.createCell(1).setCellValue(item.getWeight());
+                //row.createCell(2).setCellValue(item.getQuantity());
+                row.createCell(2).setCellValue(item.getRatePerPiece());
+                row.createCell(3).setCellValue(item.getTotalPieces());
+                row.createCell(4).setCellValue(item.getTotalAmount());
+            }
+
+            for (int i = 0; i < 5; i++) {
+                sheet.autoSizeColumn(i);
+            }
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            workbook.write(out);
+            return out.toByteArray();
+        }
+    }
+
+    public static byte[] generateChallanCSV(Challan challan) throws Exception {
+        StringBuilder sb = new StringBuilder();
+        // Header row
+        sb.append("Challan No,Ref No,Vendor Partner’s,Date\n");
+        sb.append(challan.getChallanNo()).append(",")
+                .append(challan.getRefChNo()).append(",")
+                .append(challan.getCustomerName()).append(",")
+                .append(challan.getDate().toString()).append("\n\n");
+
+        // Items header
+        sb.append("Item,Weight,Rate/Piece,Total Pieces,Amount\n");
+
+        // Items rows
+        for (ChallanItem item : challan.getItems()) {
+            sb.append(item.getDescription()).append(",")
+                    .append(item.getWeight()).append(",")
+                    //.append(item.getQuantity()).append(",")
+                    .append(item.getRatePerPiece()).append(",")
+                    .append(item.getTotalPieces()).append(",")
+                    .append(item.getTotalAmount()).append("\n");
+        }
+
+        return sb.toString().getBytes(StandardCharsets.UTF_8);
     }
 }

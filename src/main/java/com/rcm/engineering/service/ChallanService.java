@@ -8,6 +8,5 @@ public interface ChallanService {
     Challan saveChallan(Challan challan);
     Optional<Challan> getChallan(Long id);
     List<Challan> getAll();
-
     Challan getChallanById(Long id);
 }

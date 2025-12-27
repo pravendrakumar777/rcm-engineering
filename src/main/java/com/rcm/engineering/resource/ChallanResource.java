@@ -3,6 +3,7 @@ package com.rcm.engineering.resource;
 import com.rcm.engineering.domain.Challan;
 import com.rcm.engineering.domain.ChallanItem;
 import com.rcm.engineering.repository.ChallanRepository;
+import com.rcm.engineering.resource.utils.ExportUtils;
 import com.rcm.engineering.resource.utils.FtlToPdfUtil;
 import com.rcm.engineering.service.ChallanService;
 import org.slf4j.Logger;
@@ -62,6 +63,7 @@ public class ChallanResource {
         }
     }
 
+   /* download pdf challan */
     @GetMapping("/challan/download/{id}")
     public ResponseEntity<ByteArrayResource> downloadChallan(@PathVariable Long id) {
         try {
@@ -118,10 +120,50 @@ public class ChallanResource {
         String hour = String.format("%02d", now.getHour());
         String minute = String.format("%02d", now.getMinute());
         String seconds = String.format("%02d", now.getSecond());
-
         String dm = day + month;
         String hm = hour + minute;
-
         return "RCMCN" + financialYear + dm + hm + seconds;
+    }
+    // excel sheet
+    @GetMapping("/challan/download/excel/{id}")
+    public ResponseEntity<ByteArrayResource> downloadChallanExcel(@PathVariable Long id) {
+        try {
+            Challan challan = challanService.getChallanById(id);
+            byte[] excelBytes = ExportUtils.generateChallanExcel(challan);
+
+            String currentMonth = LocalDate.now().format(DateTimeFormatter.ofPattern("MMMM_yyyy"));
+            String challnNo = challan.getChallanNo();
+            String fileName = challnNo + "_" + currentMonth + "_challan.xlsx";
+
+            return ResponseEntity.ok()
+                    .contentLength(excelBytes.length)
+                    .contentType(MediaType.parseMediaType(
+                            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+                    .body(new ByteArrayResource(excelBytes));
+        } catch (Exception e) {
+            log.error("Excel download failed", e);
+            return ResponseEntity.status(500).build();
+        }
+    }
+    // csv export
+    @GetMapping("/challan/download/csv/{id}")
+    public ResponseEntity<ByteArrayResource> downloadChallanCSV(@PathVariable Long id) {
+        try {
+            Challan challan = challanService.getChallanById(id);
+            byte[] csvBytes = ExportUtils.generateChallanCSV(challan);
+            String currentMonth = LocalDate.now().format(DateTimeFormatter.ofPattern("MMMM_yyyy"));
+            String challnNo = challan.getChallanNo();
+            String fileName = challnNo + "_" + currentMonth + "_challan.csv";
+
+            return ResponseEntity.ok()
+                    .contentLength(csvBytes.length)
+                    .contentType(MediaType.TEXT_PLAIN)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+                    .body(new ByteArrayResource(csvBytes));
+        } catch (Exception e) {
+            log.error("CSV download failed", e);
+            return ResponseEntity.status(500).build();
+        }
     }
 }
