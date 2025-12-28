@@ -125,4 +125,13 @@ public class EmployeeResource {
                 return ResponseEntity.badRequest().body(ApplicationConstants.INVALID_ACTION);
         }
     }
+
+    // search
+    @GetMapping("/employees/search")
+    public ResponseEntity<Employee> searchEmployee(@RequestParam("query") String query) {
+        log.info("REST Request to searchEmployee: {}", query);
+        Optional<Employee> result = employeeRepository.findByNameIgnoreCaseOrEmpCodeIgnoreCase(query, query);
+        log.info("RESPONSE searchEmployee: {}", result);
+        return result.map(ResponseEntity::ok) .orElse(ResponseEntity.notFound().build());
+    }
 }
