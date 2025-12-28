@@ -20,4 +20,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 
     @Query("SELECT e FROM Employee e WHERE UPPER(e.status) = 'ACTIVE'")
     List<Employee> findAllActiveEmployees();
+
+    Optional<Employee> findByNameIgnoreCaseOrEmpCodeIgnoreCase(String name, String empCode);
 }
