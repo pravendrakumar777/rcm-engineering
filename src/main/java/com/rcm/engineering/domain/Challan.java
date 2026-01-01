@@ -35,6 +35,35 @@ public class Challan {
     @JsonIgnore
     private List<ChallanItem> items = new ArrayList<>();
 
+    @PrePersist
+    public void prePersist() {
+        this.date = LocalDateTime.now();
+        this.modifiedDate = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.modifiedDate = LocalDateTime.now();
+    }
+
+    @Transient
+    private String formattedDate;
+    @Transient
+    private String modifiedFormatted;
+
+    public String getFormattedDate() {
+        return formattedDate;
+    }
+    public void setFormattedDate(String formattedDate) {
+        this.formattedDate = formattedDate;
+    }
+    public String getModifiedFormatted() {
+        return modifiedFormatted;
+    }
+    public void setModifiedFormatted(String modifiedFormatted) {
+        this.modifiedFormatted = modifiedFormatted;
+    }
+
     @JsonSetter("date")
     public void setDate(String dateStr) {
         if (dateStr == null || dateStr.isEmpty()) {

@@ -5,8 +5,8 @@ body { font-family: Arial, sans-serif; font-size: 10pt; }
 .header-table { width: 100%; margin-bottom: 10px; }
 .company-info { font-size: 8pt; }
 h2 { margin: 0; }
-table { border-collapse: collapse; width: 100%; margin-top: 10px; }
-th, td { border: 1px solid black; padding: 5px; font-size: 9pt; }
+table { border-collapse: collapse; width: 100%; margin-top: 10px; table-layout: fixed; }
+th, td { border: 1px solid black; padding: 5px; font-size: 9pt; word-wrap: break-word; }
 th { font-weight: bold; text-align: center; }
 td { text-align: center; }
 .right { text-align: right; }
@@ -19,8 +19,6 @@ td { text-align: center; }
 <body>
 
 <!-- Header with Logo and Company Name -->
-<!-- Header without block -->
-<!-- Header without block -->
 <table style="width:100%; margin-bottom:10px; border-collapse: collapse; border: none;">
     <tr>
         <td style="width:20%; vertical-align: top; border: none; padding: 0;">
@@ -39,33 +37,36 @@ td { text-align: center; }
     </tr>
 </table>
 
-
 <p><b>Challan No :</b> ${challan.challanNo}</p>
 <p><b>Challan Ref No :</b> ${challan.refChNo}</p>
-<p><b>Challan Issued Date :</b> ${formattedDate}</p>
-<p><b>OEM Supplier / Vendor Partner’s :</b> ${challan.customerName}</p>
+<p><b>Issued Date :</b> ${formattedDate}</p>
+<p><b>Last Modified Date :</b> ${modifiedFormatted}</p>
+<p><b>Vendor Partner’s :</b> ${challan.customerName}</p>
 
 <table>
-    <thead>
-        <tr>
-            <th>S. No</th>
-            <th>Item Name</th>
-            <th>Process (Job Work)</th>
-            <th>HSN Code</th>
-            <th>Unit</th>
-            <th>Weight (Kg)</th>
-            <th>Pieces/Kg</th>
-            <th>Rate/Piece</th>
-            <th>Total Pieces</th>
-            <th>Total Amount</th>
-        </tr>
-    </thead>
+        <thead>
+            <tr>
+                <th style="width:6%;">S. No</th>
+                <th style="width:12%;">Item Name</th>
+                <th style="width:17%; white-space: nowrap;">Process (Job Work)</th>
+                <th style="width:12%;">Added At</th>
+                <th style="width:6%;">HSN</th>
+                <th style="width:6%;">Unit</th>
+                <th style="width:10%; white-space: nowrap;">Weight</th>
+                <th style="width:10%; white-space: nowrap;">Pcs/Kg</th>
+                <th style="width:6%;">Rate/Pcs</th>
+                <th style="width:11%; white-space: nowrap;">Total Pcs</th>
+                <th style="width:10%;">Amount</th>
+            </tr>
+        </thead>
+
     <tbody>
         <#list challan.items as item>
         <tr>
             <td>${item_index + 1}</td>
             <td class="left">${item.description!""}</td>
             <td class="left">${item.process!""}</td>
+            <td class="right">${item.formattedAddedAt!""}</td>
             <td>${item.hsnCode!""}</td>
             <td>${item.unit!""}</td>
             <td class="right">${item.weight!""}</td>
@@ -76,7 +77,7 @@ td { text-align: center; }
         </tr>
         </#list>
         <tr>
-            <td colspan="9" class="right"><b>Grand Total</b></td>
+            <td colspan="10" class="right"><b>Grand Total</b></td>
             <td class="right"><b>${grandTotal?string("0.00")}</b></td>
         </tr>
     </tbody>

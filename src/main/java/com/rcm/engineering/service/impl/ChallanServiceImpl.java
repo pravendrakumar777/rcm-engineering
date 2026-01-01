@@ -12,7 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Year;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 @Service
@@ -81,9 +83,13 @@ public class ChallanServiceImpl implements ChallanService {
         List<Challan> result = challanRepository.findAll();
         result.sort((c1, c2) -> c2.getDate().compareTo(c1.getDate()));
         log.info("Service Request to getAll: {}");
-        for (Challan challans : result) {
-            Long idNumber = challans.getId();
-            //log.info("PRIMARY ID NUMBER PRAVENDRA KUMAR: {}", idNumber);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm a", Locale.ENGLISH);
+        for (Challan challan : result) {
+            String formattedDate = challan.getDate() != null ? challan.getDate().format(formatter) : "NA";
+            challan.setFormattedDate(formattedDate);
+            boolean hasModifiedItems = challan.getItems() != null && challan.getItems().stream().anyMatch(ChallanItem::isAddedOnModifiedDate);
+            String modifiedFormatted = (hasModifiedItems && challan.getModifiedDate() != null) ? challan.getModifiedDate().format(formatter) : "NA";
+            challan.setModifiedFormatted(modifiedFormatted);
         }
         return result;
     }
@@ -101,6 +107,8 @@ public class ChallanServiceImpl implements ChallanService {
         log.info("Service Request to upsertItemInChallan: {}", challanId);
         Challan challan = getChallanById(challanId);
         if (item.getId() == null) {
+            item.setAddedAt(LocalDateTime.now());
+            item.setAddedOnModifiedDate(true);
             item.setChallan(challan);
             challan.getItems().add(item);
         } else {

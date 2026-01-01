@@ -17,11 +17,9 @@ import java.io.StringWriter;
 import java.nio.file.Files;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 @org.springframework.context.annotation.Configuration
 public class FtlToPdfUtil {
@@ -57,8 +55,20 @@ public class FtlToPdfUtil {
         model.put("logoBase64", base64Logo);
 
         model.put("challan", challan);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss a");
-        model.put("formattedDate", challan.getDate().format(formatter));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss a", Locale.ENGLISH);
+        model.put("formattedDate", challan.getDate() != null ? challan.getDate().format(formatter) : "NA");
+        boolean hasModifiedItems = challan.getItems().stream().anyMatch(ChallanItem::isAddedOnModifiedDate);
+        model.put("modifiedFormatted", hasModifiedItems && challan.getModifiedDate() != null ? challan.getModifiedDate().format(formatter) : "NA");
+
+        DateTimeFormatter dateOnlyFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy", Locale.ENGLISH);
+        for (ChallanItem item : challan.getItems()) {
+            if (item.getAddedAt() != null) {
+                String formattedAddedAt = item.getAddedAt().format(dateOnlyFormatter);
+                item.setFormattedAddedAt(formattedAddedAt);
+                } else {
+                item.setFormattedAddedAt("NA");
+            }
+        }
         double grandTotal = challan.getItems()
                 .stream()
                 .mapToDouble(ChallanItem::getTotalAmount)

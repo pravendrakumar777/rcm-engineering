@@ -5,10 +5,17 @@ import com.rcm.engineering.domain.Employee;
 import com.rcm.engineering.domain.enumerations.EmployeeStatus;
 import com.rcm.engineering.repository.AttendanceRepository;
 import com.rcm.engineering.repository.EmployeeRepository;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Date;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -99,5 +106,60 @@ public class AttendanceService {
 
     public List<Attendance> getAttendanceForEmployeeBetween(String empCode, LocalDate fromDate, LocalDate toDate) {
         return attendanceRepository.findByEmployeeEmpCodeAndDateBetween(empCode, fromDate, toDate);
+    }
+
+
+    public List<Attendance> getAllAttendances() {
+        return attendanceRepository.findAll();
+    }
+
+
+    public Workbook writeAttendancesToExcel() throws IOException {
+        List<Attendance> attendances = getAllAttendances();
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Attendance");
+
+        Row header = sheet.createRow(0);
+        header.createCell(0).setCellValue("EmployeeCode");
+        header.createCell(1).setCellValue("Date");
+        header.createCell(2).setCellValue("Status");
+        header.createCell(3).setCellValue("CheckIn");
+        header.createCell(4).setCellValue("CheckOut");
+
+        CreationHelper createHelper = workbook.getCreationHelper();
+        CellStyle dateStyle = workbook.createCellStyle();
+        dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("yyyy-MM-dd HH:mm"));
+
+        int rowIdx = 1;
+        for (Attendance att : attendances) {
+            Row row = sheet.createRow(rowIdx++);
+            row.createCell(0).setCellValue(att.getEmployee().getEmpCode());
+
+            if (att.getDate() != null) {
+                Cell cell = row.createCell(1);
+                cell.setCellValue(Date.valueOf(att.getDate()));
+                cell.setCellStyle(dateStyle);
+            }
+
+            row.createCell(2).setCellValue(att.getStatus().toString());
+
+            if (att.getCheckInDateTime() != null) {
+                Cell cell = row.createCell(3);
+                cell.setCellValue(Timestamp.valueOf(att.getCheckInDateTime()));
+                cell.setCellStyle(dateStyle);
+            }
+
+            if (att.getCheckOutDateTime() != null) {
+                Cell cell = row.createCell(4);
+                cell.setCellValue(Timestamp.valueOf(att.getCheckOutDateTime()));
+                cell.setCellStyle(dateStyle);
+            }
+        }
+
+        for (int i = 0; i < 5; i++) {
+            sheet.autoSizeColumn(i);
+        }
+
+        return workbook;
     }
 }
