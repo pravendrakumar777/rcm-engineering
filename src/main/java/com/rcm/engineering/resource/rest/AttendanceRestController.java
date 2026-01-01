@@ -6,9 +6,11 @@ import com.rcm.engineering.domain.enumerations.EmployeeStatus;
 import com.rcm.engineering.repository.EmployeeRepository;
 import com.rcm.engineering.resource.utils.ExportUtils;
 import com.rcm.engineering.service.AttendanceService;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -170,5 +172,14 @@ public class AttendanceRestController {
         response.put("pendingEmployees", pendingEmployees);
         response.put("cancelEmployees", cancelEmployees);
         return response;
+    }
+
+    // exports
+    @GetMapping("/exports")
+    public void exportAttendance(HttpServletResponse response) throws IOException {
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"attendance.xlsx\"");
+        Workbook workbook = attendanceService.writeAttendancesToExcel();
+        workbook.write(response.getOutputStream()); workbook.close();
     }
 }

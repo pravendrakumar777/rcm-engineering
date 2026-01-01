@@ -69,4 +69,13 @@
             </column>
         </addColumn>
     </changeSet>
+
+    <changeSet id="3-add-columns-to-challan-item" author="pravendra">
+        <addColumn tableName="challan_item">
+            <column name="added_at" type="TIMESTAMP"/>
+            <column name="added_on_modified_date"
+                    type="BOOLEAN"
+                    defaultValueBoolean="false"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

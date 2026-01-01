@@ -12,8 +12,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-@RestController
-@RequestMapping("/api/accounts")
+//@RestController
+//@RequestMapping("/api/accounts")
 public class AccountController {
 
     private static final Logger log = LoggerFactory.getLogger(AccountController.class);

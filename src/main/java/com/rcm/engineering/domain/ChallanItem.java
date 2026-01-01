@@ -3,6 +3,8 @@ package com.rcm.engineering.domain;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 @Entity
 @Table(name = "challan_item")
@@ -13,7 +15,6 @@ public class ChallanItem {
     private String description;
     private String weight;
     private int quantity;
-
     private double piecesPerKg;
     private double ratePerPiece;
     private int totalPieces;
@@ -28,6 +29,32 @@ public class ChallanItem {
     @JoinColumn(name = "challan_id")
     @JsonBackReference
     private Challan challan;
+
+    // NEW FIELDS
+    @Column(name = "added_at")
+    private LocalDateTime addedAt;
+    @Column(name = "added_on_modified_date")
+    private boolean addedOnModifiedDate;
+
+    @Transient
+    private String formattedAddedAt;
+
+    @Transient private String modifiedFormatted;
+
+    public String getModifiedFormatted() {
+        return modifiedFormatted;
+    }
+    public void setModifiedFormatted(String modifiedFormatted) {
+        this.modifiedFormatted = modifiedFormatted;
+    }
+
+    public String getFormattedAddedAt() {
+        return formattedAddedAt;
+    }
+
+    public void setFormattedAddedAt(String formattedAddedAt) {
+        this.formattedAddedAt = formattedAddedAt;
+    }
 
     public Long getId() {
         return id;
@@ -123,6 +150,22 @@ public class ChallanItem {
 
     public void setChallan(Challan challan) {
         this.challan = challan;
+    }
+
+    public LocalDateTime getAddedAt() {
+        return addedAt;
+    }
+
+    public void setAddedAt(LocalDateTime addedAt) {
+        this.addedAt = addedAt;
+    }
+
+    public boolean isAddedOnModifiedDate() {
+        return addedOnModifiedDate;
+    }
+
+    public void setAddedOnModifiedDate(boolean addedOnModifiedDate) {
+        this.addedOnModifiedDate = addedOnModifiedDate;
     }
 
     @Override
