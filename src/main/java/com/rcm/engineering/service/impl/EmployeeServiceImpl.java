@@ -2,12 +2,15 @@ package com.rcm.engineering.service.impl;
 
 import com.rcm.engineering.domain.Employee;
 import com.rcm.engineering.domain.enumerations.EmployeeStatus;
+import com.rcm.engineering.exceptions.EmployeeCreationException;
 import com.rcm.engineering.repository.EmployeeRepository;
 import com.rcm.engineering.resource.utils.FtlToPdfUtil;
 import com.rcm.engineering.service.EmployeeService;
 import freemarker.template.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,22 +29,49 @@ public class EmployeeServiceImpl implements EmployeeService {
         this.employeeRepository = employeeRepository;
     }
 
-    public byte[] generateEmployeeProfilePdf(String empCode) {
-        return ftlToPdfUtil.generateEmployeeProfile(empCode, freemarkerConfig);
+    public byte[] generateEmployeeProfilePdf(String ohr) {
+        return ftlToPdfUtil.generateEmployeeProfile(ohr, freemarkerConfig);
     }
 
 
     @Override
     public Employee createEmployee(Employee employee) {
-        log.info("Service Request to createEmployee: {}", employee);
-        employee.setStatus(EmployeeStatus.PENDING);
-        Employee saveEmp = employeeRepository.save(employee);
-        return saveEmp;
+        String traceId = MDC.get("traceId");
+        final String endpoint = "/employees/create";
+        try {
+            log.info("traceId:{} | Source:APK | RequestType:REST | Endpoint:{} | Action:createEmployee | Step:START | Payload:{}", traceId, endpoint, employee);
+
+            employee.setStatus(EmployeeStatus.PENDING);
+            log.debug("traceId:{} | Source:APK | RequestType:REST | Endpoint:{} | Action:createEmployee | Step:SET_STATUS | Status:{}", traceId, endpoint, employee.getStatus());
+
+            Employee saveEmp = employeeRepository.save(employee);
+            log.info("traceId:{} | Source:APK | RequestType:REST | Endpoint:{} | Action:createEmployee | Step:REPOSITORY_SAVE | Result:SUCCESS | EmployeeId:{}", traceId, endpoint, saveEmp.getId());
+
+            log.info("traceId:{} | Source:APK | RequestType:REST | Endpoint:{} | Action:createEmployee | Step:END | Status:RETURN | EmployeeId:{}", traceId, endpoint, saveEmp.getId());
+            return saveEmp;
+
+        } catch (DataAccessException dae) {
+            log.error("traceId:{} | Source:APK | RequestType:REST | Endpoint:{} | Action:createEmployee | Step:ERROR | Type:DataAccessException | Message:{} | Payload:{}",
+                    traceId, endpoint, dae.getMessage(), employee, dae);
+            throw new EmployeeCreationException("Database error while creating employee", dae);
+
+        } catch (Exception ex) {
+            log.error("traceId:{} | Source:APK | RequestType:REST | Endpoint:{} | Action:createEmployee | Step:ERROR | Type:Exception | Message:{} | Payload:{}",
+                    traceId, endpoint, ex.getMessage(), employee, ex);
+            throw new EmployeeCreationException("Unexpected error while creating employee", ex);
+
+        } finally {
+
+            MDC.clear();
+        }
     }
+
+
+
 
     @Override
     public void updateStatus(String empCode, EmployeeStatus newStatus) {
-        Employee emp = employeeRepository.findByEmpCode(empCode).orElse(null);
+        Employee emp = employeeRepository.findByOhr(empCode).orElse(null);
         if (emp != null) {
             if(emp.getStatus() == EmployeeStatus.PENDING) {
                 emp.setStatus(newStatus);

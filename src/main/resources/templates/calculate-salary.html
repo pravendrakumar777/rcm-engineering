@@ -58,8 +58,8 @@
     <!-- Salary Form -->
     <form method="get" action="/employees/calculate-salary" class="row g-3 mb-4" id="salaryForm">
         <div class="col-md-3">
-            <input type="text" name="empCode" class="form-control" placeholder="EMP CODE" required
-                   th:value="${param.empCode}">
+            <input type="text" name="ohr" class="form-control" placeholder="EMP CODE" required
+                   th:value="${param.ohr}">
         </div>
         <div class="col-md-3">
             <input type="date" name="start" class="form-control" required
@@ -89,10 +89,10 @@
         <table class="table table-bordered">
             <tbody>
             <tr>
-                <th>Employee Name</th>
+                <th>Name</th>
                 <td th:text="${employee.name}"></td>
-                <th>Employee Code</th>
-                <td th:text="${employee.empCode}"></td>
+                <th>OHR</th>
+                <td th:text="${employee.ohr}"></td>
             </tr>
             <tr>
                 <th>Department</th>
@@ -234,11 +234,11 @@
 
 <script>
     function downloadPdf() {
-        const empCode = document.querySelector('[name="empCode"]').value;
+        const ohr = document.querySelector('[name="ohr"]').value;
         const start = document.querySelector('[name="start"]').value;
         const end = document.querySelector('[name="end"]').value;
 
-        if (!empCode || !start || !end) {
+        if (!ohr || !start || !end) {
             alert("Please fill all fields before downloading PDF.");
             return;
         }
@@ -248,7 +248,7 @@
         }
 
         window.location.href =
-            `/employees/calculate-salary/pdf?empCode=${empCode}&start=${start}&end=${end}`;
+            `/employees/calculate-salary/pdf?ohr=${ohr}&start=${start}&end=${end}`;
     }
 
     document.getElementById("salaryForm").addEventListener("submit", function (e) {
@@ -261,15 +261,15 @@
     });
 
     function downloadProfile() {
-        const empCode = document.querySelector('[name="empCode"]').value;
+        const ohr = document.querySelector('[name="ohr"]').value;
 
-        if (!empCode) {
-            alert("Please enter Employee Code before downloading Profile.");
+        if (!ohr) {
+            alert("Please enter Employee OHR before downloading Profile.");
             return;
         }
 
         // New endpoint format
-        window.location.href = `/employees/${empCode}/profile`;
+        window.location.href = `/employees/${ohr}/profile`;
     }
     document.getElementById("salaryForm").addEventListener("submit", function (e) {
         const start = new Date(document.querySelector('[name="start"]').value);

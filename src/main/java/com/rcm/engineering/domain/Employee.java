@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
-@Table(name = "rcm_employee", uniqueConstraints = @UniqueConstraint(columnNames = "empCode"))
+@Table(name = "rcm_employee", uniqueConstraints = @UniqueConstraint(columnNames = "ohr"))
 public class Employee implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -25,7 +25,7 @@ public class Employee implements Serializable {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateOfBirth;
     @Column(nullable = false, unique = true)
-    private String empCode;
+    private String ohr;
     private String address;
     private String city;
     private String state;
@@ -113,12 +113,12 @@ public class Employee implements Serializable {
         this.dateOfBirth = dateOfBirth;
     }
 
-    public String getEmpCode() {
-        return empCode;
+    public String getOhr() {
+        return ohr;
     }
 
-    public void setEmpCode(String empCode) {
-        this.empCode = empCode;
+    public void setOhr(String ohr) {
+        this.ohr = ohr;
     }
 
     public String getAddress() {
@@ -270,12 +270,12 @@ public class Employee implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Employee employee = (Employee) o;
-        return Objects.equals(id, employee.id) && Objects.equals(name, employee.name) && Objects.equals(mobile, employee.mobile) && Objects.equals(gender, employee.gender) && Objects.equals(email, employee.email) && Objects.equals(manager, employee.manager) && Objects.equals(dateOfBirth, employee.dateOfBirth) && Objects.equals(empCode, employee.empCode) && Objects.equals(address, employee.address) && Objects.equals(city, employee.city) && Objects.equals(state, employee.state) && Objects.equals(postalCode, employee.postalCode) && Objects.equals(country, employee.country) && Objects.equals(department, employee.department) && Objects.equals(designation, employee.designation) && Objects.equals(dateOfJoining, employee.dateOfJoining) && Objects.equals(dateOfExit, employee.dateOfExit) && Objects.equals(panNumber, employee.panNumber) && Objects.equals(aadhaarNumber, employee.aadhaarNumber) && Objects.equals(bankName, employee.bankName) && Objects.equals(bankAccountNumber, employee.bankAccountNumber) && Objects.equals(ifscCode, employee.ifscCode) && Objects.equals(salary, employee.salary) && Objects.equals(createdAt, employee.createdAt) && status == employee.status;
+        return Objects.equals(id, employee.id) && Objects.equals(name, employee.name) && Objects.equals(mobile, employee.mobile) && Objects.equals(gender, employee.gender) && Objects.equals(email, employee.email) && Objects.equals(manager, employee.manager) && Objects.equals(dateOfBirth, employee.dateOfBirth) && Objects.equals(ohr, employee.ohr) && Objects.equals(address, employee.address) && Objects.equals(city, employee.city) && Objects.equals(state, employee.state) && Objects.equals(postalCode, employee.postalCode) && Objects.equals(country, employee.country) && Objects.equals(department, employee.department) && Objects.equals(designation, employee.designation) && Objects.equals(dateOfJoining, employee.dateOfJoining) && Objects.equals(dateOfExit, employee.dateOfExit) && Objects.equals(panNumber, employee.panNumber) && Objects.equals(aadhaarNumber, employee.aadhaarNumber) && Objects.equals(bankName, employee.bankName) && Objects.equals(bankAccountNumber, employee.bankAccountNumber) && Objects.equals(ifscCode, employee.ifscCode) && Objects.equals(salary, employee.salary) && Objects.equals(createdAt, employee.createdAt) && status == employee.status && Objects.equals(photoUrl, employee.photoUrl);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, mobile, gender, email, manager, dateOfBirth, empCode, address, city, state, postalCode, country, department, designation, dateOfJoining, dateOfExit, panNumber, aadhaarNumber, bankName, bankAccountNumber, ifscCode, salary, createdAt, status);
+        return Objects.hash(id, name, mobile, gender, email, manager, dateOfBirth, ohr, address, city, state, postalCode, country, department, designation, dateOfJoining, dateOfExit, panNumber, aadhaarNumber, bankName, bankAccountNumber, ifscCode, salary, createdAt, status, photoUrl);
     }
 
     @Override
@@ -288,7 +288,7 @@ public class Employee implements Serializable {
                 ", email='" + email + '\'' +
                 ", manager='" + manager + '\'' +
                 ", dateOfBirth=" + dateOfBirth +
-                ", empCode='" + empCode + '\'' +
+                ", ohr='" + ohr + '\'' +
                 ", address='" + address + '\'' +
                 ", city='" + city + '\'' +
                 ", state='" + state + '\'' +
@@ -306,6 +306,7 @@ public class Employee implements Serializable {
                 ", salary=" + salary +
                 ", createdAt=" + createdAt +
                 ", status=" + status +
+                ", photoUrl='" + photoUrl + '\'' +
                 '}';
     }
 }

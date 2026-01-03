@@ -26,7 +26,7 @@ td { width: 30%; }
             <img src="data:image/png;base64,${logoBase64}" alt="Company Logo" class="logo" width="150" height="150"/>
         </td>
         <td style="width:80%;">
-            <h2>RCM ENGINEERING &amp; MANUFACTURING</h2>
+            <h2>RCM ENGINEERING</h2>
             <p>
                 KH NO: 513/1, 513/2,<br/>
                 VILL BASAI, NEAR BASAI FLYOVER - GURUGRAM HR. 122001<br/>
@@ -48,8 +48,8 @@ td { width: 30%; }
     <tr>
         <th>Name</th>
         <td>${employee.name?html}</td>
-        <th>Emp Code</th>
-        <td>${employee.empCode?html}</td>
+        <th>OHR</th>
+        <td>${employee.ohr?html}</td>
     </tr>
     <tr>
         <th>Gender</th>

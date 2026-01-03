@@ -16,4 +16,6 @@ public class ApplicationConstants {
     public static final String INVALID_CREDENTIALS = "Invalid username or password length";
     public static final String USER_REGISTERED_SUCCESSFULLY = "User registered successfully";
     public static final String LOGIN_SUCCESS = "Login Successfully";
+    public static final String EMPLOYEE_FOUND_SUCCESS = "Employee found successfully";
+    public static final String SERVER_ERROR = "Internal server error occurred";
 }

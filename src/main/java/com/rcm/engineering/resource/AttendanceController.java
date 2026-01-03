@@ -44,7 +44,7 @@ public class AttendanceController {
     @PostMapping("/api/mark")
     @ResponseBody
     public ResponseEntity<?> markAttendance(
-            @RequestParam String empCode,
+            @RequestParam String ohr,
             @RequestParam String date,
             @RequestParam Attendance.Status status,
             @RequestParam(required = false) String checkInDateTime,
@@ -59,7 +59,7 @@ public class AttendanceController {
         LocalDateTime checkOut = parseDateTime(checkOutDateTime);
 
         try {
-            Attendance updated = attendanceService.markAttendance(empCode, parsedDate, status, checkIn, checkOut);
+            Attendance updated = attendanceService.markAttendance(ohr, parsedDate, status, checkIn, checkOut);
             return ResponseEntity.ok(updated);
         } catch (IllegalStateException ex) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
@@ -86,16 +86,16 @@ public class AttendanceController {
     }
 
 
-    @GetMapping("/api/{empCode}/month")
+    @GetMapping("/api/{ohr}/month")
     @ResponseBody
     public ResponseEntity<List<Attendance>> getMonthlyAttendance(
-            @PathVariable String empCode,
+            @PathVariable String ohr,
             @RequestParam String start,
             @RequestParam String end) {
 
         LocalDate s = LocalDate.parse(start);
         LocalDate e = LocalDate.parse(end);
-        List<Attendance> attendanceList = attendanceService.getAttendance(empCode, s, e)
+        List<Attendance> attendanceList = attendanceService.getAttendance(ohr, s, e)
                 .stream()
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
@@ -105,16 +105,16 @@ public class AttendanceController {
 
     @GetMapping("/report")
     public String getMonthlyAttendanceView(
-            @RequestParam(required = false) String empCode,
+            @RequestParam(required = false) String ohr,
             @RequestParam(required = false) String start,
             @RequestParam(required = false) String end,
             Model model) {
 
-        if (empCode != null && start != null && end != null) {
+        if (ohr != null && start != null && end != null) {
             try {
                 LocalDate s = LocalDate.parse(start);
                 LocalDate e = LocalDate.parse(end);
-                List<Attendance> attendanceList = attendanceService.getAttendance(empCode, s, e)
+                List<Attendance> attendanceList = attendanceService.getAttendance(ohr, s, e)
                         .stream()
                         .filter(Objects::nonNull)
                         .collect(Collectors.toList());

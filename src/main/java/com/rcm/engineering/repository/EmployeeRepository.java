@@ -13,13 +13,13 @@ import java.util.Optional;
 @Repository
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 
-    @Query("SELECT e FROM Employee e WHERE e.empCode = :empCode")
-    Optional<Employee> findByEmpCode(@Param("empCode") String empCode);
+    @Query("SELECT e FROM Employee e WHERE e.ohr = :ohr")
+    Optional<Employee> findByOhr(@Param("ohr") String ohr);
 
     List<Employee> findByStatus(EmployeeStatus status);
 
     @Query("SELECT e FROM Employee e WHERE UPPER(e.status) = 'ACTIVE'")
     List<Employee> findAllActiveEmployees();
 
-    Optional<Employee> findByNameIgnoreCaseOrEmpCodeIgnoreCase(String name, String empCode);
+    Optional<Employee> findByNameIgnoreCaseOrOhrIgnoreCase(String name, String ohr);
 }

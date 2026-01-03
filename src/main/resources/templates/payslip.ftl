@@ -57,7 +57,7 @@ object-fit: contain;
                 <img src="data:image/png;base64,${logoBase64}" alt="Company Logo" class="logo" width="150" height="150"/>
             </td>
             <td style="width:80%;">
-                <h2>RCM ENGINEERING & MANUFACTURING</h2>
+                <h2>RCM ENGINEERING</h2>
                 <p>
                     KH NO: 513/1, 513/2,<br/>
                     VILL BASAI, NEAR BASAI FLYOVER - GURUGRAM HR. 122001<br/>
@@ -79,7 +79,7 @@ object-fit: contain;
         <tr>
             <td>
                 <table>
-                    <tr><th>EMP CODE</th><td>${emp.empCode}</td></tr>
+                    <tr><th>OHR</th><td>${emp.ohr}</td></tr>
                     <tr><th>Name</th><td>${emp.name}</td></tr>
                     <tr><th>Mobile</th><td>${emp.mobile}</td></tr>
                     <tr><th>PAN</th><td>${emp.panNumber}</td></tr>
