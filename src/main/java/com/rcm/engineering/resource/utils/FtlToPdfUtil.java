@@ -148,9 +148,9 @@ public class FtlToPdfUtil {
     }
 
     // Profile
-    public byte[] generateEmployeeProfile(String empCode, Configuration freemarkerConfig) {
-        Employee employee = employeeRepository.findByEmpCode(empCode)
-                .orElseThrow(() -> new RuntimeException("Employee not found with empCode: " + empCode));
+    public byte[] generateEmployeeProfile(String ohr, Configuration freemarkerConfig) {
+        Employee employee = employeeRepository.findByOhr(ohr)
+                .orElseThrow(() -> new RuntimeException("Employee not found with ohr: " + ohr));
         try {
 
             DateTimeFormatter commonFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy");

@@ -189,7 +189,7 @@
             <table class="table table-hover">
                 <thead>
                 <tr>
-                    <th>EMP Code</th>
+                    <th>OHR</th>
                     <th>Name</th>
                     <th>Manager</th>
                     <th>Status</th>
@@ -198,7 +198,7 @@
                 </thead>
                 <tbody>
                 <tr th:each="emp : ${employees}">
-                    <td th:text="${emp.empCode}"></td>
+                    <td th:text="${emp.ohr}"></td>
                     <td th:text="${emp.name}"></td>
                     <td th:text="${emp.manager}"></td>
                     <td>
@@ -212,9 +212,9 @@
                     </td>
                     </td>
                     <td>
-                        <a th:href="@{'/employees/edit/' + ${emp.empCode}}" class="btn btn-sm btn-info btn-edit" title="Edit">✏️ Edit</a>
+                        <a th:href="@{'/employees/edit/' + ${emp.ohr}}" class="btn btn-sm btn-info btn-edit" title="Edit">✏️ Edit</a>
                         <button type="button" class="btn btn-sm btn-primary btn-view" data-bs-toggle="modal" data-bs-target="#employeeDetailModal"
-                                th:attr="data-empcode=${emp.empCode},
+                                th:attr="data-ohr=${emp.ohr},
                                 data-name=${emp.name},
                                 data-gender=${emp.gender},
                                 data-manager=${emp.manager},
@@ -256,7 +256,8 @@
                             <div class="card h-100 shadow-sm border-0">
                                 <div class="card-header bg-primary text-white fw-bold">Personal Details</div>
                                 <div class="card-body text-dark">
-                                    <p><strong>EMP Code:</strong> <span id="modalEmpCode"></span></p>
+                                    <p><strong>OHR
+                                        :</strong> <span id="modalOhr"></span></p>
                                     <p><strong>Name:</strong> <span id="modalEmpName"></span></p>
                                     <p><strong>Gender:</strong> <span id="modalEmpGender"></span></p>
                                     <p><strong>DOB:</strong> <span id="modalEmpDOB"></span></p>
@@ -327,7 +328,7 @@
               const [year, month, day] = dateStr.split("-");
               return `${day}-${month}-${year}`;
             }
-            document.getElementById('modalEmpCode').textContent = button.getAttribute('data-empcode');
+            document.getElementById('modalOhr').textContent = button.getAttribute('data-ohr');
             document.getElementById('modalEmpName').textContent = button.getAttribute('data-name');
             document.getElementById('modalEmpGender').textContent = button.getAttribute('data-gender');
             document.getElementById('modalEmpManager').textContent = button.getAttribute('data-manager');
@@ -347,10 +348,10 @@
         });
     });
 
-    function downloadProfile(empCode) {
+    function downloadProfile(ohr) {
         const link = document.createElement('a');
-        link.href = `/employees/${empCode}/profile`;
-        link.download = `employee-profile-${empCode}.pdf`;
+        link.href = `/employees/${ohr}/profile`;
+        link.download = `employee-profile-${ohr}.pdf`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);

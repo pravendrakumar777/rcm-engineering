@@ -4,9 +4,11 @@ import com.rcm.engineering.constants.ApplicationConstants;
 import com.rcm.engineering.domain.Employee;
 import com.rcm.engineering.domain.enumerations.EmployeeStatus;
 import com.rcm.engineering.repository.EmployeeRepository;
+import com.rcm.engineering.request.ApiResponse;
 import com.rcm.engineering.service.EmployeeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +17,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api")
@@ -28,22 +31,43 @@ public class EmployeeResource {
         this.employeeService = employeeService;
     }
 
-    @GetMapping("/employees/{empCode}")
-    public ResponseEntity<Employee> getEmpByEmpCode(@PathVariable String empCode) {
-        log.info("REST Request to getEmpByEmpCode: {}", empCode);
-        return employeeRepository.findByEmpCode(empCode)
+    @GetMapping("/employees/{ohr}")
+    public ResponseEntity<Employee> getEmpByOhr(@PathVariable String ohr) {
+        log.info("REST Request to getEmpByOhr: {}", ohr);
+        return employeeRepository.findByOhr(ohr)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping("/employees/create")
     public ResponseEntity<?> saveEmployee(@RequestBody Employee employee) {
-        log.info("REST Request to createEmployee: {}", employee);
-        String empCode = "RCMEC" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("ddMMyyyyHHmmss"));
-        employee.setEmpCode(empCode);
-        Employee createdEmp = employeeService.createEmployee(employee);
-        return ResponseEntity.ok().body(createdEmp);
+        String traceId = UUID.randomUUID().toString();
+        MDC.put("traceId", traceId);
+
+        final String endpoint = "/employees/create";
+
+        try {
+            log.info("traceId:{} | Source:APK | RequestType:REST | Endpoint:{} | Action:createEmployee | Step:START | Payload:{}", traceId, endpoint, employee);
+
+            String empCode = "RCMEC" + LocalDateTime.now()
+                    .format(DateTimeFormatter.ofPattern("ddMMyyyyHHmmss"));
+            employee.setOhr(empCode);
+            log.debug("traceId:{} | Source:APK | RequestType:REST | Endpoint:{} | Action:createEmployee | Step:GENERATE_CODE | EmpCode:{}", traceId, endpoint, empCode);
+
+            Employee createdEmp = employeeService.createEmployee(employee);
+            log.info("traceId:{} | Source:APK | RequestType:REST | Endpoint:{} | Action:createEmployee | Step:SERVICE_CALL | Result:SUCCESS | EmployeeId:{}", traceId, endpoint, createdEmp.getId());
+
+            log.info("traceId:{} | Source:APK | RequestType:REST | Endpoint:{} | Action:createEmployee | Step:END | Status:200 OK | EmployeeId:{}", traceId, endpoint, createdEmp.getId());
+            return ResponseEntity.ok().body(createdEmp);
+
+        } catch (Exception ex) {
+            log.error("traceId:{} | Source:APK | RequestType:REST | Endpoint:{} | Action:createEmployee | Step:ERROR | Message:{} | Payload:{}", traceId, endpoint, ex.getMessage(), employee, ex);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error creating employee");
+        } finally {
+            MDC.clear();
+        }
     }
+
 
     @GetMapping("/employees/list")
     public ResponseEntity<List<Employee>> getAll() {
@@ -52,14 +76,14 @@ public class EmployeeResource {
         return ResponseEntity.ok().body(result);
     }
 
-    @PutMapping("/employees/update/{empCode}")
-    public ResponseEntity<?> updateEmployee(@PathVariable String empCode, @RequestBody Employee employee) {
-        Optional<Employee> existingOpt = employeeRepository.findByEmpCode(empCode);
-        String EMPLOYEE_CODE = existingOpt.get().getEmpCode();
-        log.info("REST Request to updateEmployee: {}, {}", EMPLOYEE_CODE, employee);
+    @PutMapping("/employees/update/{ohr}")
+    public ResponseEntity<?> updateEmployee(@PathVariable String ohr, @RequestBody Employee employee) {
+        Optional<Employee> existingOpt = employeeRepository.findByOhr(ohr);
+        String EMPLOYEE_OHR = existingOpt.get().getOhr();
+        log.info("REST Request to updateEmployee: {}, {}", EMPLOYEE_OHR, employee);
         if (!existingOpt.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Employee not found with empCode: " + empCode);
+                    .body("Employee not found with empCode: " + ohr);
         }
         Employee existing = existingOpt.get();
         existing.setName(employee.getName());
@@ -90,7 +114,7 @@ public class EmployeeResource {
     public ResponseEntity<String> actionOnClick(@RequestParam String empCode,
                                                 @RequestParam String action) {
         log.info("REST Request to actionOnClick: {}", empCode);
-        Employee emp = employeeRepository.findByEmpCode(empCode).orElse(null);
+        Employee emp = employeeRepository.findByOhr(empCode).orElse(null);
         if (emp == null) {
             return ResponseEntity.badRequest().body(ApplicationConstants.EMPLOYEE_NOT_FOUND);
         }
@@ -126,12 +150,25 @@ public class EmployeeResource {
         }
     }
 
-    // search
     @GetMapping("/employees/search")
-    public ResponseEntity<Employee> searchEmployee(@RequestParam("query") String query) {
-        log.info("REST Request to searchEmployee: {}", query);
-        Optional<Employee> result = employeeRepository.findByNameIgnoreCaseOrEmpCodeIgnoreCase(query, query);
-        log.info("RESPONSE searchEmployee: {}", result);
-        return result.map(ResponseEntity::ok) .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<?> searchEmployee(@RequestParam("query") String query) {
+        log.info("SEARCH_EMPLOYEE | Request received | query: {}", query);
+        try {
+            Optional<Employee> result = employeeRepository.findByNameIgnoreCaseOrOhrIgnoreCase(query, query);
+
+            if (result.isPresent()) {
+                log.info("SEARCH_EMPLOYEE | Success | query: {} | employee: {}", query, result.get());
+                return ResponseEntity.ok(result.get());
+            } else {
+                log.warn("SEARCH_EMPLOYEE | Not Found | query: {}", query);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("No employee found with given query");
+            }
+
+        } catch (Exception ex) {
+            log.error("SEARCH_EMPLOYEE | Error | query: {} | exception: {}", query, ex.getMessage(), ex);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Internal server error occurred");
+        }
     }
 }

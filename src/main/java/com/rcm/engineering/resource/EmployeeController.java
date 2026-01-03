@@ -16,14 +16,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -80,8 +76,8 @@ public class EmployeeController {
 
     @PostMapping("/save")
     public String saveEmployee(@ModelAttribute Employee employee, RedirectAttributes redirectAttributes) {
-        if (employee.getEmpCode() != null && !employee.getEmpCode().isEmpty()) {
-            Optional<Employee> existingEmployee = employeeRepository.findByEmpCode(employee.getEmpCode());
+        if (employee.getOhr() != null && !employee.getOhr().isEmpty()) {
+            Optional<Employee> existingEmployee = employeeRepository.findByOhr(employee.getOhr());
 
             if (existingEmployee.isPresent()) {
                 Employee existing = existingEmployee.get();
@@ -122,7 +118,7 @@ public class EmployeeController {
             }
         }
         String empCode = "RCMEC" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("ddMMyyyyHHmmss"));
-        employee.setEmpCode(empCode);
+        employee.setOhr(empCode);
         employeeRepository.save(employee);
         redirectAttributes.addFlashAttribute("success", "Employee saved successfully.");
         return "redirect:/employees";
@@ -130,7 +126,7 @@ public class EmployeeController {
 
     @GetMapping("/edit/{empCode}")
     public String showEditForm(@PathVariable String empCode, Model model) {
-        Employee employee = employeeRepository.findByEmpCode(empCode)
+        Employee employee = employeeRepository.findByOhr(empCode)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid employee empCode"));
         model.addAttribute("employee", employee);
         model.addAttribute("formTitle", "Update Onboarded Employee Details");
@@ -139,7 +135,7 @@ public class EmployeeController {
 
     @GetMapping("/delete/{empCode}")
     public String deleteEmployee(@PathVariable String empCode) {
-        Employee employee = employeeRepository.findByEmpCode(empCode)
+        Employee employee = employeeRepository.findByOhr(empCode)
                 .orElseThrow(() -> new IllegalArgumentException("Employee with empCode " + empCode + " not found"));
 
         employeeRepository.delete(employee);
@@ -160,22 +156,22 @@ public class EmployeeController {
 
     @GetMapping("/calculate-salary")
     public String calculateSalary(
-            @RequestParam(required = false) String empCode,
+            @RequestParam(required = false) String ohr,
             @RequestParam(required = false) String start,
             @RequestParam(required = false) String end,
             Model model) {
 
-        if (empCode != null && start != null && end != null) {
+        if (ohr != null && start != null && end != null) {
             try {
                 LocalDate s = LocalDate.parse(start);
                 LocalDate e = LocalDate.parse(end);
 
-                List<Attendance> attendanceList = attendanceService.getAttendance(empCode, s, e)
+                List<Attendance> attendanceList = attendanceService.getAttendance(ohr, s, e)
                         .stream()
                         .filter(Objects::nonNull)
                         .collect(Collectors.toList());
 
-                Employee employee = employeeRepository.findByEmpCode(empCode)
+                Employee employee = employeeRepository.findByOhr(ohr)
                         .orElseThrow(() -> new RuntimeException("Employee not found"));
 
                 double monthlySalary = employee.getSalary();
@@ -222,7 +218,7 @@ public class EmployeeController {
 
     @GetMapping("/calculate-salary/pdf")
     public void downloadPayslip(
-            @RequestParam String empCode,
+            @RequestParam String ohr,
             @RequestParam String start,
             @RequestParam String end,
             HttpServletResponse response) throws IOException, java.io.IOException {
@@ -230,11 +226,11 @@ public class EmployeeController {
         LocalDate s = LocalDate.parse(start);
         LocalDate e = LocalDate.parse(end);
 
-        List<Attendance> attendanceList = attendanceService.getAttendance(empCode, s, e)
+        List<Attendance> attendanceList = attendanceService.getAttendance(ohr, s, e)
                 .stream()
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
-        Employee employee = employeeRepository.findByEmpCode(empCode)
+        Employee employee = employeeRepository.findByOhr(ohr)
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
 
         double monthlySalary = employee.getSalary();
@@ -257,7 +253,7 @@ public class EmployeeController {
 
         double totalSalary = totalWorkedHours * hourlyRate;
         String currentMonth = LocalDate.now().format(DateTimeFormatter.ofPattern("MMMM_yyyy"));
-        String emCode = employee.getEmpCode();
+        String emCode = employee.getOhr();
         String fileName = emCode + "_" + currentMonth + "_payslip.pdf";
 
         response.setContentType("application/pdf");
@@ -266,16 +262,16 @@ public class EmployeeController {
     }
 
     // Download Employee Profile
-    @GetMapping("/{empCode}/profile")
-    public ResponseEntity<byte[]> profilePDF(@PathVariable String empCode) {
+    @GetMapping("/{ohr}/profile")
+    public ResponseEntity<byte[]> profilePDF(@PathVariable String ohr) {
         try {
-            byte[] pdfBytes = employeeService.generateEmployeeProfilePdf(empCode);
+            byte[] pdfBytes = employeeService.generateEmployeeProfilePdf(ohr);
             if (pdfBytes == null || pdfBytes.length == 0) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
             }
 
             String currentMonth = LocalDate.now().format(DateTimeFormatter.ofPattern("MMMM_yyyy"));
-            String fileName = empCode + "_" + currentMonth + "_profile.pdf";
+            String fileName = ohr + "_" + currentMonth + "_profile.pdf";
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName)
                     .contentType(MediaType.APPLICATION_PDF)

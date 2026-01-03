@@ -3,7 +3,6 @@ package com.rcm.engineering.controller;
 import com.rcm.engineering.domain.Employee;
 import com.rcm.engineering.repository.EmployeeRepository;
 import com.rcm.engineering.service.AttendanceService;
-import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -53,7 +52,7 @@ public class EmployeeControllerTest {
     //@Test
     public void shouldDeleteEmployee() throws Exception {
         Employee emp = new Employee();
-        emp.setEmpCode("RCMEM12092025074409");
+        emp.setOhr("RCMEM12092025074409");
 
         Mockito.when(employeeRepository.findByEmpCode("RCMEM12092025074409"))
                 .thenReturn(Optional.of(emp));
@@ -91,7 +90,7 @@ public class EmployeeControllerTest {
         String end = "2023-09-30";
 
         Employee emp = new Employee();
-        emp.setEmpCode(empCode);
+        emp.setOhr(empCode);
         emp.setSalary(30000.00);
 
         Mockito.when(employeeRepository.findByEmpCode(empCode)).thenReturn(Optional.of(emp));

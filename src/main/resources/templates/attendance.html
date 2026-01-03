@@ -252,14 +252,14 @@
         const res = await fetch('/employees/api');
         const employees = await res.json();
         const activeEmployees = employees.filter(e => e.status === "ACTIVE");
-        employeeSelect.innerHTML = activeEmployees.map(e => `<option value="${e.empCode}">${e.name}</option>`).join('');
+        employeeSelect.innerHTML = activeEmployees.map(e => `<option value="${e.ohr}">${e.name}</option>`).join('');
         renderCalendar();
     }
 
     async function renderCalendar() {
         calendarDiv.innerHTML = '';
-        const empCode = employeeSelect.value;
-        if (!empCode) return;
+        const ohr = employeeSelect.value;
+        if (!ohr) return;
 
         const year = new Date().getFullYear();
         const month = new Date().getMonth();
@@ -285,17 +285,17 @@
             div.className = 'day';
             div.dataset.date = dateStr;
             div.innerHTML = `<div>${d}</div>`;
-            div.onclick = () => toggleAttendance(empCode, dateStr, div);
+            div.onclick = () => toggleAttendance(ohr, dateStr, div);
             calendarDiv.appendChild(div);
         }
 
-        await loadAttendance(empCode, year, month, daysInMonth);
+        await loadAttendance(ohr, year, month, daysInMonth);
     }
 
-    async function loadAttendance(empCode, year, month, daysInMonth) {
+    async function loadAttendance(ohr, year, month, daysInMonth) {
         const start = `${year}-${String(month + 1).padStart(2,'0')}-01`;
         const end = `${year}-${String(month + 1).padStart(2,'0')}-${daysInMonth}`;
-        const res = await fetch(`/attendance/api/${empCode}/month?start=${start}&end=${end}`);
+        const res = await fetch(`/attendance/api/${ohr}/month?start=${start}&end=${end}`);
         const data = await res.json();
         const map = {};
         data.forEach(a => map[a.date] = a);
@@ -340,7 +340,7 @@
         });
     }
 
-    async function toggleAttendance(empCode, date, div) {
+    async function toggleAttendance(ohr, date, div) {
         const todayStr = new Date().toISOString().split('T')[0];
         if (date !== todayStr) { alert("You can only mark attendance for today."); return; }
 
@@ -350,7 +350,7 @@
 
         const alreadyCheckedIn = div.getAttribute("data-checkin");
         const alreadyCheckedOut = div.getAttribute("data-checkout");
-        const params = new URLSearchParams({empCode, date, status});
+        const params = new URLSearchParams({ohr, date, status});
 
         if (!alreadyCheckedIn) params.append("checkInDateTime", timestamp);
         else if (!alreadyCheckedOut) params.append("checkOutDateTime", timestamp);

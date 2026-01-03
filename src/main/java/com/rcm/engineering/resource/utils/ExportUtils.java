@@ -15,12 +15,12 @@ public class ExportUtils {
     public static void writeAttendanceCSV(List<Attendance> records, OutputStream os) throws IOException {
         PrintWriter printWriter = new PrintWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8));
 
-        printWriter.println("EMP CODE, NAME, DATE, STATUS, CHECK-IN, CHECK-OUT, EMAIL, MOBILE, MANAGER, DEPARTMENT, " +
+        printWriter.println("OHR, NAME, DATE, STATUS, CHECK-IN, CHECK-OUT, EMAIL, MOBILE, MANAGER, DEPARTMENT, " +
                 "DESIGNATION, DOB, DOJ, SALARY, PAN, AADHAAR, BANK, ACCOUNT, IFSC, ADDRESS, CITY, STATE, COUNTRY");
         for (Attendance record : records) {
             Employee emp = record.getEmployee();
             printWriter.printf("%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s%n",
-                    emp.getEmpCode(),
+                    emp.getOhr(),
                     emp.getName(),
                     record.getDate(),
                     record.getStatus(),
@@ -54,7 +54,7 @@ public class ExportUtils {
 
             Row headerRow = sheet.createRow(0);
             String[] headers = {
-                    "EMP CODE", "NAME", "DATE", "STATUS", "CHECK-IN", "CHECK-OUT", "EMAIL", "MOBILE",
+                    "OHR", "NAME", "DATE", "STATUS", "CHECK-IN", "CHECK-OUT", "EMAIL", "MOBILE",
                     "MANAGER", "DEPARTMENT", "DESIGNATION", "DOB", "DOJ", "SALARY", "PAN", "AADHAAR",
                     "BANK", "ACCOUNT", "IFSC", "ADDRESS", "CITY", "STATE", "COUNTRY"
             };
@@ -76,7 +76,7 @@ public class ExportUtils {
                 Row row = sheet.createRow(rowIdx++);
 
                 int col = 0;
-                row.createCell(col++).setCellValue(emp.getEmpCode());
+                row.createCell(col++).setCellValue(emp.getOhr());
                 row.createCell(col++).setCellValue(emp.getName());
                 row.createCell(col++).setCellValue(record.getDate().toString());
                 row.createCell(col++).setCellValue(
@@ -131,7 +131,6 @@ public class ExportUtils {
             Row itemHeader = sheet.createRow(rowIdx++);
             itemHeader.createCell(0).setCellValue("Item");
             itemHeader.createCell(1).setCellValue("Weight");
-            //itemHeader.createCell(2).setCellValue("Quantity");
             itemHeader.createCell(2).setCellValue("Rate/Piece");
             itemHeader.createCell(3).setCellValue("Total Pieces");
             itemHeader.createCell(4).setCellValue("Amount");
@@ -141,7 +140,6 @@ public class ExportUtils {
                 Row row = sheet.createRow(rowIdx++);
                 row.createCell(0).setCellValue(item.getDescription());
                 row.createCell(1).setCellValue(item.getWeight());
-                //row.createCell(2).setCellValue(item.getQuantity());
                 row.createCell(2).setCellValue(item.getRatePerPiece());
                 row.createCell(3).setCellValue(item.getTotalPieces());
                 row.createCell(4).setCellValue(item.getTotalAmount());
@@ -172,7 +170,6 @@ public class ExportUtils {
         for (ChallanItem item : challan.getItems()) {
             sb.append(item.getDescription()).append(",")
                     .append(item.getWeight()).append(",")
-                    //.append(item.getQuantity()).append(",")
                     .append(item.getRatePerPiece()).append(",")
                     .append(item.getTotalPieces()).append(",")
                     .append(item.getTotalAmount()).append("\n");

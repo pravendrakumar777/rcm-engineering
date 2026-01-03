@@ -38,10 +38,10 @@ public class AttendanceRestController {
         this.employeeRepository = employeeRepository;
     }
 
-    @GetMapping("/{empCode}")
-    public ResponseEntity<List<Attendance>> getAttendanceByEmpCode(@PathVariable String empCode) {
-        log.info("REST Request to getAttendanceByEmpCode: {}", empCode);
-        List<Attendance> attendances = attendanceService.getAttendanceByEmpCode(empCode);
+    @GetMapping("/{ohr}")
+    public ResponseEntity<List<Attendance>> getAttendanceByOhr(@PathVariable String ohr) {
+        log.info("REST Request to getAttendanceByOhr: {}", ohr);
+        List<Attendance> attendances = attendanceService.getAttendanceByOhr(ohr);
         if (attendances.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
@@ -49,9 +49,9 @@ public class AttendanceRestController {
     }
 
 
-    @PostMapping("/mark/{empCode}")
+    @PostMapping("/mark/{ohr}")
     public ResponseEntity<?> markAttendance(
-            @RequestParam String empCode,
+            @RequestParam String ohr,
             @RequestParam String date,
             @RequestParam Attendance.Status status,
             @RequestParam(required = false) String checkInDateTime,
@@ -75,7 +75,7 @@ public class AttendanceRestController {
         LocalDateTime checkOut = parseDateTime(checkOutDateTime);
 
         try {
-            Attendance updated = attendanceService.markAttendance(empCode, parsedDate, status, checkIn, checkOut);
+            Attendance updated = attendanceService.markAttendance(ohr, parsedDate, status, checkIn, checkOut);
             return ResponseEntity.ok(updated);
         } catch (IllegalStateException ex) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)

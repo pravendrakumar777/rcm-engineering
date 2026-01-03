@@ -10,7 +10,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "attendances", uniqueConstraints = @UniqueConstraint(columnNames = {"employee_emp_code", "date"}))
+@Table(name = "attendances", uniqueConstraints = @UniqueConstraint(columnNames = {"employee_ohr", "date"}))
 public class Attendance implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -21,7 +21,7 @@ public class Attendance implements Serializable {
     private Long id;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "employee_emp_code", referencedColumnName = "empCode")
+    @JoinColumn(name = "employee_ohr", referencedColumnName = "ohr")
     private Employee employee;
 
     @Column(nullable = false)
