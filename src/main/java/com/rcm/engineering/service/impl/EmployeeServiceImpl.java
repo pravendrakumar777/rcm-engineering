@@ -70,8 +70,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 
     @Override
-    public void updateStatus(String empCode, EmployeeStatus newStatus) {
-        Employee emp = employeeRepository.findByOhr(empCode).orElse(null);
+    public void updateStatus(String ohr, EmployeeStatus newStatus) {
+        Employee emp = employeeRepository.findByOhr(ohr).orElse(null);
         if (emp != null) {
             if(emp.getStatus() == EmployeeStatus.PENDING) {
                 emp.setStatus(newStatus);

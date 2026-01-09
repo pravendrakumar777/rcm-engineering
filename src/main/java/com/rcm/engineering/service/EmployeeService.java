@@ -8,6 +8,6 @@ import java.util.List;
 public interface EmployeeService {
 
     Employee createEmployee(Employee employee);   // Step-1
-    void updateStatus(String empCode, EmployeeStatus newStatus);
+    void updateStatus(String ohr, EmployeeStatus newStatus);
     List<Employee>  getAllActive();
 }

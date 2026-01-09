@@ -54,7 +54,7 @@ public class EmployeeControllerTest {
         Employee emp = new Employee();
         emp.setOhr("RCMEM12092025074409");
 
-        Mockito.when(employeeRepository.findByEmpCode("RCMEM12092025074409"))
+        Mockito.when(employeeRepository.findByOhr("RCMEM12092025074409"))
                 .thenReturn(Optional.of(emp));
 
         mockMvc.perform(get("/employees/delete/RCMEM12092025074409"))
@@ -93,7 +93,7 @@ public class EmployeeControllerTest {
         emp.setOhr(empCode);
         emp.setSalary(30000.00);
 
-        Mockito.when(employeeRepository.findByEmpCode(empCode)).thenReturn(Optional.of(emp));
+        Mockito.when(employeeRepository.findByOhr(empCode)).thenReturn(Optional.of(emp));
         Mockito.when(attendanceService.getAttendance(eq(empCode), any(), any()))
                 .thenReturn(Collections.emptyList());
 

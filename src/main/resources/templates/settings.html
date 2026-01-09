@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>RCM EMS | Settings</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h2 { color: #0066cc; }
+        .toolbar { margin-bottom: 20px; display:flex; gap:10px; }
+        input, select, textarea { padding:8px; border:1px solid #ccc; border-radius:4px; font-size:14px; }
+        button { padding:8px 12px; border:none; border-radius:4px; cursor:pointer; }
+        .btn-primary { background:#0066cc; color:#fff; }
+        .btn-danger { background:#cc0000; color:#fff; }
+        table { width:100%; border-collapse: collapse; margin-top: 12px; }
+        th, td { border:1px solid #ddd; padding:8px; font-size:14px; }
+        th { background:#f3f6fa; text-align:left; }
+        .badge { padding:2px 6px; border-radius:4px; font-weight:bold; font-size:12px; }
+        .badge.active { background:#e6ffed; color:#1a7f37; border:1px solid #1a7f37; }
+        .badge.inactive { background:#fff5f5; color:#b00020; border:1px solid #b00020; }
+        .form-section { border:1px solid #ddd; padding:12px; border-radius:6px; margin-top:20px; background:#fefefe; }
+        .msg { margin-top:10px; font-size:13px; }
+    </style>
+</head>
+<body>
+
+<h2>Settings Management</h2>
+
+<!-- Filter and list -->
+<div class="toolbar">
+    <select id="filterCategory">
+        <option value="">All Categories</option>
+        <option value="ATTENDANCE">ATTENDANCE</option>
+        <option value="PAYROLL">PAYROLL</option>
+        <option value="ONBOARDING">ONBOARDING</option>
+        <option value="CHALLAN">CHALLAN</option>
+    </select>
+    <button class="btn-primary" onclick="loadSettings()">Load Settings</button>
+</div>
+
+<table id="settingsTable">
+    <thead>
+    <tr>
+        <th>Key</th>
+        <th>Value</th>
+        <th>Category</th>
+        <th>Description</th>
+        <th>Active</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+<div id="listMsg" class="msg"></div>
+
+<!-- Fetch single setting -->
+<div class="form-section">
+    <h3>Fetch Setting by Key</h3>
+    <input type="text" id="fetchKey" placeholder="Enter setting key">
+    <button class="btn-primary" onclick="fetchSetting()">Fetch</button>
+    <div id="fetchResult" class="msg"></div>
+</div>
+
+<!-- Create/Update setting -->
+<div class="form-section">
+    <h3>Create / Update Setting</h3>
+    <input type="text" id="key" placeholder="Key"><br><br>
+    <input type="text" id="value" placeholder="Value"><br><br>
+    <select id="category">
+        <option value="ATTENDANCE">ATTENDANCE</option>
+        <option value="PAYROLL">PAYROLL</option>
+        <option value="ONBOARDING">ONBOARDING</option>
+        <option value="CHALLAN">CHALLAN</option>
+    </select><br><br>
+    <textarea id="description" placeholder="Description"></textarea><br><br>
+    <select id="active">
+        <option value="true">Active</option>
+        <option value="false">Inactive</option>
+    </select><br><br>
+    <button class="btn-primary" onclick="saveSetting()">Save</button>
+    <div id="editMsg" class="msg"></div>
+</div>
+
+<script>
+    function loadSettings() {
+      const category = $("#filterCategory").val();
+      $("#listMsg").text("Loading...");
+      $.ajax({
+        url: "/api/settings" + (category ? ("?category=" + encodeURIComponent(category)) : ""),
+        method: "GET",
+        success: function(list) {
+          const rows = list.map(s => `
+            <tr>
+              <td>${s.key}</td>
+              <td>${escapeHtml(s.value)}</td>
+              <td>${s.category}</td>
+              <td>${escapeHtml(s.description || "")}</td>
+              <td><span class="badge ${s.active ? 'active' : 'inactive'}">${s.active ? 'ACTIVE' : 'INACTIVE'}</span></td>
+              <td>
+                <button class="btn-primary" onclick="editSetting('${s.key}')">Edit</button>
+                <button class="btn-danger" onclick="deactivateSetting('${s.key}')">Deactivate</button>
+              </td>
+            </tr>
+          `).join("");
+          $("#settingsTable tbody").html(rows);
+          $("#listMsg").text(`Loaded ${list.length} settings`);
+        },
+        error: function(err) {
+          $("#listMsg").css("color", "red").text("Error loading settings: " + (err.responseText || err.statusText));
+        }
+      });
+    }
+
+    function fetchSetting() {
+      const key = $("#fetchKey").val().trim();
+      if (!key) { $("#fetchResult").css("color","orange").text("Please enter a key"); return; }
+      $.ajax({
+        url: "/api/settings/" + encodeURIComponent(key),
+        method: "GET",
+        success: function(s) {
+          $("#fetchResult").css("color","black").html(`
+            <strong>Key:</strong> ${s.key}<br>
+            <strong>Value:</strong> ${escapeHtml(s.value)}<br>
+            <strong>Category:</strong> ${s.category}<br>
+            <strong>Description:</strong> ${escapeHtml(s.description || "-")}<br>
+            <strong>Active:</strong> ${s.active}
+          `);
+        },
+        error: function(err) {
+          $("#fetchResult").css("color","red").text("Error: " + (err.responseText || err.statusText));
+        }
+      });
+    }
+
+    function saveSetting() {
+      const key = $("#key").val().trim();
+      const payload = {
+        key: key,
+        value: $("#value").val().trim(),
+        category: $("#category").val(),
+        description: $("#description").val().trim(),
+        active: $("#active").val() === "true"
+      };
+      if (!payload.key || !payload.value) {
+        $("#editMsg").css("color","orange").text("Key and Value are required");
+        return;
+      }
+      $.ajax({
+        url: "/api/settings/" + encodeURIComponent(key),
+        method: "PUT",
+        contentType: "application/json",
+        data: JSON.stringify(payload),
+        success: function() {
+          $("#editMsg").css("color","green").text("Saved successfully");
+          loadSettings();
+        },
+        error: function(err) {
+          $("#editMsg").css("color","red").text("Error saving: " + (err.responseText || err.statusText));
+        }
+      });
+    }
+
+    function editSetting(key) {
+      $.ajax({
+        url: "/api/settings/" + encodeURIComponent(key),
+        method: "GET",
+        success: function(s) {
+          $("#key").val(s.key).prop("disabled", true);
+          $("#value").val(s.value);
+          $("#category").val(s.category);
+          $("#description").val(s.description || "");
+          $("#active").val(String(s.active));
+          $("#editMsg").text("Editing existing setting");
+        },
+        error: function(err) {
+          $("#editMsg").css("color","red").text("Error loading: " + (err.responseText || err.statusText));
+        }
+      });
+    }
+
+    function deactivateSetting(key) {
+      if (!confirm("Deactivate setting: " + key + "?")) return;
+      $.ajax({
+        url: "/api/settings/" + encodeURIComponent(key),
+        method: "DELETE",
+        success: function() {
+          $("#listMsg").css("color","green").text("Setting deactivated");
+          loadSettings();
+        },
+        error: function(err) {
+          $("#listMsg").css("color","red").text("Error deactivating: " + (err.responseText || err.statusText));
+        }
+      });
+    }
+
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
+    }
+
+    $(document).ready(loadSettings);
+</script>
+
+</body>
+</html>
