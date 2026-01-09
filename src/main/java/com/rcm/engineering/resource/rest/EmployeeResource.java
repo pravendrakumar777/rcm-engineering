@@ -111,10 +111,10 @@ public class EmployeeResource {
     }
 
     @PostMapping("/employees/actions")
-    public ResponseEntity<String> actionOnClick(@RequestParam String empCode,
+    public ResponseEntity<String> actionOnClick(@RequestParam String ohr,
                                                 @RequestParam String action) {
-        log.info("REST Request to actionOnClick: {}", empCode);
-        Employee emp = employeeRepository.findByOhr(empCode).orElse(null);
+        log.info("REST Request to actionOnClick: {}", ohr);
+        Employee emp = employeeRepository.findByOhr(ohr).orElse(null);
         if (emp == null) {
             return ResponseEntity.badRequest().body(ApplicationConstants.EMPLOYEE_NOT_FOUND);
         }
@@ -140,10 +140,10 @@ public class EmployeeResource {
 
         switch (action.toLowerCase()) {
             case "approve":
-                employeeService.updateStatus(empCode, EmployeeStatus.ACTIVE);
+                employeeService.updateStatus(ohr, EmployeeStatus.ACTIVE);
                 return ResponseEntity.ok(ApplicationConstants.STATUS_ACTIVE);
             case "reject":
-                employeeService.updateStatus(empCode, EmployeeStatus.CANCEL);
+                employeeService.updateStatus(ohr, EmployeeStatus.CANCEL);
                 return ResponseEntity.ok(ApplicationConstants.STATUS_CANCELLED);
             default:
                 return ResponseEntity.badRequest().body(ApplicationConstants.INVALID_ACTION);

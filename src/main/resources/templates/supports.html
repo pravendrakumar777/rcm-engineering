@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>RCM Supports Module</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Inline CSS -->
+    <style>
+        body {
+          font-family: Arial, sans-serif;
+          margin: 20px;
+          background: #f9f9f9;
+        }
+
+        header {
+          background: #004080;
+          color: white;
+          padding: 10px;
+        }
+
+        nav button {
+          margin: 5px;
+          padding: 8px 12px;
+          background: #0066cc;
+          color: white;
+          border: none;
+          cursor: pointer;
+        }
+
+        nav button:hover {
+          background: #0055aa;
+        }
+
+        .page-section {
+          display: none;
+          margin-top: 20px;
+          padding: 15px;
+          background: white;
+          border: 1px solid #ddd;
+        }
+
+        table {
+          width: 100%;
+          border-collapse: collapse;
+        }
+
+        table th, table td {
+          border: 1px solid #ddd;
+          padding: 8px;
+        }
+
+        .status-OPEN { color: gray; }
+        .status-IN_PROGRESS { color: blue; }
+        .status-RESOLVED { color: green;
+        }
+        .status-CLOSED { color: black;
+        }
+
+        .form-card {
+          max-width: 500px;
+          margin: auto;
+          background: #fff;
+          padding: 20px;
+          border-radius: 8px;
+          box-shadow: 0 0 10px rgba(0,0,0,0.05);
+        }
+
+        .ticket-form {
+          background: #fff;
+          padding: 15px;
+          border-radius: 6px;
+          box-shadow: 0 0 5px rgba(0,0,0,0.1);
+          max-width: 900px;
+          margin: auto;
+        }
+
+        .ticket-form .form-row {
+          display: flex;
+          gap: 10px;
+          margin-bottom: 10px;
+        }
+
+        .ticket-form input,
+        .ticket-form select,
+        .ticket-form textarea {
+          padding: 8px;
+          font-size: 14px;
+          border: 1px solid #ccc;
+          border-radius: 4px;
+        }
+
+        .ticket-form input,
+        .ticket-form select {
+          flex: 1;
+        }
+
+        .ticket-form textarea {
+          width: 100%;
+          resize: vertical;
+          margin-bottom: 10px;
+        }
+
+        .btn-submit {
+          background-color: #0066cc;
+          color: white;
+          border: none;
+          padding: 10px 16px;
+          font-size: 15px;
+          border-radius: 4px;
+          cursor: pointer;
+        }
+
+        .btn-submit:hover {
+          background-color: #0055aa;
+        }
+
+        .result-box {
+          margin-top: 10px;
+          padding: 10px;
+          background: #e6ffe6;
+          border: 1px solid #b3ffb3;
+          border-radius: 4px;
+          font-size: 14px;
+        }
+
+    </style>
+</head>
+<body>
+<header>
+    <h1>RCM Support</h1>
+    <nav>
+        <button onclick="showSection('create')">Create</button>
+        <button onclick="showSection('list')">List</button>
+        <button onclick="showSection('fetch')">Fetch</button>
+        <button onclick="showSection('update')">Update</button>
+        <button onclick="showSection('status')">Status</button>
+        <button onclick="showSection('comments')">Comments</button>
+    </nav>
+</header>
+
+<main>
+    <!-- List Tickets -->
+    <section id="list" class="page-section">
+        <h2>List Tickets</h2>
+        <table id="supportTable">
+            <thead>
+            <tr>
+                <th>Ticket No</th><th>Title</th><th>Status</th><th>Priority</th><th>Actions</th>
+            </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </section>
+
+    <section id="fetch" class="page-section">
+        <h2>Fetch Ticket</h2>
+        <input type="text" id="fetchTicketNo" placeholder="Ticket No">
+        <button onclick="fetchTicket()">Fetch</button>
+        <div id="fetchResult"></div>
+    </section>
+
+    <!-- Create Ticket -->
+    <section id="create" class="page-section">
+        <h2>Create Ticket</h2>
+        <form id="createTicketForm" class="ticket-form">
+            <div class="form-row">
+                <input type="text" name="title" placeholder="Title" required>
+                <input type="text" name="requester" placeholder="Requester" required>
+                <select name="priority">
+                    <option>LOW</option><option selected>MEDIUM</option><option>HIGH</option><option>CRITICAL</option>
+                </select>
+                <input type="text" name="category" placeholder="Category">
+            </div>
+            <textarea name="description" placeholder="Description" rows="3" required></textarea>
+            <button type="submit" class="btn-submit">Submit</button>
+            <div id="createResult" class="result-box"></div>
+        </form>
+    </section>
+
+    <!-- Update Ticket -->
+    <section id="update" class="page-section">
+        <h2>Update Ticket</h2>
+        <form id="updateTicketForm">
+            <input type="number" name="id" placeholder="Ticket ID" required>
+            <input type="text" name="title" placeholder="New Title">
+            <textarea name="description" placeholder="New Description"></textarea>
+            <select name="priority">
+                <option>LOW</option><option>MEDIUM</option><option>HIGH</option><option>CRITICAL</option>
+            </select>
+            <input type="text" name="category" placeholder="Category">
+            <button type="submit">Update</button>
+        </form>
+        <div id="updateResult"></div>
+    </section>
+
+    <!-- Status Transition -->
+    <section id="status" class="page-section">
+        <h2>Change Status</h2>
+        <input type="number" id="statusId" placeholder="Ticket ID">
+        <select id="newStatus">
+            <option>OPEN</option><option>IN_PROGRESS</option><option>RESOLVED</option><option>CLOSED</option>
+        </select>
+        <button onclick="updateStatus()">Change</button>
+        <div id="statusResult"></div>
+    </section>
+
+    <!-- Add Comment -->
+    <section id="comments" class="page-section">
+        <h2>Add Comment</h2>
+        <input type="text" id="commentTicketNo" placeholder="Ticket No">
+        <textarea id="commentText" placeholder="Comment"></textarea>
+        <select id="commentVisibility">
+            <option value="INTERNAL">INTERNAL</option>
+            <option value="EXTERNAL">EXTERNAL</option>
+        </select>
+        <button onclick="addComment()">Add</button>
+        <div id="commentResult"></div>
+    </section>
+</main>
+
+<!-- Inline JavaScript -->
+<script>
+    function showSection(ticketNo) {
+      $(".page-section").hide();
+      $("#" + ticketNo).show();
+    }
+
+    function loadTickets() {
+      $.ajax({
+        url: "/api/supports/list",
+        method: "GET",
+        success: function(data) {
+          let rows = "";
+          data.content.forEach(ticket => {
+            rows += `<tr>
+              <td>${ticket.ticketNo}</td>
+              <td>${ticket.title}</td>
+              <td class="status-${ticket.status}">${ticket.status}</td>
+              <td>${ticket.priority}</td>
+              <td>
+                <button onclick="fetchTicketById(${ticket.ticketNo})">View</button>
+                <button onclick="updateStatusDirect(${ticket.ticketNo}, 'IN_PROGRESS')">Start</button>
+              </td>
+            </tr>`;
+          });
+          $("#supportTable tbody").html(rows);
+        },
+        error: function(err) {
+          alert("Error loading tickets: " + err.responseText);
+        }
+      });
+    }
+
+       function fetchTicket() {
+          const ticketNo = $("#fetchTicketNo").val().trim();
+
+          if (!ticketNo) {
+            $("#fetchResult").html("Please enter a valid Ticket No").css("color", "orange");
+            return;
+          }
+
+          $.ajax({
+            url: "/api/supports/fetch/" + ticketNo,
+            method: "GET",
+            success: function(ticket) {
+              const statusColor = getStatusColor(ticket.status);
+              const priorityColor = getPriorityColor(ticket.priority);
+
+              $("#fetchResult").html(`
+                <div style="border:1px solid #ccc; padding:14px; border-radius:6px; background:#fefefe; max-width:800px;">
+                  <h3 style="margin-top:0; color:#0066cc;">Ticket Details</h3>
+                  <table style="width:100%; border-collapse:collapse; font-size:14px;">
+                    <tr>
+                      <td><strong>Ticket No:</strong></td>
+                      <td>${ticket.ticketNo}</td>
+                      <td><strong>Title:</strong></td>
+                      <td>${ticket.title}</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Status:</strong></td>
+                      <td>${ticket.status}</td>
+                      <td><strong>Priority:</strong></td>
+                      <td><span style="color:${priorityColor}; font-weight:bold;">${ticket.priority}</span></td>
+                    </tr>
+                    <tr>
+                      <td><strong>Requester:</strong></td>
+                      <td>${ticket.requester}</td>
+                      <td><strong>Category:</strong></td>
+                      <td>${ticket.category || '-'}</td>
+                    </tr>
+                  </table>
+                  <div style="margin-top:12px;"><strong>Description:</strong><br>${ticket.description || '-'}</div>
+                </div>
+              `);
+            },
+            error: function(err) {
+              $("#fetchResult").html("Ticket not found or error: " + err.responseText)
+                .css("color", "red");
+            }
+          });
+       }
+
+        function getStatusColor(status) {
+          switch (status) {
+            case "OPEN": return "green";
+            case "IN_PROGRESS": return "orange";
+            case "RESOLVED": return "blue";
+            case "CLOSED": return "gray";
+            default: return "black";
+          }
+        }
+
+        function getPriorityColor(priority) {
+          switch (priority) {
+            case "LOW": return "#999";
+            case "MEDIUM": return "#ff9900";
+            case "HIGH": return "#ff3300";
+            case "CRITICAL": return "#cc0000";
+            default: return "black";
+          }
+        }
+
+
+       $("#createTicketForm").on("submit", function(e) {
+       e.preventDefault();
+          const payload = {
+            title: this.title.value,
+            description: this.description.value,
+            requester: this.requester.value,
+            priority: this.priority.value,
+            category: this.category.value
+          };
+
+          $.ajax({
+            url: "/api/supports/create",
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify(payload),
+            success: function(ticket) {
+              $("#createResult").html(
+                `<strong>Ticket Created!</strong><br>
+                 Ticket No: ${ticket.ticketNo}<br>
+                 Status: ${ticket.status}<br>
+                 Priority: ${ticket.priority}`
+              );
+              $("#createTicketForm")[0].reset();
+            },
+            error: function(err) {
+              $("#createResult").html("Error: " + err.responseText).css("background", "#ffe6e6").css("border-color", "#ffb3b3");
+            }
+          });
+        });
+
+    $("#updateTicketForm").on("submit", function(e) {
+      e.preventDefault();
+      const ticketNo = this.ticketNo.value;
+      const payload = {
+        title: this.title.value,
+        description: this.description.value,
+        priority: this.priority.value,
+        category: this.category.value
+      };
+      $.ajax({
+        url: "/api/supports/update/" + ticketNo,
+        method: "PUT",
+        contentType: "application/json",
+        data: JSON.stringify(payload),
+        success: function(ticket) {
+          $("#updateResult").html("Ticket updated: " + ticket.title + " | Status: " + ticket.status);
+          showSection('list');
+          loadTickets();
+        },
+        error: function(err) {
+          $("#updateResult").html("Error updating ticket: " + err.responseText);
+        }
+      });
+    });
+
+    function updateStatus() {
+      const ticketNo = $("#statusId").val();
+      const newStatus = $("#newStatus").val();
+      $.ajax({
+        url: `/api/supports/status/${ticketNo}?status=${newStatus}`,
+        method: "POST",
+        success: function(ticket) {
+          $("#statusResult").html("Status updated to " + ticket.status);
+          loadTickets();
+        },
+        error: function(err) {
+          $("#statusResult").html("Error updating status: " + err.responseText);
+        }
+      });
+    }
+
+    function addComment() {
+          const ticketNo = $("#commentTicketNo").val().trim();
+          const comment = $("#commentText").val().trim();
+          const visibility = $("#commentVisibility").val();
+
+          if (!ticketNo || !comment) {
+            $("#commentResult").html("Ticket No and Comment are required").css("color", "orange");
+            return;
+          }
+
+          $.ajax({
+            url: "/api/supports/comments/" + ticketNo,
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({ comment, visibility }),
+            success: function() {
+              $("#commentResult").html("Comment added successfully").css("color", "green");
+              $("#commentText").val("");
+            },
+            error: function(err) {
+              $("#commentResult").html("Failed to add comment: " + err.responseText).css("color", "red");
+            }
+          });
+    }
+
+
+  // Helper: fetch ticket by ID directly from list table
+  function fetchTicketById(ticketNo) {
+    $.ajax({
+      url: "/api/supports/fetch/" + ticketNo,
+      method: "GET",
+      success: function(ticket) {
+        alert("Ticket " + ticket.ticketNo + ": " + ticket.title + " | Status: " + ticket.status);
+      },
+      error: function(err) {
+        alert("Error fetching ticket: " + err.responseText);
+      }
+    });
+  }
+
+  // Helper: update status directly from list table
+  function updateStatusDirect(ticketNo, newStatus) {
+    $.ajax({
+      url: `/api/supports/status/${ticketNo}?status=${newStatus}`,
+      method: "POST",
+      success: function(ticket) {
+        alert("Ticket " + ticket.ticketNo + " status changed to " + ticket.status);
+        loadTickets();
+      },
+      error: function(err) {
+        alert("Error updating status: " + err.responseText);
+      }
+    });
+  }
+
+  $(document).ready(function() {
+    showSection('list');
+    loadTickets();
+  });
+</script>
+</body>
+</html>
