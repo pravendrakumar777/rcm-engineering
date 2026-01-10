@@ -16,7 +16,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -75,7 +78,9 @@ public class EmployeeController {
     }
 
     @PostMapping("/save")
-    public String saveEmployee(@ModelAttribute Employee employee, RedirectAttributes redirectAttributes) {
+    public String saveEmployee(@ModelAttribute Employee employee,
+                               @RequestParam(value = "file", required = false) MultipartFile file,
+                               RedirectAttributes redirectAttributes) throws java.io.IOException {
         if (employee.getOhr() != null && !employee.getOhr().isEmpty()) {
             Optional<Employee> existingEmployee = employeeRepository.findByOhr(employee.getOhr());
 
@@ -103,7 +108,10 @@ public class EmployeeController {
                 existing.setBankAccountNumber(employee.getBankAccountNumber());
                 existing.setIfscCode(employee.getIfscCode());
                 existing.setSalary(employee.getSalary());
-                //existing.setPhotoUrl("/uploads/" + fileName);
+
+                if (file != null && !file.isEmpty()) {
+                    existing.setPhoto(file.getBytes());
+                }
 
                 if (existing.getCreatedAt() == null) {
                     existing.setCreatedAt(LocalDateTime.now());
@@ -119,19 +127,78 @@ public class EmployeeController {
         }
         String empCode = "RCMEC" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("ddMMyyyyHHmmss"));
         employee.setOhr(empCode);
+
+        if (file != null && !file.isEmpty()) {
+            employee.setPhoto(file.getBytes());
+        }
         employeeRepository.save(employee);
         redirectAttributes.addFlashAttribute("success", "Employee saved successfully.");
         return "redirect:/employees";
     }
 
-    @GetMapping("/edit/{empCode}")
-    public String showEditForm(@PathVariable String empCode, Model model) {
-        Employee employee = employeeRepository.findByOhr(empCode)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid employee empCode"));
+    @GetMapping("/{id}/photo")
+    public ResponseEntity<byte[]> getPhoto(@PathVariable Long id) {
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Employee not found"));
+
+        byte[] photo = employee.getPhoto();
+        if (photo == null || photo.length == 0) {
+            throw new EntityNotFoundException("Photo not found for employee id: " + id);
+        }
+
+        //return ResponseEntity.ok().header(HttpHeaders.CONTENT_TYPE, "image/jpeg").body(employee.getPhoto());
+        return ResponseEntity.ok() .contentType(MediaType.IMAGE_JPEG).body(photo);
+    }
+
+    @GetMapping("/edit/{ohr}")
+    public String showEditForm(@PathVariable String ohr, Model model) {
+        Employee employee = employeeRepository.findByOhr(ohr)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid employee ohr"));
         model.addAttribute("employee", employee);
         model.addAttribute("formTitle", "Update Onboarded Employee Details");
         return "employee-edit";
     }
+
+    @PostMapping("/edit/{ohr}")
+    public String updateEmployee(@PathVariable String ohr,
+                                 @ModelAttribute Employee employee,
+                                 @RequestParam(value = "file", required = false) MultipartFile file,
+                                 RedirectAttributes redirectAttributes) throws IOException, java.io.IOException {
+
+        Employee existing = employeeRepository.findByOhr(ohr)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid employee ohr"));
+
+        existing.setName(employee.getName());
+        existing.setMobile(employee.getMobile());
+        existing.setGender(employee.getGender());
+        existing.setEmail(employee.getEmail());
+        existing.setManager(employee.getManager());
+        existing.setDateOfBirth(employee.getDateOfBirth());
+        existing.setAddress(employee.getAddress());
+        existing.setCity(employee.getCity());
+        existing.setState(employee.getState());
+        existing.setPostalCode(employee.getPostalCode());
+        existing.setCountry(employee.getCountry());
+        existing.setDepartment(employee.getDepartment());
+        existing.setDesignation(employee.getDesignation());
+        existing.setDateOfJoining(employee.getDateOfJoining());
+        existing.setDateOfExit(employee.getDateOfExit());
+        existing.setPanNumber(employee.getPanNumber());
+        existing.setAadhaarNumber(employee.getAadhaarNumber());
+        existing.setBankName(employee.getBankName());
+        existing.setBankAccountNumber(employee.getBankAccountNumber());
+        existing.setIfscCode(employee.getIfscCode());
+        existing.setSalary(employee.getSalary());
+
+        if (file != null && !file.isEmpty()) {
+            existing.setPhoto(file.getBytes());
+        }
+
+        employeeRepository.save(existing);
+        redirectAttributes.addFlashAttribute("success", "Employee updated successfully.");
+        return "redirect:/employees";
+    }
+
 
     @GetMapping("/delete/{empCode}")
     public String deleteEmployee(@PathVariable String empCode) {

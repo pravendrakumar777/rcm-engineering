@@ -7,6 +7,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Objects;
 
 @Entity
@@ -45,13 +46,10 @@ public class Employee implements Serializable {
     private Double salary;
     @Column(nullable = true, updatable = false)
     private LocalDateTime createdAt;
-
     @Enumerated(EnumType.STRING)
     private EmployeeStatus status = EmployeeStatus.PENDING;
-
-    @Column(name = "photo_url")
-    private String photoUrl;
-
+    @Column(name = "photo")
+    private byte[] photo;
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
@@ -257,12 +255,12 @@ public class Employee implements Serializable {
         this.status = status;
     }
 
-    public String getPhotoUrl() {
-        return photoUrl;
+    public byte[] getPhoto() {
+        return photo;
     }
 
-    public void setPhotoUrl(String photoUrl) {
-        this.photoUrl = photoUrl;
+    public void setPhoto(byte[] photo) {
+        this.photo = photo;
     }
 
     @Override
@@ -270,12 +268,14 @@ public class Employee implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Employee employee = (Employee) o;
-        return Objects.equals(id, employee.id) && Objects.equals(name, employee.name) && Objects.equals(mobile, employee.mobile) && Objects.equals(gender, employee.gender) && Objects.equals(email, employee.email) && Objects.equals(manager, employee.manager) && Objects.equals(dateOfBirth, employee.dateOfBirth) && Objects.equals(ohr, employee.ohr) && Objects.equals(address, employee.address) && Objects.equals(city, employee.city) && Objects.equals(state, employee.state) && Objects.equals(postalCode, employee.postalCode) && Objects.equals(country, employee.country) && Objects.equals(department, employee.department) && Objects.equals(designation, employee.designation) && Objects.equals(dateOfJoining, employee.dateOfJoining) && Objects.equals(dateOfExit, employee.dateOfExit) && Objects.equals(panNumber, employee.panNumber) && Objects.equals(aadhaarNumber, employee.aadhaarNumber) && Objects.equals(bankName, employee.bankName) && Objects.equals(bankAccountNumber, employee.bankAccountNumber) && Objects.equals(ifscCode, employee.ifscCode) && Objects.equals(salary, employee.salary) && Objects.equals(createdAt, employee.createdAt) && status == employee.status && Objects.equals(photoUrl, employee.photoUrl);
+        return Objects.equals(id, employee.id) && Objects.equals(name, employee.name) && Objects.equals(mobile, employee.mobile) && Objects.equals(gender, employee.gender) && Objects.equals(email, employee.email) && Objects.equals(manager, employee.manager) && Objects.equals(dateOfBirth, employee.dateOfBirth) && Objects.equals(ohr, employee.ohr) && Objects.equals(address, employee.address) && Objects.equals(city, employee.city) && Objects.equals(state, employee.state) && Objects.equals(postalCode, employee.postalCode) && Objects.equals(country, employee.country) && Objects.equals(department, employee.department) && Objects.equals(designation, employee.designation) && Objects.equals(dateOfJoining, employee.dateOfJoining) && Objects.equals(dateOfExit, employee.dateOfExit) && Objects.equals(panNumber, employee.panNumber) && Objects.equals(aadhaarNumber, employee.aadhaarNumber) && Objects.equals(bankName, employee.bankName) && Objects.equals(bankAccountNumber, employee.bankAccountNumber) && Objects.equals(ifscCode, employee.ifscCode) && Objects.equals(salary, employee.salary) && Objects.equals(createdAt, employee.createdAt) && status == employee.status && Arrays.equals(photo, employee.photo);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, mobile, gender, email, manager, dateOfBirth, ohr, address, city, state, postalCode, country, department, designation, dateOfJoining, dateOfExit, panNumber, aadhaarNumber, bankName, bankAccountNumber, ifscCode, salary, createdAt, status, photoUrl);
+        int result = Objects.hash(id, name, mobile, gender, email, manager, dateOfBirth, ohr, address, city, state, postalCode, country, department, designation, dateOfJoining, dateOfExit, panNumber, aadhaarNumber, bankName, bankAccountNumber, ifscCode, salary, createdAt, status);
+        result = 31 * result + Arrays.hashCode(photo);
+        return result;
     }
 
     @Override
@@ -306,7 +306,7 @@ public class Employee implements Serializable {
                 ", salary=" + salary +
                 ", createdAt=" + createdAt +
                 ", status=" + status +
-                ", photoUrl='" + photoUrl + '\'' +
+                ", photo=" + Arrays.toString(photo) +
                 '}';
     }
 }
