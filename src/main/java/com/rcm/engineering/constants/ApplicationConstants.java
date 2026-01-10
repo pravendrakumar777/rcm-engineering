@@ -18,4 +18,10 @@ public class ApplicationConstants {
     public static final String LOGIN_SUCCESS = "Login Successfully";
     public static final String EMPLOYEE_FOUND_SUCCESS = "Employee found successfully";
     public static final String SERVER_ERROR = "Internal server error occurred";
+    public static final String RECORDS_FOUND = "Data fetch successfully";
+    public static final String RECORDS_NOT_FOUND = "No records found";
+    public static final String ERROR_OCCURRED = "Internal server error occurred";
+    public static final String SUCCESS_STATUS_CODE = "RCM_200";
+    public static final String NOT_FOUND_STATUS_CODE = "RCM_404";
+    public static final String INTERNAL_SERVER_ERROR = "RCM_500";
 }

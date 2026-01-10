@@ -48,7 +48,7 @@
     </div>
 
     <div class="form-container">
-        <form th:action="@{/employees/save}" th:object="${employee}" method="post">
+        <form th:action="@{/employees/save}" th:object="${employee}" method="post" enctype="multipart/form-data">
             <input type="hidden" th:field="*{ohr}"/>
 
             <div class="row mb-3">
@@ -184,11 +184,30 @@
                 </div>
             </div>
 
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label class="form-label">Photo</label>
+                    <input type="file" class="form-control" name="file" accept="image/*" onchange="previewPhoto(event)" />
+                    <img id="photoPreview" src="#" alt="Preview" style="margin-top:10px; max-width:150px; display:none;"/>
+                </div>
+            </div>
+
             <div class="text-end">
                 <button type="submit" class="btn btn-primary">Update</button>
             </div>
         </form>
     </div>
 </div>
+<script>
+    function previewPhoto(event) {
+        const reader = new FileReader();
+        reader.onload = function(){
+            const output = document.getElementById('photoPreview');
+            output.src = reader.result;
+            output.style.display = 'block';
+        };
+        reader.readAsDataURL(event.target.files[0]);
+    }
+</script>
 </body>
 </html>

@@ -4,7 +4,6 @@ import com.rcm.engineering.constants.ApplicationConstants;
 import com.rcm.engineering.domain.Employee;
 import com.rcm.engineering.domain.enumerations.EmployeeStatus;
 import com.rcm.engineering.repository.EmployeeRepository;
-import com.rcm.engineering.request.ApiResponse;
 import com.rcm.engineering.service.EmployeeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,21 +46,21 @@ public class EmployeeResource {
         final String endpoint = "/employees/create";
 
         try {
-            log.info("traceId:{} | Source:APK | RequestType:REST | Endpoint:{} | Action:createEmployee | Step:START | Payload:{}", traceId, endpoint, employee);
+            log.info("traceId: {} | Source: APK | RequestType: REST | Endpoint: {} | Action: createEmployee | Step: START | Payload: {}", traceId, endpoint, employee);
 
-            String empCode = "RCMEC" + LocalDateTime.now()
+            String ohrCode = "RCMEC" + LocalDateTime.now()
                     .format(DateTimeFormatter.ofPattern("ddMMyyyyHHmmss"));
-            employee.setOhr(empCode);
-            log.debug("traceId:{} | Source:APK | RequestType:REST | Endpoint:{} | Action:createEmployee | Step:GENERATE_CODE | EmpCode:{}", traceId, endpoint, empCode);
+            employee.setOhr(ohrCode);
+            log.debug("traceId: {} | Source: APK | RequestType: REST | Endpoint: {} | Action: createEmployee | Step: GENERATE_CODE | OHR: {}", traceId, endpoint, ohrCode);
 
             Employee createdEmp = employeeService.createEmployee(employee);
-            log.info("traceId:{} | Source:APK | RequestType:REST | Endpoint:{} | Action:createEmployee | Step:SERVICE_CALL | Result:SUCCESS | EmployeeId:{}", traceId, endpoint, createdEmp.getId());
+            log.info("traceId: {} | Source: APK | RequestType: REST | Endpoint: {} | Action: createEmployee | Step: SERVICE_CALL | Result: SUCCESS | EmployeeId: {}", traceId, endpoint, createdEmp.getId());
 
-            log.info("traceId:{} | Source:APK | RequestType:REST | Endpoint:{} | Action:createEmployee | Step:END | Status:200 OK | EmployeeId:{}", traceId, endpoint, createdEmp.getId());
+            log.info("traceId: {} | Source: APK | RequestType: REST | Endpoint: {} | Action: createEmployee | Step: END | Status: 200 OK | EmployeeId: {}", traceId, endpoint, createdEmp.getId());
             return ResponseEntity.ok().body(createdEmp);
 
         } catch (Exception ex) {
-            log.error("traceId:{} | Source:APK | RequestType:REST | Endpoint:{} | Action:createEmployee | Step:ERROR | Message:{} | Payload:{}", traceId, endpoint, ex.getMessage(), employee, ex);
+            log.error("traceId: {} | Source: APK | RequestType: REST | Endpoint: {} | Action: createEmployee | Step: ERROR | Message: {} | Payload: {}", traceId, endpoint, ex.getMessage(), employee, ex);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error creating employee");
         } finally {
             MDC.clear();
@@ -152,12 +151,12 @@ public class EmployeeResource {
 
     @GetMapping("/employees/search")
     public ResponseEntity<?> searchEmployee(@RequestParam("query") String query) {
-        log.info("SEARCH_EMPLOYEE | Request received | query: {}", query);
+        log.info("SEARCH_EMPLOYEE | Request received | OHR: {}", query);
         try {
             Optional<Employee> result = employeeRepository.findByNameIgnoreCaseOrOhrIgnoreCase(query, query);
 
             if (result.isPresent()) {
-                log.info("SEARCH_EMPLOYEE | Success | query: {} | employee: {}", query, result.get());
+                log.info("SEARCH_EMPLOYEE | Success | OHR: {} | : {}", query, result.get());
                 return ResponseEntity.ok(result.get());
             } else {
                 log.warn("SEARCH_EMPLOYEE | Not Found | query: {}", query);

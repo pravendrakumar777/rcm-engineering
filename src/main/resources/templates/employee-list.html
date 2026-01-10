@@ -231,6 +231,7 @@
                                 data-salary=${emp.salary},
                                 data-dob=${emp.dateOfBirth},
                                 data-doj=${emp.dateOfJoining},
+                                data-id=${emp.id},
                         ">👁️ View</button>
                     </td>
                 </tr>
@@ -244,9 +245,19 @@
     <div class="modal-dialog modal-dialog-centered modal-xl">
         <div class="modal-content shadow-lg rounded-4 border-0">
             <div class="modal-header text-white" style="background: linear-gradient(90deg,#007bff,#00c6ff);">
-                <h5 class="modal-title fw-semibold" id="employeeDetailLabel">
-                    <i class="bi bi-person-circle me-2"></i>Employee Information
-                </h5>
+<!--                <h5 class="modal-title fw-semibold" id="employeeDetailLabel">-->
+<!--                    <i class="bi bi-person-circle me-2"></i>Employee Information-->
+<!--                </h5>-->
+                <div class="d-flex align-items-center gap-3">
+                    <img id="modalEmpPhotoIcon"
+                         src=""
+                         alt="Employee Photo"
+                         class="rounded-circle border shadow-sm"
+                         style="width:40px; height:40px; object-fit:cover;">
+                    <h5 class="modal-title fw-semibold mb-0" id="employeeDetailLabel">
+                        Employee Information
+                    </h5>
+                </div>
             </div>
             <div class="modal-body p-4 text-dark" style="background-color:#f9fafc;">
                 <div class="container-fluid">
@@ -345,6 +356,10 @@
             document.getElementById('modalEmpAccount').textContent = button.getAttribute('data-acc');
             document.getElementById('modalEmpIfsc').textContent = button.getAttribute('data-ifsc');
             document.getElementById('modalEmpSalary').textContent = button.getAttribute('data-salary');
+
+            const empId = button.getAttribute("data-id");
+            document.getElementById("modalEmpPhotoIcon").src = "/employees/" + empId + "/photo";
+
         });
     });
 
