@@ -23,37 +23,23 @@ public class AuthController {
         this.userService = userService;
     }
 
-    @GetMapping("/register")
+    //@GetMapping("/register")
     public String registerForm(Model model) {
         model.addAttribute("user", new User());
         model.addAttribute("availableRoles", Arrays.asList("USER", "ADMIN", "SUPER_ADMIN"));
         return "register";
     }
 
-    @PostMapping("/register")
+    //@PostMapping("/register")
     public String register(@ModelAttribute User user, @RequestParam("roles") List<String> roles) {
         user.setRoles(new HashSet<>(roles));
         userService.save(user);
         return "redirect:/login";
     }
 
-    @GetMapping("/login")
+    //@GetMapping("/login")
     public String login() {
         return "login";
     }
 
-    @GetMapping("/user")
-    public String userPage() {
-        return "user";
-    }
-
-    @GetMapping("/admin")
-    public String adminPage() {
-        return "admin";
-    }
-
-    @GetMapping("/superadmin")
-    public String superAdminPage() {
-        return "superadmin";
-    }
 }

@@ -20,8 +20,8 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                .antMatchers("/register", "/login").permitAll()
-                .antMatchers("/attendance/dashboard").authenticated()
+                //.antMatchers("/register", "/login").permitAll()
+                .antMatchers("/", "/attendance/dashboard").authenticated()
                 .antMatchers("/attendance/api/mark").hasAnyRole("ADMIN", "SUPER_ADMIN")
                 .antMatchers("/employees/form", "/employees/save").hasRole("SUPER_ADMIN")
                 .antMatchers("/user").hasRole("USER")

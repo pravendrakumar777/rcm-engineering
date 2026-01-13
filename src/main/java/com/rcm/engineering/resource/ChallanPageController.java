@@ -15,11 +15,6 @@ public class ChallanPageController {
         this.challanRepository = challanRepository;
     }
 
-    @GetMapping("/")
-    public String homeRedirect() {
-        return "redirect:/login";
-    }
-
     @GetMapping("/challans")
     public String viewChallanListPage() {
         return "challan-list";
