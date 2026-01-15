@@ -132,6 +132,11 @@
             padding: 6px 0;
             border-bottom: 1px solid #eee;
         }
+        .logout-link {
+            pointer-events: none;
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body>
@@ -167,7 +172,7 @@
         </ul>
         <div class="mt-auto w-100">
             <form th:action="@{/logout}" method="post" id="logoutForm">
-                <a href="#" class="d-flex align-items-center text-white text-decoration-none py-3 px-3 logout-link"
+                <a href="#" class="d-flex align-items-center text-white text-decoration-none py-3 px-3 logout-link disabled"
                    onclick="document.getElementById('logoutForm').submit(); return false;">
                     <i class="bi bi-box-arrow-right fs-5 me-2"></i>
                     <span>Logout</span>
