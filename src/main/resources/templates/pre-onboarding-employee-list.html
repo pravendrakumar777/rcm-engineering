@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Pre Onboarding Employees</title>
+  <title>Pre Onboarding</title>
 
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -138,16 +138,15 @@
   <div th:fragment="sidebar" class="sidebar">
     <img src="/images/logo.png" alt="Logo">
     <ul class="nav-links">
-      <li><a th:href="@{/attendance/dashboard}" class="active"><i class="bi bi-speedometer2"></i> <span>Dashboard</span></a></li>
-      <li><a class="dropdown-toggle text-white" data-bs-toggle="collapse" href="#employeesSubmenu"><i class="bi bi-people"></i> <span>Employees</span></a>
+      <li><a th:href="@{/attendance/dashboard}" class="active"><i class="bi bi-speedometer2"></i> <span>Attendance Dashboard</span></a></li>
+      <li><a class="dropdown-toggle text-white" data-bs-toggle="collapse" href="#employeesSubmenu"><i class="bi bi-people"></i> <span>Onboarding & Orientation</span></a>
         <ul class="collapse nav flex-column ms-2" id="employeesSubmenu">
           <li><a th:href="@{/employees/pre-onboarding}" class="bi text-white align-items-center py-2"><i class="bi bi-pre-onboarding-list me-2"></i><span>Pre-Onboarding</span></a></li>
           <li><a th:href="@{/employees}" class="text-white d-flex align-items-center py-2"><i class="bi bi-onboarded-employee-list me-2"></i><span>Post‑Onboarding</span></a></li>
         </ul>
       </li>
-
-      <li><a th:href="@{/attendance}"><i class="bi bi-calendar-check"></i> <span>Attendance</span></a></li>
-      <li><a class="dropdown-toggle text-white" data-bs-toggle="collapse" href="#reportsSubmenu"><i class="bi bi-bar-chart-line"></i> <span>Reports</span></a>
+      <li><a th:href="@{/attendance}"><i class="bi bi-calendar-check"></i> <span>Time & Attendance</span></a></li>
+      <li><a class="dropdown-toggle text-white" data-bs-toggle="collapse" href="#reportsSubmenu" role="button" aria-expanded="false" aria-controls="reportsSubmenu"><i class="bi bi-bar-chart-line"></i> <span>Compensation & Benefits</span></a>
         <ul class="collapse nav flex-column ms-3" id="reportsSubmenu">
           <li><a th:href="@{/employees/calculate-salary}" class="text-white d-flex align-items-center py-2"><i class="bi bi-currency-rupee me-2"></i> <span>Salary</span></a></li>
           <li><a th:href="@{/challans}" class="text-white d-flex align-items-center py-2"><i class="bi bi-clipboard-data me-2"></i> <span>Challans</span></a></li>
@@ -155,12 +154,12 @@
           <li><a th:href="@{/attendance/export}" class="text-white d-flex align-items-center py-2"><i class="bi bi-box-arrow-up me-2"></i><span>Exports</span></a></li>
         </ul>
       </li>
-      <li><a th:href="@{/accounts}"><i class="bi bi-person-badge"></i> <span>Accounts</span></a></li>
+      <li><a th:href="@{/leave-managements}"><i class="bi bi-clipboard-check"></i> <span>Leave Management</span></a></li>
+      <li><a th:href="@{/recruitment-interviews}"><i class="bi bi-lightbulb"></i> <span>Recruitment & Interview</span></a></li>
+      <li><a th:href="@{/performance-goals}"><i class="bi bi-stack"></i> <span>Performance & Goals</span></a></li>
+      <li><a th:href="@{/training-developments}"><i class="bi bi-box-seam"></i> <span>Training & Development</span></a></li>
+      <li><a th:href="@{/supports/}"><i class="bi bi-life-preserver"></i> <span>Supports</span></a></li>
       <li><a th:href="@{/settings}"><i class="bi bi-gear"></i> <span>Settings</span></a></li>
-      <li><a th:href="@{/whatsnew}"><i class="bi bi-lightbulb"></i> <span>What's New</span></a></li>
-      <li><a th:href="@{/supports}"><i class="bi bi-life-preserver"></i> <span>Supports</span></a></li>
-      <li><a th:href="@{/more}"><i class="bi bi-stack"></i> <span>More Options</span></a></li>
-      <li><a th:href="@{/extra}"><i class="bi bi-box-seam"></i> <span>Extra Link</span></a></li>
     </ul>
     <div class="mt-auto w-100">
       <form th:action="@{/logout}" method="post" id="logoutForm">
@@ -179,7 +178,7 @@
       <div class="action-buttons">
         <a href="/employees/form" class="btn btn-success btn-new">➕ Pre Onboarding</a>
       </div>
-      <h3 class="header-title">Pre Onboarding Employees</h3>
+      <h3 class="header-title">Pre Onboarding</h3>
       <div style="width: 120px;"></div>
     </div>
 
