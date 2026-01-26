@@ -48,7 +48,7 @@ public class FtlToPdfUtil {
         Template template = cfg.getTemplate("challan.ftl");
         Map<String, Object> model = new HashMap<>();
 
-        ClassPathResource resource = new ClassPathResource("static/images/logo.png");
+        ClassPathResource resource = new ClassPathResource("static/images/Niiran-white.png");
         byte[] imageBytes = Files.readAllBytes(resource.getFile().toPath());
         String base64Logo = Base64.getEncoder().encodeToString(imageBytes);
         model.put("logoBase64", base64Logo);
@@ -124,7 +124,7 @@ public class FtlToPdfUtil {
             long totalHours = totalMinutes / 60;
             long remainingMinutes = totalMinutes % 60;
             model.put("totalWorkedHours", String.format("%d Hrs %d Mins", totalHours, remainingMinutes));
-            ClassPathResource resource = new ClassPathResource("static/images/logo.png");
+            ClassPathResource resource = new ClassPathResource("static/images/Niiran-white.png");
             byte[] imageBytes = Files.readAllBytes(resource.getFile().toPath());
             String base64Logo = Base64.getEncoder().encodeToString(imageBytes);
             model.put("logoBase64", base64Logo);
