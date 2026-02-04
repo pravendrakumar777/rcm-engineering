@@ -47,6 +47,7 @@ public class EmployeeController {
         this.employeeService = employeeService;
     }
 
+    // employee pre-onboarding list
     @GetMapping("/pre-onboarding")
     public String preOnboardingList(Model model) {
         List<Employee> onboardingEmployees = employeeRepository
@@ -60,6 +61,7 @@ public class EmployeeController {
         return "pre-onboarding-employee-list";
     }
 
+    // employee post-onboarding list
     @GetMapping
     public String postOnboardingList(Model model) {
         List<Employee> activeEmployees = employeeRepository
@@ -72,6 +74,7 @@ public class EmployeeController {
         return "employee-list";
     }
 
+    // employee form
     @GetMapping("/form")
     public String showCreateForm(Model model) {
         model.addAttribute("employee", new Employee());
@@ -79,6 +82,7 @@ public class EmployeeController {
         return "employee-form";
     }
 
+    // employee creation
     @PostMapping("/save")
     public String saveEmployee(@ModelAttribute Employee employee,
                                @RequestParam(value = "file", required = false) MultipartFile file,
@@ -138,6 +142,7 @@ public class EmployeeController {
         return "redirect:/employees";
     }
 
+    // fetch photo
     @GetMapping("/{id}/photo")
     public ResponseEntity<byte[]> getPhoto(@PathVariable Long id) {
         Employee employee = employeeRepository.findById(id)
@@ -147,11 +152,10 @@ public class EmployeeController {
         if (photo == null || photo.length == 0) {
             throw new EntityNotFoundException("Photo not found for employee id: " + id);
         }
-
-        //return ResponseEntity.ok().header(HttpHeaders.CONTENT_TYPE, "image/jpeg").body(employee.getPhoto());
         return ResponseEntity.ok() .contentType(MediaType.IMAGE_JPEG).body(photo);
     }
 
+    // employee update form
     @GetMapping("/edit/{ohr}")
     public String showEditForm(@PathVariable String ohr, Model model) {
         Employee employee = employeeRepository.findByOhr(ohr)
@@ -161,6 +165,7 @@ public class EmployeeController {
         return "employee-edit";
     }
 
+    // employee update
     @PostMapping("/edit/{ohr}")
     public String updateEmployee(@PathVariable String ohr,
                                  @ModelAttribute Employee employee,
@@ -195,18 +200,17 @@ public class EmployeeController {
         if (file != null && !file.isEmpty()) {
             existing.setPhoto(file.getBytes());
         }
-
         employeeRepository.save(existing);
         redirectAttributes.addFlashAttribute("success", "Employee updated successfully.");
         return "redirect:/employees";
     }
 
 
+    // employee delete
     @GetMapping("/delete/{ohr}")
     public String deleteEmployee(@PathVariable String ohr) {
         Employee employee = employeeRepository.findByOhr(ohr)
                 .orElseThrow(() -> new IllegalArgumentException("Employee with ohr " + ohr + " not found"));
-
         employeeRepository.delete(employee);
         return "redirect:/employees";
     }
@@ -223,6 +227,7 @@ public class EmployeeController {
         return employeeRepository.findAll();
     }
 
+    // salary calculation
     @GetMapping("/calculate-salary")
     public String calculateSalary(
             @RequestParam(required = false) String ohr,
@@ -285,6 +290,7 @@ public class EmployeeController {
         return "calculate-salary";
     }
 
+    // salary payslip
     @GetMapping("/calculate-salary/pdf")
     public void downloadPayslip(
             @RequestParam String ohr,
@@ -330,7 +336,7 @@ public class EmployeeController {
         FtlToPdfUtil.generatePayslip(employee, attendanceList, presentDays, totalSalary, response.getOutputStream());
     }
 
-    // Download Employee Profile
+    // download Employee Profile
     @GetMapping("/{ohr}/profile")
     public ResponseEntity<byte[]> profilePDF(@PathVariable String ohr) {
         try {

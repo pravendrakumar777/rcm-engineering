@@ -27,7 +27,7 @@ td { text-align: center; }
                  style="width:150px; height:150px; object-fit: contain;"/>
         </td>
         <td style="width:80%; vertical-align: top; text-align:center; border: none; padding: 0;">
-            <h2 style="margin:0;">RCM ENGINEERING</h2>
+            <h2 style="margin:0;">Niiran Software Solutions</h2>
             <div style="font-size:8pt; line-height: 1.2;">
                 KH NO: 513/1, 513/2, VILL BASAI, NEAR BASAI FLYOVER - GURUGRAM HR. 122001<br>
                 Mob: 9639200584, 7819929402 | Email: cs29680881@gmail.com<br>

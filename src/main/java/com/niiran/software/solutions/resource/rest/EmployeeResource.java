@@ -1,9 +1,11 @@
 package com.niiran.software.solutions.resource.rest;
 
 import com.niiran.software.solutions.constants.ApplicationConstants;
+import com.niiran.software.solutions.domain.Attendance;
 import com.niiran.software.solutions.domain.Employee;
 import com.niiran.software.solutions.domain.enumerations.EmployeeStatus;
 import com.niiran.software.solutions.repository.EmployeeRepository;
+import com.niiran.software.solutions.service.AttendanceService;
 import com.niiran.software.solutions.service.EmployeeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,11 +14,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
@@ -24,10 +30,12 @@ public class EmployeeResource {
     private static final Logger log = LoggerFactory.getLogger(EmployeeResource.class);
     private final EmployeeRepository employeeRepository;
     private final EmployeeService employeeService;
+    private final AttendanceService attendanceService;
 
-    public EmployeeResource(EmployeeRepository employeeRepository, EmployeeService employeeService) {
+    public EmployeeResource(EmployeeRepository employeeRepository, EmployeeService employeeService, AttendanceService attendanceService) {
         this.employeeRepository = employeeRepository;
         this.employeeService = employeeService;
+        this.attendanceService = attendanceService;
     }
 
     @GetMapping("/employees/{ohr}")
