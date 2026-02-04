@@ -131,7 +131,7 @@ public class EmployeeController {
                 return "redirect:/employees?error=notfound";
             }
         }
-        String ohr = "RCMEC" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("ddMMyyyyHHmmss"));
+        String ohr = "NII" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("ddMMyyyyHHmmss"));
         employee.setOhr(ohr);
 
         if (file != null && !file.isEmpty()) {
