@@ -50,6 +50,10 @@ public class Employee implements Serializable {
     private EmployeeStatus status = EmployeeStatus.PENDING;
     @Column(name = "photo")
     private byte[] photo;
+
+    @Column(name = "location")
+    private String location;
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
@@ -262,6 +266,12 @@ public class Employee implements Serializable {
     public void setPhoto(byte[] photo) {
         this.photo = photo;
     }
+
+    public String getLocation(){return location; }
+    public void setLocation(String location){
+        this.location = location;
+    }
+
 
     @Override
     public boolean equals(Object o) {
