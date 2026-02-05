@@ -56,7 +56,7 @@ public class EmployeeResource {
         try {
             log.info("traceId: {} | Source: APK | RequestType: REST | Endpoint: {} | Action: createEmployee | Step: START | Payload: {}", traceId, endpoint, employee);
 
-            String ohrCode = "RCMEC" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("ddMMyyyyHHmmss"));
+            String ohrCode = "NII" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("ddMMyyyyHHmmss"));
             employee.setOhr(ohrCode);
             log.debug("traceId: {} | Source: APK | RequestType: REST | Endpoint: {} | Action: createEmployee | Step: GENERATE_CODE | OHR: {}", traceId, endpoint, ohrCode);
 
