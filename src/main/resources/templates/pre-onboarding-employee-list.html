@@ -138,9 +138,8 @@
   <div th:fragment="sidebar" class="sidebar">
     <img src="/images/Niiran-white.png" alt="RCM Logo">
     <ul class="nav-links">
-      <li><a th:href="@{/attendance/dashboard}" class="active"><i class="bi bi-speedometer2"></i><span>Attendance Dashboard</span></a></li>
-      <li><a th:href="@{/organizations/companies}"><i class="bi bi-building"></i><span>Organization & Company</span></a></li>
-      <li><a th:href="@{/users/roles}"><i class="bi bi-person-badge"></i><span>User & Role</span></a></li>
+      <li><a th:href="@{/attendance/dashboard}" class="active"><i class="bi bi-speedometer2"></i><span>Workforce Dashboard</span></a></li>
+      <li><a th:href="@{/organizations}"><i class="bi bi-building"></i><span>Organization & Company</span></a></li>
       <!-- Onboarding -->
       <li><a class="dropdown-toggle text-white" data-bs-toggle="collapse" href="#employeesSubmenu"><i class="bi bi-people-fill"></i><span>Onboarding & Orientation</span></a>
         <ul class="collapse nav flex-column ms-2" id="employeesSubmenu">
@@ -149,9 +148,9 @@
         </ul>
       </li>
       <li><a th:href="@{/attendance}"><i class="bi bi-calendar-check"></i><span>Attendance Management</span></a></li>
-      <li><a th:href="@{/leave-managements}"><i class="bi bi-calendar-x"></i><span>Leave Management</span></a></li>
+      <li><a th:href="@{/leave-managements}"><i class="bi bi-calendar-x"></i><span>Leave Policy & Absence</span></a></li>
       <!-- Payroll -->
-      <li><a class="dropdown-toggle text-white" data-bs-toggle="collapse" href="#reportsSubmenu"><i class="bi bi-cash-stack"></i><span>Payroll & Salary</span></a>
+      <li><a class="dropdown-toggle text-white" data-bs-toggle="collapse" href="#reportsSubmenu"><i class="bi bi-cash-stack"></i><span>Payroll, Challan & Records</span></a>
         <ul class="collapse nav flex-column ms-3" id="reportsSubmenu">
           <li><a th:href="@{/employees/calculate-salary}" class="text-white d-flex align-items-center py-2"><i class="bi bi-currency-rupee me-2"></i><span>Salary</span></a></li>
           <li><a th:href="@{/challans}" class="text-white d-flex align-items-center py-2"><i class="bi bi-receipt me-2"></i><span>Challans</span></a></li>
@@ -162,7 +161,7 @@
       <li><a th:href="@{/recruitment-interviews}"><i class="bi bi-person-workspace"></i><span>Recruitment & Interview</span></a></li>
       <li><a th:href="@{/performance-goals}"><i class="bi bi-graph-up-arrow"></i><span>Performance Management</span></a></li>
       <li><a th:href="@{/projects/tasks}"><i class="bi bi-kanban"></i><span>Project & Task Management</span></a></li>
-      <li><a th:href="@{/assets-managements}"><i class="bi bi-box-seam"></i><span>Asset Management</span></a></li>
+      <li><a th:href="@{/assets-managements}"><i class="bi bi-box-seam"></i><span>Asset Tracking & Compliance</span></a></li>
       <li><a th:href="@{/documents-managements}"><i class="bi bi-file-earmark-text"></i><span>Documents Management</span></a></li>
       <li><a th:href="@{/notifications}"><i class="bi bi-bell"></i><span>Notifications & Communication</span></a></li>
       <li><a th:href="@{/reports/analytics}"><i class="bi bi-bar-chart-line"></i><span>Reports & Analytics</span></a></li>
@@ -171,6 +170,7 @@
       <li><a th:href="@{/integrations}"><i class="bi bi-plug"></i><span>API & Integration</span></a></li>
       <li><a th:href="@{/audits/securities}"><i class="bi bi-shield-lock"></i><span>Audit & Security</span></a></li>
       <li><a th:href="@{/training-developments}"><i class="bi bi-mortarboard"></i><span>Training & Development</span></a></li>
+      <li><a th:href="@{/users/roles}"><i class="bi bi-person-badge"></i><span>User & Role</span></a></li>
       <li><a th:href="@{/supports/}"><i class="bi bi-life-preserver"></i><span>Supports</span></a></li>
     </ul>
     <div class="mt-auto w-100">
