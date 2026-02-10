@@ -92,7 +92,7 @@ font-size: 15px;
 
 <div class="input-group">
 <i class="bi bi-building"></i>
-<input id="organizationName" placeholder="Organization Name">
+<input id="organizationName" placeholder="Organization">
 </div>
 
 <div class="input-group">
@@ -114,21 +114,28 @@ font-size: 15px;
 <i class="bi bi-diagram-3"></i>
 <select id="industryType">
 <option value="">Industry Type</option>
-<option>IT</option>
-<option>Manufacturing</option>
-<option>Healthcare</option>
-<option>Education</option>
+    <option>IT & Software Services</option>
+    <option>Mechanical & Engineering</option>
+    <option>Consulting & Corporate</option>
+    <option>Finance Banking & Fintech</option>
+    <option>Healthcare & Pharma, Biotech</option>
+    <option>Manufacturing & Industrial</option>
+    <option>Construction & Real Estate</option>
+    <option>Investment & Venture Capital</option>
+    <option>Retail & E-Commerce</option>
+    <option>Logistics & Supply Chain</option>
+    <option>Media & Digital Platforms</option>
+    <option>Telecommunications</option>
+    <option>Aerospace & Defense</option>
+    <option>Automobile & EV</option>
+    <option>Energy & Power</option>
+    <option>Insurance</option>
 </select>
 </div>
 
 <div class="input-group">
 <i class="bi bi-tags"></i>
 <input id="industry" placeholder="Industry">
-</div>
-
-<div class="input-group">
-<i class="bi bi-file-earmark-text"></i>
-<input id="registrationNumber" placeholder="Registration Number">
 </div>
 
 <div class="input-group">

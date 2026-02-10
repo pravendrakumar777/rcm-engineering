@@ -4,6 +4,7 @@ import com.niiran.software.solutions.domain.org.Organization;
 import com.niiran.software.solutions.exceptions.ResourceNotFoundException;
 import com.niiran.software.solutions.repository.org.OrganizationRepository;
 import com.niiran.software.solutions.service.org.OrganizationService;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -28,7 +29,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Override
     public List<Organization> getAll() {
-        return organizationRepository.findAll();
+        return organizationRepository.findAllByOrderByCreatedDateDescNative();
     }
 
     @Override

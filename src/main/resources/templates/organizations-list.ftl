@@ -206,22 +206,22 @@ window.onload = loadOrganizations;
 <h3>Organization Details</h3>
 
         <div class="details-grid">
-            <div class="details-item"><b>Org ID:</b> <span id="mId"></span></div>
-                <div class="details-item"><b>Name:</b> <span id="mName"></span></div>
-                <div class="details-item"><b>Email:</b> <span id="mEmail"></span></div>
-                <div class="details-item"><b>Phone:</b> <span id="mPhone"></span></div>
-                <div class="details-item"><b>Address:</b> <span id="mAddress"></span></div>
-                <div class="details-item"><b>Status:</b> <span id="mStatus"></span></div>
-                <div class="details-item"><b>Industry Type:</b> <span id="mIndustryType"></span></div>
-                <div class="details-item"><b>Industry:</b> <span id="mIndustry"></span></div>
-                <div class="details-item"><b>Registration No:</b> <span id="mRegistrationNumber"></span></div>
-                <div class="details-item"><b>PAN / TAX:</b> <span id="mPanTaxId"></span></div>
-                <div class="details-item"><b>Founded Year:</b> <span id="mFoundedYear"></span></div>
-                <div class="details-item"><b>Founded By:</b> <span id="mFoundedBy"></span></div>
-                <div class="details-item"><b>City:</b> <span id="mCity"></span></div>
-                <div class="details-item"><b>Country:</b> <span id="mCountry"></span></div>
-                <div class="details-item"><b>Website:</b> <span id="mWebsite"></span></div>
-                <div class="details-item"><b>Created Date:</b> <span id="mCreatedDate"></span></div>
+            <div class="details-item"><b>ORG ID :</b> <span id="mId"></span></div>
+                <div class="details-item"><b>Name :</b> <span id="mName"></span></div>
+                <div class="details-item"><b>Email :</b> <span id="mEmail"></span></div>
+                <div class="details-item"><b>Phone :</b> <span id="mPhone"></span></div>
+                <div class="details-item"><b>Address :</b> <span id="mAddress"></span></div>
+                <div class="details-item"><b>Status :</b> <span id="mStatus"></span></div>
+                <div class="details-item"><b>Industry Type :</b> <span id="mIndustryType"></span></div>
+                <div class="details-item"><b>Industry :</b> <span id="mIndustry"></span></div>
+                <div class="details-item"><b>Registration No :</b> <span id="mRegistrationNumber"></span></div>
+                <div class="details-item"><b>PAN & TAX :</b> <span id="mPanTaxId"></span></div>
+                <div class="details-item"><b>Founded Year :</b> <span id="mFoundedYear"></span></div>
+                <div class="details-item"><b>Founded By :</b> <span id="mFoundedBy"></span></div>
+                <div class="details-item"><b>City :</b> <span id="mCity"></span></div>
+                <div class="details-item"><b>Country :</b> <span id="mCountry"></span></div>
+                <div class="details-item"><b>Website :</b> <span id="mWebsite"></span></div>
+                <div class="details-item"><b>Created :</b> <span id="mCreatedDate"></span></div>
             </div>
             <button class="close-btn" onclick="closeModal()">Close</button>
             </div>
