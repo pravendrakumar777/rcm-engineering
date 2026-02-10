@@ -205,7 +205,6 @@ public class EmployeeController {
         return "redirect:/employees";
     }
 
-
     // employee delete
     @GetMapping("/delete/{ohr}")
     public String deleteEmployee(@PathVariable String ohr) {
