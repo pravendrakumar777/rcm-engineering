@@ -4,6 +4,7 @@ import com.niiran.software.solutions.constants.ApplicationConstants;
 import com.niiran.software.solutions.domain.Attendance;
 import com.niiran.software.solutions.domain.Employee;
 import com.niiran.software.solutions.domain.enumerations.EmployeeStatus;
+import com.niiran.software.solutions.exceptions.EmployeeCreationException;
 import com.niiran.software.solutions.repository.EmployeeRepository;
 import com.niiran.software.solutions.service.AttendanceService;
 import com.niiran.software.solutions.service.EmployeeService;
@@ -30,12 +31,10 @@ public class EmployeeResource {
     private static final Logger log = LoggerFactory.getLogger(EmployeeResource.class);
     private final EmployeeRepository employeeRepository;
     private final EmployeeService employeeService;
-    private final AttendanceService attendanceService;
 
-    public EmployeeResource(EmployeeRepository employeeRepository, EmployeeService employeeService, AttendanceService attendanceService) {
+    public EmployeeResource(EmployeeRepository employeeRepository, EmployeeService employeeService) {
         this.employeeRepository = employeeRepository;
         this.employeeService = employeeService;
-        this.attendanceService = attendanceService;
     }
 
     @GetMapping("/employees/{ohr}")
@@ -50,26 +49,37 @@ public class EmployeeResource {
     public ResponseEntity<?> saveEmployee(@RequestBody Employee employee) {
         String traceId = UUID.randomUUID().toString();
         MDC.put("traceId", traceId);
-
         final String endpoint = "/employees/create";
 
         try {
-            log.info("traceId: {} | Source: APK | RequestType: REST | Endpoint: {} | Action: createEmployee | Step: START | Payload: {}", traceId, endpoint, employee);
 
-            String ohrCode = "NII" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("ddMMyyyyHHmmss"));
-            employee.setOhr(ohrCode);
-            log.debug("traceId: {} | Source: APK | RequestType: REST | Endpoint: {} | Action: createEmployee | Step: GENERATE_CODE | OHR: {}", traceId, endpoint, ohrCode);
+            log.info("traceId: {} | Source: APK | RequestType: REST | Endpoint: {} | Action: createEmployee | Step: START | Payload: {}",
+                    traceId, endpoint, employee);
 
-            Employee createdEmp = employeeService.createEmployee(employee);
-            log.info("traceId: {} | Source: APK | RequestType: REST | Endpoint: {} | Action: createEmployee | Step: SERVICE_CALL | Result: SUCCESS | EmployeeId: {}", traceId, endpoint, createdEmp.getId());
+            Employee createdEmployee = employeeService.createEmployee(employee);
 
-            log.info("traceId: {} | Source: APK | RequestType: REST | Endpoint: {} | Action: createEmployee | Step: END | Status: 200 OK | EmployeeId: {}", traceId, endpoint, createdEmp.getId());
-            return ResponseEntity.ok().body(createdEmp);
+            log.info("traceId: {} | Source: APK | RequestType: REST | Endpoint: {} | Action: createEmployee | Step: END | Status: SUCCESS | EmployeeId: {}",
+                    traceId, endpoint, createdEmployee.getId());
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdEmployee);
+
+        } catch (EmployeeCreationException ex) {
+
+            log.error("traceId: {} | Source: APK | RequestType: REST | Endpoint: {} | Action: createEmployee | Step: ERROR | Message: {} | Payload: {}",
+                    traceId, endpoint, ex.getMessage(), employee, ex);
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
 
         } catch (Exception ex) {
-            log.error("traceId: {} | Source: APK | RequestType: REST | Endpoint: {} | Action: createEmployee | Step: ERROR | Message: {} | Payload: {}", traceId, endpoint, ex.getMessage(), employee, ex);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error creating employee");
+
+            log.error("traceId:{} | Source:APK | RequestType:REST | Endpoint:{} | Action:createEmployee | Step:ERROR | Message:{} | Payload:{}",
+                    traceId, endpoint, ex.getMessage(), employee, ex);
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Unexpected error while creating employee");
+
         } finally {
+
             MDC.clear();
         }
     }

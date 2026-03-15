@@ -22,4 +22,5 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     List<Employee> findAllActiveEmployees();
 
     Optional<Employee> findByNameIgnoreCaseOrOhrIgnoreCase(String name, String ohr);
+    boolean existsByOhr(String ohr);
 }

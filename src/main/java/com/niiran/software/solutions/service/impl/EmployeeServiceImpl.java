@@ -13,6 +13,8 @@ import org.slf4j.MDC;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
@@ -33,36 +35,72 @@ public class EmployeeServiceImpl implements EmployeeService {
         return ftlToPdfUtil.generateEmployeeProfile(ohr, freemarkerConfig);
     }
 
-
     @Override
     public Employee createEmployee(Employee employee) {
+
         String traceId = MDC.get("traceId");
         final String endpoint = "/employees/create";
         try {
-            log.info("traceId:{} | Source:APK | RequestType:REST | Endpoint:{} | Action:createEmployee | Step:START | Payload:{}", traceId, endpoint, employee);
 
+            log.info("traceId: {} | Source: APK | RequestType: REST | Endpoint: {} | Action: createEmployee | Step: START | Payload: {}",
+                    traceId, endpoint, employee);
+
+            // Generate OHR Code
+            String ohrCode = "NII" + LocalDateTime.now()
+                    .format(DateTimeFormatter.ofPattern("ddMMyyyyHHmmss"));
+
+            employee.setOhr(ohrCode);
+
+            log.debug("traceId: {} | Endpoint: {} | Step: GENERATE_OHR | OHR: {}",
+                    traceId, endpoint, ohrCode);
+
+
+            // Validate OHR
+            if (employee.getOhr() == null || employee.getOhr().trim().isEmpty()) {
+                log.error("traceId: {} | Endpoint: {} | Step: VALIDATE_OHR | Result: FAILED | Reason: OHR_EMPTY",
+                        traceId, endpoint);
+                throw new EmployeeCreationException("OHR cannot be empty");
+            }
+
+            // Check Duplicate OHR
+            boolean exists = employeeRepository.existsByOhr(employee.getOhr());
+
+            if (exists) {
+
+                log.error("traceId: {} | Endpoint: {} | Step: CHECK_DUPLICATE_OHR | Result: FAILED | OHR_ALREADY_EXISTS: {}",
+                        traceId, endpoint, employee.getOhr());
+
+                throw new EmployeeCreationException("Employee with this OHR already exists");
+            }
+
+            // Set Status
             employee.setStatus(EmployeeStatus.PENDING);
-            log.debug("traceId:{} | Source:APK | RequestType:REST | Endpoint:{} | Action:createEmployee | Step:SET_STATUS | Status:{}", traceId, endpoint, employee.getStatus());
 
-            Employee saveEmp = employeeRepository.save(employee);
-            log.info("traceId:{} | Source:APK | RequestType:REST | Endpoint:{} | Action:createEmployee | Step:REPOSITORY_SAVE | Result:SUCCESS | EmployeeId:{}", traceId, endpoint, saveEmp.getId());
+            log.debug("traceId: {} | Endpoint: {} | Step: SET_STATUS | Status: {}",
+                    traceId, endpoint, employee.getStatus());
 
-            log.info("traceId:{} | Source:APK | RequestType:REST | Endpoint:{} | Action:createEmployee | Step:END | Status:RETURN | EmployeeId:{}", traceId, endpoint, saveEmp.getId());
-            return saveEmp;
+            // Save Employee
+            Employee savedEmployee = employeeRepository.save(employee);
+
+            log.info("traceId: {} | Endpoint: {} | Step: REPOSITORY_SAVE | Result: SUCCESS | EmployeeId: {}",
+                    traceId, endpoint, savedEmployee.getId());
+
+            log.info("traceId: {} | Endpoint: {} | Step: END | Status: RETURN_SUCCESS", traceId, endpoint);
+            return savedEmployee;
 
         } catch (DataAccessException dae) {
-            log.error("traceId:{} | Source:APK | RequestType:REST | Endpoint:{} | Action:createEmployee | Step:ERROR | Type:DataAccessException | Message:{} | Payload:{}",
+
+            log.error("traceId: {} | Endpoint: {} | Step: ERROR | Type: Database | Message: {} | Payload: {}",
                     traceId, endpoint, dae.getMessage(), employee, dae);
+
             throw new EmployeeCreationException("Database error while creating employee", dae);
 
         } catch (Exception ex) {
-            log.error("traceId:{} | Source:APK | RequestType:REST | Endpoint:{} | Action:createEmployee | Step:ERROR | Type:Exception | Message:{} | Payload:{}",
+
+            log.error("traceId: {} | Endpoint: {} | Step: ERROR | Type: Exception | Message: {} | Payload: {}",
                     traceId, endpoint, ex.getMessage(), employee, ex);
+
             throw new EmployeeCreationException("Unexpected error while creating employee", ex);
-
-        } finally {
-
-            MDC.clear();
         }
     }
 

@@ -51,12 +51,10 @@ public class AttendanceServiceImpl implements AttendanceService {
         }
 
         Employee emp = empOpt.get();
-        log.trace("markAttendance:EMPLOYEE_LOADED | empStatus:{}",
-                emp.getStatus());
+        log.trace("markAttendance:EMPLOYEE_LOADED | empStatus:{}", emp.getStatus());
 
         if (emp.getStatus() == EmployeeStatus.PENDING || emp.getStatus() == EmployeeStatus.CANCEL) {
-            log.error("markAttendance:ERROR | INVALID_EMPLOYEE_STATUS | empStatus:{}",
-                    emp.getStatus());
+            log.error("markAttendance:ERROR | INVALID_EMPLOYEE_STATUS | empStatus:{}", emp.getStatus());
             throw new IllegalStateException(
                     "Attendance cannot be marked for employee with status " + emp.getStatus());
         }
