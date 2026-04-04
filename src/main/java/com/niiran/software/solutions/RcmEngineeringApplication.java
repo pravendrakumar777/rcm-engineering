@@ -151,6 +151,20 @@ public class RcmEngineeringApplication {
             System.out.println(sum);
             System.out.println();
             System.out.println();
+
+
+
+            // 1. Find Second highest
+            int arr[] = {10,20,30,50,40};
+            //int numb  = Arrays.stream(arr).sorted(Comparator.reverseOrder()).skip(1).findfirst(1).get();
+
+            //2. Frequency of each Character
+            String string = "programming";
+            //Map<Character,Long> result = str.char().mapToObj(c -> (char) c).collect(IdentityFunction,Collectors.counting());
+
+            //3. Find duplicate characters
+            String stri = "programming";
+            //List<Character> output =str.char().mapToObj(c -> (char) c).collect(identityFunction,Collectors.counting()).entryset().stream().filter(c -> c.getValue > 1).map(Map::getkeySet).collect(Collectors.toList());
         }
     }
 }

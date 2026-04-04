@@ -1,8 +1,8 @@
 package com.rcm.engineering.controller;
 
-import com.rcm.engineering.domain.Employee;
-import com.rcm.engineering.repository.EmployeeRepository;
-import com.rcm.engineering.service.AttendanceService;
+import com.niiran.software.solutions.domain.Employee;
+import com.niiran.software.solutions.repository.EmployeeRepository;
+import com.niiran.software.solutions.service.AttendanceService;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
